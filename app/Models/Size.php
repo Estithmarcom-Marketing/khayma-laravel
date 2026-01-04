@@ -10,4 +10,11 @@ class Size extends Model
         'name_ar',
         'name_en',
     ];
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
+   
+
 }

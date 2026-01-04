@@ -11,4 +11,10 @@ class Color extends Model
         'name_ar',
         'code',
     ];
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
+    
 }
