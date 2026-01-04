@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('meta_description_ar')->nullable();
             $table->text('meta_description_en')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
         });

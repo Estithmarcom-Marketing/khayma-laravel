@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('slug_en')->unique();
             $table->foreignId('parent_id')->nullable()->constrained('categories');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
         });
