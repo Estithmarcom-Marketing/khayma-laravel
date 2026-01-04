@@ -19,6 +19,7 @@ class Payment extends Model
 
     protected $casts = [
         'meta_data' => 'array',
+        'status' => PaymentStatusEnum::class,
     ];
 
     public function order()

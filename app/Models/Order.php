@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Orders\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,6 +30,7 @@ class Order extends Model
         'shipping_cost' => 'decimal,2',
         'tax_amount' => 'decimal,2',
         'discount_amount' => 'decimal,2',
+        'status' => OrderStatusEnum::class,
     ];
 
     public function user()
@@ -60,5 +62,4 @@ class Order extends Model
     {
         return $this->belongsTo(Cart::class);
     }
-    
 }
