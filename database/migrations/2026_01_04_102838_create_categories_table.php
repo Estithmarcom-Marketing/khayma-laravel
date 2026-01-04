@@ -13,11 +13,16 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('slug')->unique();
+            $table->string('name_ar');
+            $table->string('name_en');
+            $table->text('description_ar')->nullable();
+            $table->text('description_en')->nullable();
+            $table->string('slug_ar')->unique();
+            $table->string('slug_en')->unique();
             $table->foreignId('parent_id')->nullable()->constrained('categories');
             $table->timestamps();
+
+            $table->index(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
         });
     }
 
@@ -26,6 +31,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropIndex(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
+        });
         Schema::dropIfExists('categories');
     }
 };
