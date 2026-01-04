@@ -22,8 +22,7 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('categories');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->index(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
+            $table->index(['name_ar', 'name_en'], 'category_names_idx');
         });
     }
 
@@ -33,7 +32,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->dropIndex(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
+            $table->dropIndex(['name_ar', 'name_en']);
         });
         Schema::dropIfExists('categories');
     }

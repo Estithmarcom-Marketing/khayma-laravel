@@ -24,7 +24,10 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            $table->index(['product_id', 'color_id', 'size_id' , 'sku' , 'offer_expired_date' , 'offer_started_date']);
+            $table->index(
+                ['product_id', 'color_id', 'size_id', 'sku', 'offer_expired_date', 'offer_started_date'],
+                'pv_product_color_size_sku_offer_idx'
+            );
 
         });
     }
@@ -35,5 +38,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('product_variations');
+        Schema::table('product_variations', function (Blueprint $table) {
+            $table->dropIndex(['product_id', 'color_id', 'size_id', 'sku', 'offer_expired_date', 'offer_started_date']);
+        });
     }
 };

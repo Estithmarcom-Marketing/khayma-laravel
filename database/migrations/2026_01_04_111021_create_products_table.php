@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
+            $table->index(['name_ar', 'name_en']);
         });
     }
 
@@ -40,7 +40,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('products');
         Schema::table('products', function (Blueprint $table) {
-            $table->dropIndex(['name_ar', 'name_en', 'slug_ar', 'slug_en']);
+            $table->dropIndex(['name_ar', 'name_en']);
         });
     }
 };

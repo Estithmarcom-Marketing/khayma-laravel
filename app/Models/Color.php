@@ -11,6 +11,4 @@ class Color extends Model
         'name_ar',
         'code',
     ];
-
-   
 }
