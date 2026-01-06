@@ -61,7 +61,7 @@ class SizeController extends Controller
         try {
             $this->service->delete($size);
 
-            return ApiResponse::successResponse(null, 'Size deleted successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(null, 'Size deleted successfully', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Failed to delete size', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

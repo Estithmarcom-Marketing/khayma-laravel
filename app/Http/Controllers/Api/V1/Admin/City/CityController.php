@@ -75,7 +75,7 @@ class CityController extends Controller
 
             return ApiResponse::successResponse(null,
                 'City deleted successfully',
-                Response::HTTP_OK);
+                Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Failed to delete city', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

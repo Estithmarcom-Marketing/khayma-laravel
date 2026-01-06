@@ -73,7 +73,7 @@ class DeliveryMethodController extends Controller
         try {
             $this->service->delete($deliveryMethod);
 
-            return ApiResponse::successResponse([], 'Delivery method deleted successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse([], 'Delivery method deleted successfully', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Failed to delete delivery method: ', [$e->getMessage(), 'method' => __METHOD__]);
 

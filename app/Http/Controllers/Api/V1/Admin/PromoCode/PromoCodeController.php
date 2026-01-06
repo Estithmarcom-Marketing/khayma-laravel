@@ -102,7 +102,7 @@ class PromoCodeController extends Controller
         try {
             $this->service->delete($promoCode);
 
-            return ApiResponse::successResponse([], 'Promo code deleted successfully.', Response::HTTP_OK);
+            return ApiResponse::successResponse([], 'Promo code deleted successfully.', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Error deleting promo code: ', [$e->getMessage(), 'method' => __METHOD__]);
 

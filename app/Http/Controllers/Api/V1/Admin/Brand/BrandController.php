@@ -81,7 +81,7 @@ class BrandController extends Controller
         try {
             $this->service->delete($brand);
 
-            return ApiResponse::successResponse(null, 'Brand deleted successfully', status: Response::HTTP_OK);
+            return ApiResponse::successResponse(null, 'Brand deleted successfully', status: Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Failed to delete brand', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
