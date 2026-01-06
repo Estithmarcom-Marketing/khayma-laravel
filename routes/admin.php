@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
+use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
@@ -16,7 +17,7 @@ Route::prefix('v1/admin')
                 Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
             });
 
-        Route::middleware(['auth:sanctum'])
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('cities')
             ->group(function () {
                 Route::get('', [CityController::class, 'index']);
@@ -43,6 +44,15 @@ Route::prefix('v1/admin')
                 Route::patch('{size}', [SizeController::class, 'update']);
                 Route::get('{size}', [SizeController::class, 'show']);
                 Route::delete('{size}', [SizeController::class, 'destroy']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('brands')
+            ->group(function () {
+                Route::get('', [BrandController::class, 'index']);
+                Route::post('', [BrandController::class, 'store']);
+                Route::patch('{brand}', [BrandController::class, 'update']);
+                Route::get('{brand}', [BrandController::class, 'show']);
+                Route::delete('{brand}', [BrandController::class, 'destroy']);
             });
 
     });
