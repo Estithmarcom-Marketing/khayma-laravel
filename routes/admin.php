@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
+use App\Http\Controllers\Api\V1\Admin\PromoCode\PromoCodeController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,4 +56,14 @@ Route::prefix('v1/admin')
                 Route::delete('{brand}', [BrandController::class, 'destroy']);
             });
 
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('promo-codes')
+            ->group(function () {
+                Route::get('', [PromoCodeController::class, 'index']);
+                Route::get('active', [PromoCodeController::class, 'getActive']);
+                Route::post('', [PromoCodeController::class, 'store']);
+                Route::patch('{promoCode}', [PromoCodeController::class, 'update']);
+                Route::get('{promoCode}', [PromoCodeController::class, 'show']);
+                Route::delete('{promoCode}', [PromoCodeController::class, 'destroy']);
+            });
     });
