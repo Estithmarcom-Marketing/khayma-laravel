@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminAuthService
 {
-    public function register(array $data)
+    public function store(array $data)
     {
         $data['password'] = Hash::make($data['password']);
         $data['is_guest'] = false;

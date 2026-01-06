@@ -7,7 +7,6 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\User\UserResource;
 use App\Services\V1\Admin\Auth\AdminAuthService;
-use App\Services\V1\Auth\AuthService;
 use App\Traits\Response\ApiResponse;
 use Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,11 +15,11 @@ class AdminAuthController extends Controller
 {
     public function __construct(protected AdminAuthService $service) {}
 
-    public function register(RegisterRequest $request)
+    public function store(RegisterRequest $request)
     {
         try {
             $validated = $request->validated();
-            $data = $this->service->register($validated);
+            $data = $this->service->store($validated);
 
             Log::info('Admin registered successfully', ['admin_id' => $data['admin']->id]);
 

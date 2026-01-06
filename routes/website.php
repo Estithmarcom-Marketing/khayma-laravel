@@ -1,0 +1,36 @@
+<?php
+
+use App\Http\Controllers\Api\V1\User\Address\AddressController;
+use App\Http\Controllers\Api\V1\User\Auth\UserAuthController;
+use App\Http\Controllers\Api\V1\User\ProfileManagment\ProfileManagmentController;
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('v1/user')
+    ->group(function () {
+
+        Route::middleware('throttle:10,1')
+            ->prefix('auth')
+            ->group(function () {
+                Route::post('otp', [UserAuthController::class, 'sendOtp']);
+                Route::post('login', [UserAuthController::class, 'login']);
+                Route::post('logout', [UserAuthController::class, 'logout'])->middleware('auth:sanctum');
+
+            });
+        Route::middleware(['throttle:10,1', 'auth:sanctum'])
+            ->prefix('profile')
+            ->group(function () {
+                Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
+                Route::patch('', [ProfileManagmentController::class, 'update']);
+            });
+
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('addresses')
+            ->group(function () {
+                Route::get('', [AddressController::class, 'index']);
+                Route::post('', [AddressController::class, 'store']);
+                Route::patch('{address}', [AddressController::class, 'update']);
+                Route::get('{address}', [AddressController::class, 'show']);
+                Route::delete('{address}', [AddressController::class, 'destroy']);
+            });
+
+    });

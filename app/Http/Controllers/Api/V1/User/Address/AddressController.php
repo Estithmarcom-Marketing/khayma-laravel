@@ -9,7 +9,6 @@ use App\Http\Resources\Address\AddressResource;
 use App\Models\Address;
 use App\Services\V1\User\Address\AddressService;
 use App\Traits\Response\ApiResponse;
-use Auth;
 use Log;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,7 +19,7 @@ class AddressController extends Controller
     public function index()
     {
         try {
-            $user = Auth::user();
+            $user = auth()->user();
             $addresses = $this->service->list($user);
 
             return ApiResponse::successResponse([
@@ -38,7 +37,7 @@ class AddressController extends Controller
         try {
 
             $validated = $request->validated();
-            $user = Auth::user();
+            $user = auth()->user();
             $address = $this->service->store($user, $validated);
             $address->load('city');
 

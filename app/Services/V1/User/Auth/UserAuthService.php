@@ -75,7 +75,7 @@ class UserAuthService
 
     }
     public function logout(){
-        $user = Auth::user(); 
+        $user = auth()->user(); 
         if ($user) {
             $user->tokens()->delete();
         }
