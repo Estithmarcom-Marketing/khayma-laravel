@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
+use App\Http\Controllers\Api\V1\Admin\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Admin\PromoCode\PromoCodeController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
@@ -76,5 +77,15 @@ Route::prefix('v1/admin')
                 Route::patch('{deliveryMethod}', [DeliveryMethodController::class, 'update']);
                 Route::get('{deliveryMethod}', [DeliveryMethodController::class, 'show']);
                 Route::delete('{deliveryMethod}', [DeliveryMethodController::class, 'destroy']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('payment-methods')
+            ->group(function () {
+                Route::get('', [PaymentMethodController::class, 'index']);
+                Route::get('active', [PaymentMethodController::class, 'getActive']);
+                Route::post('', [PaymentMethodController::class, 'store']);
+                Route::patch('{paymentMethod}', [PaymentMethodController::class, 'update']);
+                Route::get('{paymentMethod}', [PaymentMethodController::class, 'show']);
+                Route::delete('{paymentMethod}', [PaymentMethodController::class, 'destroy']);
             });
     });
