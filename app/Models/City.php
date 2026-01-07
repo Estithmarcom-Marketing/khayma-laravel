@@ -17,4 +17,10 @@ class City extends Model
     {
         return $this->hasMany(CityShipment::class);
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true)
+            ->where('can_ship', true);
+    }
 }

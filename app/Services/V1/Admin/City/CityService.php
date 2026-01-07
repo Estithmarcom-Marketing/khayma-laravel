@@ -11,6 +11,16 @@ class CityService
         return City::paginate(10);
     }
 
+    public function getActive()
+    {
+        return City::active()->paginate(10);
+    }
+
+    public function listWithShipments()
+    {
+        return City::with(['shipments:id,cost,estimated_delivery_days'])->paginate(10);
+    }
+
     public function store(array $data): City
     {
         return City::create([
@@ -30,7 +40,7 @@ class CityService
             'can_ship' => $data['can_ship'] ?? $city->can_ship,
         ]);
 
-        return $city;
+        return $city->refresh();
     }
 
     public function delete(City $city): void
@@ -40,6 +50,6 @@ class CityService
 
     public function show(City $city): City
     {
-        return $city;
+        return $city->load('shipments');
     }
 }

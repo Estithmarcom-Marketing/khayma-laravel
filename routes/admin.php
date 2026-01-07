@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
+use App\Http\Controllers\Api\V1\Admin\City\CityShipmentController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
@@ -27,9 +28,20 @@ Route::prefix('v1/admin')
             ->group(function () {
                 Route::get('', [CityController::class, 'index']);
                 Route::post('', [CityController::class, 'store']);
+                Route::get('active', [CityController::class, 'getActive']);
+                Route::get('with-shipments', [CityController::class, 'listWithShipments']);
                 Route::patch('{city}', [CityController::class, 'update']);
                 Route::get('{city}', [CityController::class, 'show']);
                 Route::delete('{city}', [CityController::class, 'destroy']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('city-shipments')
+            ->group(function () {
+                Route::get('', [CityShipmentController::class, 'index']);
+                Route::get('{cityShipment}', [CityShipmentController::class, 'show']);
+                Route::post('cities/{city}', [CityShipmentController::class, 'store']);
+                Route::patch('{cityShipment}', [CityShipmentController::class, 'update']);
+                Route::delete('{cityShipment}', [CityShipmentController::class, 'destroy']);
             });
 
         Route::middleware(['auth:sanctum', 'throttle:60,1'])

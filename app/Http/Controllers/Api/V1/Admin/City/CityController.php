@@ -36,6 +36,46 @@ class CityController extends Controller
         }
     }
 
+    public function getActive()
+    {
+        try {
+            $cities = $this->service->getActive();
+            $cities = CityResource::collection($cities)->response()->getData(true);
+
+            return ApiResponse::successResponse([
+                'cities' => $cities['data'],
+                'meta' => $cities['meta'],
+                'links' => $cities['links'],
+            ],
+                'Active cities retrieved successfully',
+                status: Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch active cities', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to fetch active cities', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function listWithShipments()
+    {
+        try {
+            $cities = $this->service->listWithShipments();
+            $cities = CityResource::collection($cities)->response()->getData(true);
+
+            return ApiResponse::successResponse([
+                'cities' => $cities['data'],
+                'meta' => $cities['meta'],
+                'links' => $cities['links'],
+            ],
+                'Cities with shipments retrieved successfully',
+                status: Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch cities with shipments', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to fetch cities with shipments', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function store(StoreCityRequest $request)
     {
         try {
@@ -44,7 +84,7 @@ class CityController extends Controller
 
             return ApiResponse::successResponse(['city' => CityResource::make($city)],
                 'City created successfully',
-                Response::HTTP_OK);
+                Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error('Failed to create city', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

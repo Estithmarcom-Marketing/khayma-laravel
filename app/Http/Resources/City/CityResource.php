@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\City;
 
+use App\Http\Resources\CityShipment\CityShipmentResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,6 +21,8 @@ class CityResource extends JsonResource
             'name_ar' => $this->name_ar,
             'is_active' => $this->is_active,
             'can_ship' => $this->can_ship,
+            'shipments' => $this->whenLoaded('shipments', CityShipmentResource::collection($this->shipments)
+            ),
             'created_at' => $this->whenNotNull($this->created_at?->toDateTimeString()),
             'updated_at' => $this->whenNotNull($this->updated_at?->toDateTimeString()),
         ];
