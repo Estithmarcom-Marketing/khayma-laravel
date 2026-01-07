@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\PaymentMethod;
+namespace App\Http\Resources\Payment;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PaymentMethodResource extends JsonResource
+class PaymentGatewayResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,10 @@ class PaymentMethodResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
+            'name_en' => $this->name_en,
             'is_active' => $this->is_active,
+            'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
             'created_at' => $this->whenNotNull($this->created_at->toDateTimeString()),
             'updated_at' => $this->whenNotNull($this->updated_at->toDateTimeString()),
         ];

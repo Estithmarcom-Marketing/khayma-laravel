@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Admin\PaymentMethod;
+namespace App\Http\Controllers\Api\V1\Admin\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentMethod\StorePaymentMethodRequest;
 use App\Http\Requests\PaymentMethod\UpdatePaymentMethodRequest;
-use App\Http\Resources\PaymentMethod\PaymentMethodResource;
+use App\Http\Resources\Payment\PaymentMethodResource;
 use App\Models\PaymentMethod;
-use App\Services\V1\Admin\PaymentMethod\PaymentMethodService;
+use App\Services\V1\Admin\Payment\PaymentMethodService;
 use App\Traits\Response\ApiResponse;
 use Log;
 use Symfony\Component\HttpFoundation\Response;

@@ -5,7 +5,8 @@ use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
-use App\Http\Controllers\Api\V1\Admin\PaymentMethod\PaymentMethodController;
+use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
+use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Admin\PromoCode\PromoCodeController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
@@ -87,5 +88,16 @@ Route::prefix('v1/admin')
                 Route::patch('{paymentMethod}', [PaymentMethodController::class, 'update']);
                 Route::get('{paymentMethod}', [PaymentMethodController::class, 'show']);
                 Route::delete('{paymentMethod}', [PaymentMethodController::class, 'destroy']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('payment-gateways')
+            
+            ->group(function () {
+                Route::get('', [PaymentGatewayController::class, 'index']);
+                Route::get('active', [PaymentGatewayController::class, 'getActive']);
+                Route::get('{paymentGateway}', [PaymentGatewayController::class, 'show']);
+                Route::post('', [PaymentGatewayController::class, 'store']);
+                Route::patch('{paymentGateway}', [PaymentGatewayController::class, 'update']);
+                Route::delete('{paymentGateway}', [PaymentGatewayController::class, 'destroy']);
             });
     });

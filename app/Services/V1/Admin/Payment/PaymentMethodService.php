@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\V1\Admin\PaymentMethod;
+namespace App\Services\V1\Admin\Payment;
 
 use App\Models\PaymentMethod;
 
