@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
+use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
@@ -91,7 +92,7 @@ Route::prefix('v1/admin')
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('payment-gateways')
-            
+
             ->group(function () {
                 Route::get('', [PaymentGatewayController::class, 'index']);
                 Route::get('active', [PaymentGatewayController::class, 'getActive']);
@@ -99,5 +100,19 @@ Route::prefix('v1/admin')
                 Route::post('', [PaymentGatewayController::class, 'store']);
                 Route::patch('{paymentGateway}', [PaymentGatewayController::class, 'update']);
                 Route::delete('{paymentGateway}', [PaymentGatewayController::class, 'destroy']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('categories')
+            ->scopeBindings()
+            ->group(function () {
+                Route::get('', [CategoryController::class, 'index']);
+                Route::post('', [CategoryController::class, 'store']);
+                Route::patch('{category}', [CategoryController::class, 'update']);
+                Route::get('{category}', [CategoryController::class, 'show']);
+                Route::delete('{category}', [CategoryController::class, 'destroy']);
+                Route::post('{category}/sub-categories', [CategoryController::class, 'storeSubCategory']);
+                Route::patch('{category}/sub-categories/{subCategory}', [CategoryController::class, 'updateSubCategory']);
+                Route::delete('{category}/sub-categories/{subCategory}', [CategoryController::class, 'destroySubCategory']);
+                Route::get('{category}/sub-categories', [CategoryController::class, 'listSubCategories']);
             });
     });

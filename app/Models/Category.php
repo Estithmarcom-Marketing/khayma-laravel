@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Category extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'name_en',
         'name_ar',
@@ -22,5 +23,15 @@ class Category extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function subCategories()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
     }
 }
