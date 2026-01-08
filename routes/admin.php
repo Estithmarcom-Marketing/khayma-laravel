@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Admin\PromoCode\PromoCodeController;
+use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,26 @@ Route::prefix('v1/admin')
                 Route::post('store', [AdminAuthController::class, 'store']);
                 Route::post('login', [AdminAuthController::class, 'login']);
                 Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->scopeBindings()
+            ->group(function () {
+                Route::get('roles', [RolesPermissionsController::class, 'getAllRoles']);
+                Route::get('permissions', [RolesPermissionsController::class, 'getAllPermissions']);
+                Route::post('roles', [RolesPermissionsController::class, 'storeRole']);
+                Route::post('permissions', [RolesPermissionsController::class, 'storePermission']);
+                Route::post('users/{user}/roles', [RolesPermissionsController::class, 'assignRoleToUser']);
+                Route::delete('users/{user}/roles/{role}', [RolesPermissionsController::class, 'revokeRoleFromUser']);
+                Route::post('roles/{role}/permissions', [RolesPermissionsController::class, 'assignPermissionToRole']);
+                Route::delete('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'revokePermissionFromRole']);
+                Route::get('users/{user}/roles', [RolesPermissionsController::class, 'getRolesByUser']);
+                Route::get('users/{user}/permissions', [RolesPermissionsController::class, 'getPermissionsByUser']);
+
+                Route::get('roles/{role}/permissions', [RolesPermissionsController::class, 'getPermissionsByRole']);
+                Route::get('roles/{role}/users', [RolesPermissionsController::class, 'getUsersByRole']);
+
+                Route::get('permissions/{permission}/roles', [RolesPermissionsController::class, 'getRolesByPermission']);
+                Route::get('permissions/{permission}/users', [RolesPermissionsController::class, 'getUsersByPermission']);
             });
 
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
