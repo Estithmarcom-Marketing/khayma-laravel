@@ -120,8 +120,11 @@ class RolesPermissionsController extends Controller
     {
         try {
             $roles = $this->service->getAllRoles();
+            $roles = RoleResource::collection($roles)->response()->getData(true);
 
-            return ApiResponse::successResponse(['roles' => RoleResource::collection($roles)], 'Roles fetched successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['roles' => $roles['data'],
+                'meta' => $roles['meta'],
+                'links' => $roles['links']], 'Roles fetched successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch roles', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -133,8 +136,11 @@ class RolesPermissionsController extends Controller
     {
         try {
             $permissions = $this->service->getAllPermissions();
+            $permissions = PermissionResource::collection($permissions)->response()->getData(true);
 
-            return ApiResponse::successResponse(['permissions' => PermissionResource::collection($permissions)], 'Permissions fetched successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['permissions' => $permissions['data'],
+                'meta' => $permissions['meta'],
+                'links' => $permissions['links']], 'Permissions fetched successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch permissions', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

@@ -17,9 +17,11 @@ class PermissionResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'roles' => $this->whenLoaded('roles', RoleResource::collection($this->roles)),
-            'created_at' => $this->whenNotNull($this->created_at->toDateTimeString()),
-            'updated_at' => $this->whenNotNull($this->updated_at->toDateTimeString()),
+            'roles' => $this->whenLoaded('roles', function () {
+                return $this->roles->pluck('name');
+            }),
+            'created_at' => optional($this->created_at)->toDateTimeString(),
+            'updated_at' => optional($this->created_at)->toDateTimeString(),
         ];
     }
 }

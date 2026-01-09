@@ -3,7 +3,6 @@
 namespace App\Services\V1\Admin\RolesAndPermissions;
 
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -29,11 +28,11 @@ class RolePermissionService
     public function assignPermissionToRole(array $data, Role $role)
     {
 
-            if (! $role->hasPermissionTo($data['permission_name'])) {
-                $role->givePermissionTo($data['permission_name']);
-            }
+        if (! $role->hasPermissionTo($data['permission_name'])) {
+            $role->givePermissionTo($data['permission_name']);
+        }
 
-            return $role->refresh();
+        return $role->refresh();
     }
 
     public function removePermissionFromRole(Permission $permission, Role $role)
@@ -66,12 +65,18 @@ class RolePermissionService
 
     public function getAllRoles()
     {
-        return Role::query()->with('permissions')->latest()->get();
+        return Role::query()
+            ->select('id', 'name', 'created_at', 'updated_at')
+            ->latest()
+            ->paginate(10);
     }
 
     public function getAllPermissions()
     {
-        return Permission::query()->latest()->get();
+        return Permission::query()
+            ->select('id', 'name', 'created_at', 'updated_at')
+            ->latest()
+            ->paginate(10);
     }
 
     public function getUserPermissions(User $user)
