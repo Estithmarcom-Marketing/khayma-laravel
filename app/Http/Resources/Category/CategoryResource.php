@@ -22,7 +22,14 @@ class CategoryResource extends JsonResource
             'slug_ar' => $this->slug_ar,
             'description_en' => $this->description_en,
             'description_ar' => $this->description_ar,
-            'parent' => $this->whenLoaded('parent', new CategoryResource($this->parent)),
+            'parent' => $this->whenLoaded('parent', function () {
+                return [
+                    'id' => $this->parent->id,
+                    'name_en' => $this->parent->name_en,
+                    'name_ar' => $this->parent->name_ar,
+                ];
+            }),
+
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

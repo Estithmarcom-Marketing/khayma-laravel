@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\User\Address\AddressController;
 use App\Http\Controllers\Api\V1\User\Auth\UserAuthController;
+use App\Http\Controllers\Api\V1\User\Cart\CartController;
 use App\Http\Controllers\Api\V1\User\ProfileManagment\ProfileManagmentController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,11 @@ Route::prefix('v1/user')
                 Route::patch('{address}', [AddressController::class, 'update']);
                 Route::get('{address}', [AddressController::class, 'show']);
                 Route::delete('{address}', [AddressController::class, 'destroy']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('cart')
+            ->group(function () {
+                Route::get('', [CartController::class, 'getCart']);
             });
 
     });

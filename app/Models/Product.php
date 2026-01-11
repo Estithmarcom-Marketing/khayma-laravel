@@ -24,12 +24,15 @@ class Product extends Model
         'meta_title_en',
         'meta_description_ar',
         'meta_description_en',
-
     ];
 
-    public function categories()
+    protected $casts = [
+        'is_published' => 'boolean',
+    ];
+
+    public function category()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function brand()

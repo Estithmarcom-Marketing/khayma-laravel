@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers\Api\V1\Admin\Category;
 
+use App\Exports\CategoriesExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\ImportCategoryRequest;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\Category\CategoryResource;
+use App\Imports\CategoriesImport;
 use App\Models\Category;
 use App\Services\V1\Admin\Category\CategoryService;
+use App\Services\V1\Admin\SpreadsheetImportExport\SpreadsheetImportExportService;
 use App\Traits\Response\ApiResponse;
 use Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
 {
-    public function __construct(protected CategoryService $service) {}
+    public function __construct(protected CategoryService $service, protected SpreadsheetImportExportService $spreadsheetService) {}
 
     public function index()
     {
@@ -159,6 +163,43 @@ class CategoryController extends Controller
             Log::error('Failed to fetch sub-categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch sub-categories', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function exportCsv()
+    {
+        try {
+            return $this->spreadsheetService->exportCsv(new CategoriesExport, 'categories');
+        } catch (\Exception $e) {
+            Log::error('Failed to export categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to export categories', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function exportExcel()
+    {
+        try {
+            return $this->spreadsheetService->exportExcel(new CategoriesExport, 'categories');
+        } catch (\Exception $e) {
+            Log::error('Failed to export categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to export categories', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function importSpreadsheet(ImportCategoryRequest $request)
+    {
+        try {
+            $file = $request->file('file');
+
+            $this->spreadsheetService->import(new CategoriesImport, $file);
+
+            return ApiResponse::successResponse(null, 'Import started. Processing in background.', Response::HTTP_ACCEPTED);
+        } catch (\Exception $e) {
+            Log::error('Failed to import categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to import categories', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

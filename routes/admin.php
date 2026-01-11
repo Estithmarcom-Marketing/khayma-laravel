@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
+use App\Http\Controllers\Api\V1\Admin\Product\ProductController;
 use App\Http\Controllers\Api\V1\Admin\PromoCode\PromoCodeController;
 use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
@@ -134,18 +135,32 @@ Route::prefix('v1/admin')
                 Route::patch('{paymentGateway}', [PaymentGatewayController::class, 'update']);
                 Route::delete('{paymentGateway}', [PaymentGatewayController::class, 'destroy']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['throttle:60,1'])
             ->prefix('categories')
             ->scopeBindings()
             ->group(function () {
+
                 Route::get('', [CategoryController::class, 'index']);
                 Route::post('', [CategoryController::class, 'store']);
-                Route::patch('{category}', [CategoryController::class, 'update']);
+                Route::get('export-csv', [CategoryController::class, 'exportCsv']);
+                Route::get('export-excel', [CategoryController::class, 'exportExcel']);
                 Route::get('{category}', [CategoryController::class, 'show']);
-                Route::delete('{category}', [CategoryController::class, 'destroy']);
-                Route::post('{category}/sub-categories', [CategoryController::class, 'storeSubCategory']);
-                Route::patch('{category}/sub-categories/{subCategory}', [CategoryController::class, 'updateSubCategory']);
-                Route::delete('{category}/sub-categories/{subCategory}', [CategoryController::class, 'destroySubCategory']);
                 Route::get('{category}/sub-categories', [CategoryController::class, 'listSubCategories']);
+
+                Route::post('import', [CategoryController::class, 'importSpreadsheet']);
+                Route::patch('{category}', [CategoryController::class, 'update'])->middleware('auth:sanctum');
+                Route::delete('{category}', [CategoryController::class, 'destroy'])->middleware('auth:sanctum');
+                Route::post('{category}/sub-categories', [CategoryController::class, 'storeSubCategory'])->middleware('auth:sanctum');
+                Route::patch('{category}/sub-categories/{subCategory}', [CategoryController::class, 'updateSubCategory'])->middleware('auth:sanctum');
+                Route::delete('{category}/sub-categories/{subCategory}', [CategoryController::class, 'destroySubCategory'])->middleware('auth:sanctum');
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('products')
+            ->group(function () {
+                Route::get('', [ProductController::class, 'index']);
+                Route::get('{product}', [ProductController::class, 'show']);
+                Route::post('', [ProductController::class, 'store']);
+                Route::patch('{product}', [ProductController::class, 'update']);
+                Route::delete('{product}', [ProductController::class, 'destroy']);
             });
     });

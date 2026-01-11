@@ -80,7 +80,10 @@ class CategoryService
 
     public function listSubCategories(Category $category)
     {
-        return $category->subCategories()->paginate(10);
+        return $category
+        ->subCategories()
+        ->with('parent')
+        ->paginate(10);
     }
 
     public function deleteSubCategory(Category $category, Category $subCategory)

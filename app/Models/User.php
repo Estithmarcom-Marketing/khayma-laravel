@@ -75,4 +75,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Favourite::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($user) {
+            $user->cart()->create([]);
+        });
+    }
 }

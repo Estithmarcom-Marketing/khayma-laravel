@@ -24,7 +24,9 @@ class DatabaseSeeder extends Seeder
         // $this->call([
         //     CitiesTableSeeder::class,
         // ]);
-        $this->call(RolesAndPermissionsSeeder::class);
+        // $this->call(RolesAndPermissionsSeeder::class);
+        // $this->call(BrandSeeder::class);
+        $this->call(ProductSeeder::class);
 
     }
 }
