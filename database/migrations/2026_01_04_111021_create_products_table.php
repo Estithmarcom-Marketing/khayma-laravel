@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['name_ar', 'name_en']);
+            $table->index(['name_ar', 'name_en',]);
         });
     }
 

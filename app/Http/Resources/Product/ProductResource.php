@@ -37,6 +37,7 @@ class ProductResource extends JsonResource
                     'name_en' => $this->brand->name_en,
                 ];
             }),
+            'variations' => $this->whenLoaded('variations', $this->variations),
             'meta_title_ar' => $this->meta_title_ar,
             'meta_title_en' => $this->meta_title_en,
             'meta_description_ar' => $this->meta_description_ar,

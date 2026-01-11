@@ -14,6 +14,9 @@ class ProductVariation extends Model
         'price',
         'sku',
         'is_active',
+        'offer',
+        'offer_expired_date',
+        'offer_started_date',
     ];
 
     protected $casts = [
@@ -25,7 +28,7 @@ class ProductVariation extends Model
     {
         return $this->belongsTo(Product::class);
     }
-    
+
     public function color()
     {
         return $this->belongsTo(Color::class);
@@ -39,5 +42,12 @@ class ProductVariation extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function properties()
+    {
+        return $this->belongsToMany(Property::class, 'variant_properties')
+            ->withPivot('value_ar', 'value_en')
+            ->withTimestamps();
     }
 }

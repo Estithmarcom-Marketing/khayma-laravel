@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Requests\Product;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreProductVaritionsRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'color_id' => 'required|exists:colors,id',
+            'size_id' => 'required|exists:sizes,id',
+            'sku' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock_quantity' => 'required|numeric|min:0',
+            'is_active' => 'required|boolean',
+            'offer' => 'nullable|numeric|min:0',
+            'offer_expired_date' => 'nullable|date|after:today',
+            'offer_started_date' => 'nullable|date|before:offer_expired_date',
+        ];
+    }
+}

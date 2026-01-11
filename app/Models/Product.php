@@ -50,9 +50,9 @@ class Product extends Model
         return $this->hasMany(ProductVariation::class);
     }
 
-    public function properties(): HasManyThrough
+    public function properties()
     {
-        return $this->hasManyThrough(Property::class, ProductVariation::class);
+        return $this->hasManyThrough(Property::class, ProductVariation::class, 'product_id', 'id', 'id', 'property_id');
     }
 
     public function sizes(): HasManyThrough

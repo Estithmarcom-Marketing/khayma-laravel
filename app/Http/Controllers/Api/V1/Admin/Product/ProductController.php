@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api\V1\Admin\Product;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\StoreProductPropertyRequest;
 use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\StoreProductVaritionsRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Requests\Product\UpdateProductVaritionsRequest;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
+use App\Models\ProductVariation;
 use App\Services\V1\Admin\Product\ProductService;
 use App\Traits\Response\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -101,4 +105,49 @@ class ProductController extends Controller
             return ApiResponse::errorResponse('Failed to delete product', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function StoreVariation(Product $product, StoreProductVaritionsRequest $request)
+    {
+        try {
+            $product = $this->service->storeVariations($product, $request->validated());
+
+            return ApiResponse::successResponse(['product' => ProductResource::make($product)],
+                'Product updated successfully',
+                Response::HTTP_OK);
+        } catch (\Exception $e) {
+            \Log::error('Failed to update product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to update product', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateVariation(Product $product, ProductVariation $productVariation, UpdateProductVaritionsRequest $request)
+    {
+        try {
+            $product = $this->service->updateVariation($product, $productVariation, $request->validated());
+
+            return ApiResponse::successResponse(['product' => ProductResource::make($product)],
+                'Product updated successfully',
+                Response::HTTP_OK);
+        } catch (\Exception $e) {
+            \Log::error('Failed to update product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to update product', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function destroyVariation(Product $product, ProductVariation $productVariation)
+    {
+        try {
+            $this->service->deleteVariation($product, $productVariation);
+
+            return ApiResponse::successResponse([], 'Product deleted successfully', Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to delete product', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+   
 }
