@@ -25,24 +25,25 @@ Route::prefix('v1/admin')
                 Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
-            ->scopeBindings()
+
             ->group(function () {
                 Route::get('roles', [RolesPermissionsController::class, 'getAllRoles']);
                 Route::get('permissions', [RolesPermissionsController::class, 'getAllPermissions']);
                 Route::post('roles', [RolesPermissionsController::class, 'storeRole']);
                 Route::post('permissions', [RolesPermissionsController::class, 'storePermission']);
-                Route::post('users/{user}/roles', [RolesPermissionsController::class, 'assignRoleToUser']);
+
+                Route::post('users/{user}/roles/{role}', [RolesPermissionsController::class, 'assignRoleToUser']);
                 Route::delete('users/{user}/roles/{role}', [RolesPermissionsController::class, 'revokeRoleFromUser']);
-                Route::post('roles/{role}/permissions', [RolesPermissionsController::class, 'assignPermissionToRole']);
+
+                Route::post('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'assignPermissionToRole']);
                 Route::delete('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'revokePermissionFromRole']);
+
                 Route::get('users/{user}/roles', [RolesPermissionsController::class, 'getRolesByUser']);
-                Route::get('users/{user}/permissions', [RolesPermissionsController::class, 'getPermissionsByUser']);
 
                 Route::get('roles/{role}/permissions', [RolesPermissionsController::class, 'getPermissionsByRole']);
                 Route::get('roles/{role}/users', [RolesPermissionsController::class, 'getUsersByRole']);
 
                 Route::get('permissions/{permission}/roles', [RolesPermissionsController::class, 'getRolesByPermission']);
-                Route::get('permissions/{permission}/users', [RolesPermissionsController::class, 'getUsersByPermission']);
             });
 
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
@@ -168,5 +169,5 @@ Route::prefix('v1/admin')
                 Route::patch('{product}/variations/{productVariation}', [ProductController::class, 'updateVariation']);
 
             });
-       
+
     });

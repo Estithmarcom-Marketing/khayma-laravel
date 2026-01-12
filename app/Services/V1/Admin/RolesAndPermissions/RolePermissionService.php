@@ -12,7 +12,7 @@ class RolePermissionService
     {
         return Role::create([
             'name' => $data['name'],
-            'guard_name' => 'sanctum',
+            'guard_name' => 'api',
         ]);
 
     }
@@ -21,52 +21,54 @@ class RolePermissionService
     {
         return Permission::create([
             'name' => $data['name'],
-            'guard_name' => 'sanctum',
+            'guard_name' => 'api',
         ]);
     }
 
-    public function assignPermissionToRole(array $data, Role $role)
+    public function assignPermissionToRole(Role $role, Permission $permission)
     {
 
-        if (! $role->hasPermissionTo($data['permission_name'])) {
-            $role->givePermissionTo($data['permission_name']);
+        if (! $role->hasPermissionTo($permission)) {
+            $role->givePermissionTo($permission);
         }
 
-        return $role->refresh();
+        return $role->refresh()->load('permissions');
     }
 
     public function removePermissionFromRole(Permission $permission, Role $role)
     {
-        if ($role->hasPermissionTo($permission->name)) {
-            $role->revokePermissionTo($permission->name);
+        if ($role->hasPermissionTo($permission)) {
+            $role->revokePermissionTo($permission);
         }
 
-        return $role->refresh();
+        return $role->refresh()->load('permissions');
     }
 
-    public function assignRoleToUser(array $data, User $user)
+    public function assignRoleToUser(User $user, Role $role)
     {
+        if ($user->hasRole($role->name)) {
+            return $user;
+        }
+        $user->assignRole($role);
 
-        $user->assignRole($data['role_name']);
-
-        return $user->refresh();
+        return $user->refresh()->load('roles');
     }
 
     public function removeRoleFromUser(User $user, Role $role)
     {
 
-        if ($user->hasRole($role->name)) {
-            $user->removeRole($role->name);
+        if ($user->hasRole($role)) {
+            $user->removeRole($role);
         }
 
-        return $user->refresh();
+        return $user->refresh()->load('roles');
 
     }
 
     public function getAllRoles()
     {
         return Role::query()
-            ->select('id', 'name', 'created_at', 'updated_at')
+            ->select('id', 'name', 'guard_name', 'created_at', 'updated_at')
             ->latest()
             ->paginate(10);
     }
@@ -74,16 +76,12 @@ class RolePermissionService
     public function getAllPermissions()
     {
         return Permission::query()
-            ->select('id', 'name', 'created_at', 'updated_at')
+            ->select('id', 'name', 'guard_name', 'created_at', 'updated_at')
             ->latest()
             ->paginate(10);
     }
 
-    public function getUserPermissions(User $user)
-    {
-
-        return $user->getAllPermissions();
-    }
+ 
 
     public function getUserRoles(User $user)
     {
@@ -112,9 +110,5 @@ class RolePermissionService
 
     }
 
-    public function getPermissionUsers(Permission $permission)
-    {
-
-        return $permission->users;
-    }
+   
 }

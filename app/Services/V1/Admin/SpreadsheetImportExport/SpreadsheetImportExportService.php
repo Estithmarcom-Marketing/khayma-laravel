@@ -24,7 +24,7 @@ class SpreadsheetImportExportService
         try {
             $path = Storage::disk('local')->putFile('import', $file);
 
-            Excel::queueImport($importable, Storage::disk('local')->path($path));
+            Excel::import($importable, Storage::disk('local')->path($path));
 
             Log::info('Import queued successfully', [
                 'importable' => get_class($importable),

@@ -3,31 +3,26 @@
 namespace App\Imports;
 
 use App\Models\Category;
-use Illuminate\Contracts\Queue\ShouldQueue;
+// use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Concerns\ShouldQueue;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Validators\Failure;
 use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Validators\Failure;
 
-class CategoriesImport implements
-    ShouldQueue,
-    ToModel,
-    WithChunkReading,
-    WithHeadingRow,
-    WithValidation,
-    SkipsOnFailure,
-    WithEvents
+class CategoriesImport implements  SkipsOnFailure, ToModel, WithChunkReading, WithEvents, WithHeadingRow, WithValidation
 {
     use SkipsFailures;
 
     public string $queue = 'imports';
+
     public int $timeout = 900;
 
     private ?string $filePath;
@@ -45,7 +40,7 @@ class CategoriesImport implements
         try {
             $parentId = null;
 
-            if (!empty($row['parent_slug_en'])) {
+            if (! empty($row['parent_slug_en'])) {
                 $parentId = Category::where(
                     'slug_en',
                     $row['parent_slug_en']
@@ -55,19 +50,19 @@ class CategoriesImport implements
             return Category::updateOrCreate(
                 ['slug_en' => $row['slug_en']],
                 [
-                    'name_en'        => $row['name_en'],
-                    'name_ar'        => $row['name_ar'],
-                    'slug_ar'        => $row['slug_ar'],
+                    'name_en' => $row['name_en'],
+                    'name_ar' => $row['name_ar'],
+                    'slug_ar' => $row['slug_ar'],
                     'description_en' => $row['description_en'] ?? null,
                     'description_ar' => $row['description_ar'] ?? null,
-                    'parent_id'      => $parentId,
+                    'parent_id' => $parentId,
                 ]
             );
         } catch (\Throwable $e) {
             Log::error('Category import failed', [
                 'slug_en' => $row['slug_en'] ?? null,
-                'error'   => $e->getMessage(),
-                'trace'   => app()->isLocal() ? $e->getTraceAsString() : null,
+                'error' => $e->getMessage(),
+                'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
             ]);
 
             return null;
@@ -80,13 +75,13 @@ class CategoriesImport implements
     public function rules(): array
     {
         return [
-            'name_en'        => ['required', 'string', 'max:255'],
-            'name_ar'        => ['required', 'string', 'max:255'],
-            'slug_en'        => ['required', 'string', 'max:255'],
-            'slug_ar'        => ['required', 'string', 'max:255'],
-            'description_en'=> ['nullable', 'string', 'max:500'],
-            'description_ar'=> ['nullable', 'string', 'max:500'],
-            'parent_slug_en'=> ['nullable', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
+            'slug_en' => ['required', 'string', 'max:255'],
+            'slug_ar' => ['required', 'string', 'max:255'],
+            'description_en' => ['nullable', 'string', 'max:500'],
+            'description_ar' => ['nullable', 'string', 'max:500'],
+            'parent_slug_en' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -110,8 +105,8 @@ class CategoriesImport implements
     {
         foreach ($failures as $failure) {
             Log::warning('Category row skipped', [
-                'row'     => $failure->row(),
-                'errors'  => $failure->errors(),
+                'row' => $failure->row(),
+                'errors' => $failure->errors(),
                 'values' => $failure->values(),
             ]);
         }

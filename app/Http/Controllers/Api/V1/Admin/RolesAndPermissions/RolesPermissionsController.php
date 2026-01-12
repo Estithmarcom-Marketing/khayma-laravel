@@ -21,6 +21,7 @@ class RolesPermissionsController extends Controller
 
     public function storeRole(Request $request)
     {
+
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:roles,name',
@@ -53,14 +54,11 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    public function assignPermissionToRole(Request $request, Role $role)
+    public function assignPermissionToRole(Role $role, Permission $permission)
     {
         try {
-            $validated = $request->validate([
-                'permission_name' => 'required|string|max:255|exists:permissions,name',
-            ]);
 
-            $role = $this->service->assignPermissionToRole($validated, $role);
+            $role = $this->service->assignPermissionToRole($role, $permission);
 
             return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Permission assigned to role successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
@@ -71,7 +69,7 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    public function revokePermissionFromRole(Permission $permission, Role $role)
+    public function revokePermissionFromRole(Role $role, Permission $permission)
     {
         try {
 
@@ -85,20 +83,22 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    public function assignRoleToUser(Request $request, User $user)
+    public function assignRoleToUser(User $user, Role $role)
     {
         try {
-            $validated = $request->validate([
-                'role_name' => 'required|string|max:255|exists:roles,name',
-            ]);
-
-            $user = $this->service->assignRoleToUser($validated, $user);
+            $user = $this->service->assignRoleToUser($user, $role);
 
             return ApiResponse::successResponse(['user' => UserResource::make($user)], 'Role assigned to user successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('Failed to assign role to user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to assign role to user', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+                'role_id' => $role->id,
+                'method' => __METHOD__,
+            ]);
 
-            return ApiResponse::errorResponse('Failed to assign role to user', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse('Failed to assign role to user',
+                Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -148,19 +148,7 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    public function getPermissionsByUser(User $user)
-    {
-        try {
-
-            $permissions = $this->service->getUserPermissions($user);
-
-            return ApiResponse::successResponse(['permissions' => PermissionResource::collection($permissions)], 'Permissions fetched successfully', Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to fetch permissions by user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-
-            return ApiResponse::errorResponse('Failed to fetch permissions by user', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    
 
     public function getRolesByUser(User $user)
     {
@@ -179,7 +167,6 @@ class RolesPermissionsController extends Controller
     public function getPermissionsByRole(Role $role)
     {
         try {
-
             $permissions = $this->service->getRolePermissions($role);
 
             return ApiResponse::successResponse(['permissions' => PermissionResource::collection($permissions)], 'Permissions fetched successfully', Response::HTTP_OK);
@@ -218,17 +205,5 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    public function getUsersByPermission(Permission $permission)
-    {
-        try {
-
-            $users = $this->service->getPermissionUsers($permission);
-
-            return ApiResponse::successResponse(['users' => UserResource::collection($users)], 'Users fetched successfully', Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to fetch users by permission', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-
-            return ApiResponse::errorResponse('Failed to fetch users by permission', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    
 }
