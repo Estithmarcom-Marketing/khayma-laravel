@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Admin\Product\ProductController;
 use App\Http\Controllers\Api\V1\Admin\PromoCode\PromoCodeController;
+use App\Http\Controllers\Api\V1\Admin\Property\PropertyController;
 use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
@@ -169,5 +170,13 @@ Route::prefix('v1/admin')
                 Route::patch('{product}/variations/{productVariation}', [ProductController::class, 'updateVariation']);
 
             });
-
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('properties')
+            ->group(function () {
+                Route::get('', [PropertyController::class, 'index']);
+                Route::post('', [PropertyController::class, 'store']);
+                Route::patch('{property}', [PropertyController::class, 'update']);
+                Route::get('{property}', [PropertyController::class, 'show']);
+                Route::delete('{property}', [PropertyController::class, 'destroy']);
+            });
     });
