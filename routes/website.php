@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\User\Address\AddressController;
 use App\Http\Controllers\Api\V1\User\Auth\UserAuthController;
 use App\Http\Controllers\Api\V1\User\Cart\CartController;
+use App\Http\Controllers\Api\V1\User\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\User\ProfileManagment\ProfileManagmentController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,15 @@ Route::prefix('v1/user')
             ->prefix('cart')
             ->group(function () {
                 Route::get('', [CartController::class, 'getCart']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('favourites')
+            ->group(function () {
+
+                Route::get('', [FavouriteController::class, 'index']);
+                Route::get('{favourite}', [FavouriteController::class, 'show']);
+                Route::post('products/{product}', [FavouriteController::class, 'store']);
+                Route::delete('{favourite}', [FavouriteController::class, 'destroy']);
             });
 
     });

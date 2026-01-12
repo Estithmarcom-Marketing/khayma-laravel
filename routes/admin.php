@@ -163,10 +163,10 @@ Route::prefix('v1/admin')
                 Route::patch('{product}', [ProductController::class, 'update']);
                 Route::delete('{product}', [ProductController::class, 'destroy']);
 
-
                 Route::post('{product}/variations', [ProductController::class, 'StoreVariation']);
                 Route::delete('{product}/variations/{productVariation}', [ProductController::class, 'destroyVariation']);
                 Route::patch('{product}/variations/{productVariation}', [ProductController::class, 'updateVariation']);
 
             });
+       
     });
