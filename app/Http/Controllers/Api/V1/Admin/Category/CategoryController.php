@@ -188,18 +188,96 @@ class CategoryController extends Controller
         }
     }
 
-    public function importSpreadsheet(ImportCategoryRequest $request)
+    // public function importSpreadsheet(ImportCategoryRequest $request)
+    // {
+    //     try {
+    //         $file = $request->file('file');
+
+    //         $this->spreadsheetService->import(new CategoriesImport, $file);
+
+    //         return ApiResponse::successResponse(
+    //             null,
+    //             'Categories imported successfully.',
+    //             Response::HTTP_OK
+    //         );
+
+    //     } catch (\Throwable $e) {
+    //         Log::error('Failed to import categories', [
+    //             'error' => $e->getMessage(),
+    //             'method' => __METHOD__,
+    //         ]);
+
+    //         return ApiResponse::errorResponse(
+    //             'Failed to import categories',
+    //             Response::HTTP_INTERNAL_SERVER_ERROR
+    //         );
+    //     }
+    // }
+     public function importSpreadsheet(ImportCategoryRequest $request)
     {
         try {
             $file = $request->file('file');
 
-            $this->spreadsheetService->import(new CategoriesImport, $file);
+            // Pass the file path to the import class
+            $result = $this->spreadsheetService->import(
+                new CategoriesImport(),
+                $file
+            );
 
-            return ApiResponse::successResponse(null, 'Import started. Processing in background.', Response::HTTP_ACCEPTED);
-        } catch (\Exception $e) {
-            Log::error('Failed to import categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            $stats = $result['stats'];
+            $message = $this->buildImportMessage($stats);
 
-            return ApiResponse::errorResponse('Failed to import categories', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::successResponse(
+                [
+                    'statistics' => $stats,
+                    'details' => $this->getImportDetails($stats),
+                ],
+                $message,
+                Response::HTTP_OK
+            );
+
+        } catch (\Throwable $e) {
+            Log::error('Failed to import categories', [
+                'error' => $e->getMessage(),
+                'method' => __METHOD__,
+                'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
+            ]);
+
+            return ApiResponse::errorResponse(
+                'Failed to import categories: ' . $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
+
+    /**
+     * Build user-friendly import message
+     */
+    private function buildImportMessage(array $stats): string
+    {
+        $total = $stats['processed'] ?? 0;
+        $successful = $stats['successful'] ?? 0;
+        $failed = ($stats['skipped'] ?? 0) + ($stats['validation_failures'] ?? 0);
+
+        if ($failed === 0) {
+            return "Successfully imported all {$successful} categories.";
+        }
+
+        return "Imported {$successful} of {$total} categories. {$failed} rows had errors.";
+    }
+
+    /**
+     * Get detailed import information
+     */
+    private function getImportDetails(array $stats): array
+    {
+        return [
+            'total_rows' => $stats['processed'] ?? 0,
+            'successful' => $stats['successful'] ?? 0,
+            'skipped' => $stats['skipped'] ?? 0,
+            'validation_failures' => $stats['validation_failures'] ?? 0,
+            'duration_seconds' => $stats['duration'] ?? 0,
+        ];
+    }
+
 }

@@ -19,33 +19,82 @@ class SpreadsheetImportExportService
         return Excel::download($exportable, $filename.'.csv');
     }
 
-    public function import(object $importable, UploadedFile|string $file): string
+    // public function import(object $importable, UploadedFile|string $file): string
+    // {
+    //     $path = Storage::disk('local')->putFile('import', $file);
+
+    //     try {
+    //         Excel::import(
+    //             $importable,
+    //             Storage::disk('local')->path($path)
+    //         );
+
+    //         Log::info('Import completed successfully (sync)', [
+    //             'importable' => get_class($importable),
+    //             'file_path' => $path,
+    //         ]);
+
+    //         return $path;
+
+    //     } catch (\Throwable $e) {
+    //         Log::error('Failed to import spreadsheet', [
+    //             'importable' => get_class($importable),
+    //             'error' => $e->getMessage(),
+    //             'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
+    //         ]);
+
+    //         Storage::disk('local')->delete($path);
+
+    //         throw $e;
+    //     }
+    // }
+     public function import(object $importable, UploadedFile|string $file): array
     {
+        $path = Storage::disk('local')->putFile('imports', $file);
+
+        // Ensure error directory exists
+        Storage::disk('local')->makeDirectory('imports/errors');
+
         try {
-            $path = Storage::disk('local')->putFile('import', $file);
+            Excel::import(
+                $importable,
+                Storage::disk('local')->path($path)
+            );
 
-            Excel::import($importable, Storage::disk('local')->path($path));
+            // Get statistics if available
+            $stats = method_exists($importable, 'getStats') 
+                ? $importable->getStats() 
+                : [];
 
-            Log::info('Import queued successfully', [
+            Log::info('Import completed successfully', [
                 'importable' => get_class($importable),
                 'file_path' => $path,
+                'stats' => $stats,
             ]);
 
-            return $path;
+            // Note: File deletion is handled by the importable class
+            // to allow for error file preservation
+
+            return [
+                'success' => true,
+                'path' => $path,
+                'stats' => $stats,
+            ];
 
         } catch (\Throwable $e) {
-            Log::error('Failed to queue import', [
+            Log::error('Failed to import spreadsheet', [
                 'importable' => get_class($importable),
+                'file_path' => $path,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
             ]);
 
-            // Clean up stored file if import queueing failed
-            if (isset($path) && $file instanceof UploadedFile) {
-                Storage::disk('local')->delete($path);
-            }
+            // Move file to error directory instead of deleting
+            $errorPath = 'imports/errors/' . basename($path);
+            Storage::disk('local')->move($path, $errorPath);
 
             throw $e;
         }
     }
+
 }
