@@ -18,6 +18,8 @@ class PropertyResource extends JsonResource
             'id' => $this->id,
             'name_ar' => $this->name_ar,
             'name_en' => $this->name_en,
+            'value_ar' => $this->pivot?->value_ar,
+            'value_en' => $this->pivot?->value_en,
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
         ];

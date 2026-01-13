@@ -45,14 +45,31 @@ class Product extends Model
         return $this->belongsToMany(Order::class);
     }
 
-    public function variations()
+    public function productVariations()
     {
         return $this->hasMany(ProductVariation::class);
     }
 
     public function properties()
     {
-        return $this->hasManyThrough(Property::class, ProductVariation::class, 'product_id', 'id', 'id', 'property_id');
+        return $this->hasManyThrough(
+            Property::class,
+            ProductVariation::class,
+            'product_id',
+            'id',
+            'id',
+            'id'
+        )->withPivot('value_ar', 'value_en');
+    }
+
+    public function getAllPropertiesAttribute()
+    {
+        // Eager load variations + properties to avoid N+1
+        return $this->productVariations
+            ->load('properties')
+            ->flatMap(fn ($variation) => $variation->properties)
+            ->unique('id')
+            ->values();
     }
 
     public function sizes(): HasManyThrough

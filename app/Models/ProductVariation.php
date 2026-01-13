@@ -46,7 +46,10 @@ class ProductVariation extends Model
 
     public function properties()
     {
-        return $this->belongsToMany(Property::class, 'variant_properties')
+        return $this->belongsToMany(
+            Property::class,
+            'variant_properties'
+        )
             ->withPivot('value_ar', 'value_en')
             ->withTimestamps();
     }

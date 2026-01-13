@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Product;
 
+use App\Http\Resources\ProductVariation\ProductVariationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -37,7 +38,7 @@ class ProductResource extends JsonResource
                     'name_en' => $this->brand->name_en,
                 ];
             }),
-            'variations' => $this->whenLoaded('variations', $this->variations),
+            'variations' => ProductVariationResource::collection($this->whenLoaded('productVariations')),
             'meta_title_ar' => $this->meta_title_ar,
             'meta_title_en' => $this->meta_title_en,
             'meta_description_ar' => $this->meta_description_ar,

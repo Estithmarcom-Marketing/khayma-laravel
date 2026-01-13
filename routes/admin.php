@@ -157,20 +157,6 @@ Route::prefix('v1/admin')
                 Route::delete('{category}/sub-categories/{subCategory}', [CategoryController::class, 'destroySubCategory'])->middleware('auth:sanctum');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
-            ->prefix('products')
-            ->group(function () {
-                Route::get('', [ProductController::class, 'index']);
-                Route::get('{product}', [ProductController::class, 'show']);
-                Route::post('', [ProductController::class, 'store']);
-                Route::patch('{product}', [ProductController::class, 'update']);
-                Route::delete('{product}', [ProductController::class, 'destroy']);
-
-                Route::post('{product}/variations', [ProductController::class, 'StoreVariation']);
-                Route::delete('{product}/variations/{productVariation}', [ProductController::class, 'destroyVariation']);
-                Route::patch('{product}/variations/{productVariation}', [ProductController::class, 'updateVariation']);
-
-            });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('properties')
             ->group(function () {
                 Route::get('', [PropertyController::class, 'index']);
@@ -179,4 +165,35 @@ Route::prefix('v1/admin')
                 Route::get('{property}', [PropertyController::class, 'show']);
                 Route::delete('{property}', [PropertyController::class, 'destroy']);
             });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('products')
+            ->group(function () {
+                Route::get('', [ProductController::class, 'index']);
+                Route::get('{product}', [ProductController::class, 'show']);
+                Route::post('', [ProductController::class, 'store']);
+                Route::patch('{product}', [ProductController::class, 'update']);
+                Route::delete('{product}', [ProductController::class, 'destroy']);
+
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('products/{product}/variations')
+            ->scopeBindings()
+            ->group(function () {
+                Route::get('', [ProductController::class, 'listProductVariations']);
+                Route::get('{productVariation}', [ProductController::class, 'showProductVariation']);
+                Route::post('', [ProductController::class, 'storeProductVariation']);
+                Route::patch('{productVariation}', [ProductController::class, 'updateProductVariation']);
+                Route::delete('{productVariation}', [ProductController::class, 'destroyProductVariation']);
+
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('products/{product}/variations/{productVariation}/properties')
+            ->scopeBindings()
+            ->group(function () {
+                Route::get('', [ProductController::class, 'listProductVariationProperties']);
+                Route::get('{property}', [ProductController::class, 'showProductVariationProperty']);
+                Route::post('', [ProductController::class, 'storeProductVariationProperty']);
+                Route::delete('{property}', [ProductController::class, 'destroyProductVariationProperty']);
+            });
+
     });

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('variant_properties', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('variant_id')->constrained('product_variations')->onDelete('cascade');
+            $table->foreignId('product_variation_id')->constrained('product_variations')->onDelete('cascade');
             $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
             $table->string('value_ar');
             $table->string('value_en');
