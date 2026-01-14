@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\User\Address\AddressController;
 use App\Http\Controllers\Api\V1\User\Auth\UserAuthController;
 use App\Http\Controllers\Api\V1\User\Cart\CartController;
 use App\Http\Controllers\Api\V1\User\Favourite\FavouriteController;
+use App\Http\Controllers\Api\V1\User\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\User\ProfileManagment\ProfileManagmentController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,5 +54,12 @@ Route::prefix('v1/user')
                 Route::post('products/{product}', [FavouriteController::class, 'store']);
                 Route::delete('{favourite}', [FavouriteController::class, 'destroy']);
             });
-
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('product-reminders')
+            ->group(function () {
+                Route::get('', [ProductReminderController::class, 'index']);
+                Route::get('{productReminder}', [ProductReminderController::class, 'show']);
+                Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
+                Route::delete('{productReminder}', [ProductReminderController::class, 'destroy']);
+            });
     });

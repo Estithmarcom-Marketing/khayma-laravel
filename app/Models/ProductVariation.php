@@ -29,6 +29,11 @@ class ProductVariation extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function reminders()
+    {
+        return $this->hasMany(ProductReminder::class);
+    }
+
     public function color()
     {
         return $this->belongsTo(Color::class);

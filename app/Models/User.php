@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->hasMany(Favourite::class);
     }
 
+    public function productReminders()
+    {
+        return $this->hasMany(ProductReminder::class);
+    }
+
     protected static function boot()
     {
         parent::boot();

@@ -88,14 +88,11 @@ class Product extends Model
         return $this->hasMany(Favourite::class);
     }
 
+  
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
-    }
-
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class);
     }
 
     public function scopePublished($query)
