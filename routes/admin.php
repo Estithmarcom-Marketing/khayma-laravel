@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\City\CityShipmentController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
+use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
@@ -194,6 +195,15 @@ Route::prefix('v1/admin')
                 Route::get('{property}', [ProductController::class, 'showProductVariationProperty']);
                 Route::post('', [ProductController::class, 'storeProductVariationProperty']);
                 Route::delete('{property}', [ProductController::class, 'destroyProductVariationProperty']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('questions')
+            ->group(function () {
+                Route::get('', [CommonQuestionController::class, 'index']);
+                Route::post('', [CommonQuestionController::class, 'store']);
+                Route::patch('{commonQuestion}', [CommonQuestionController::class, 'update']);
+                Route::get('{commonQuestion}', [CommonQuestionController::class, 'show']);
+                Route::delete('{commonQuestion}', [CommonQuestionController::class, 'destroy']);
             });
 
     });
