@@ -34,15 +34,20 @@ Route::prefix('v1/user')
                 Route::get('{address}', [AddressController::class, 'show']);
                 Route::delete('{address}', [AddressController::class, 'destroy']);
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('cart')
+            ->scopeBindings()
             ->group(function () {
                 Route::get('', [CartController::class, 'getCart']);
+                Route::get('{cart}', [CartController::class, 'getCartItems']);
+                Route::post('items/{productVariation}', [CartController::class, 'addToCart']);
+                Route::patch('items/{cartProduct}', [CartController::class, 'updateCartItem']);
+                Route::delete('items/{cartProduct}', [CartController::class, 'removeCartItem']);
+                Route::delete('', [CartController::class, 'clearCart']);
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('favourites')
             ->group(function () {
-
                 Route::get('', [FavouriteController::class, 'index']);
                 Route::get('{favourite}', [FavouriteController::class, 'show']);
                 Route::post('products/{product}', [FavouriteController::class, 'store']);

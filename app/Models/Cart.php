@@ -20,6 +20,7 @@ class Cart extends Model
     {
         return $this->hasMany(CartProduct::class);
     }
+    
 
     public function promoCode()
     {
