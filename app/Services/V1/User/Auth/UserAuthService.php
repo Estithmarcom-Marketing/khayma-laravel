@@ -4,7 +4,6 @@ namespace App\Services\V1\User\Auth;
 
 use App\Models\OtpCode;
 use App\Models\User;
-use Auth;
 use DB;
 use Hash;
 use Hypersender\Hypersender;
@@ -34,6 +33,7 @@ class UserAuthService
                 Hypersender::whatsapp()
                     ->safeSendTextMessage($phoneNumber.'@c.us',
                         "Your OTP is: $otp. It will expire in 5 minutes.");
+                Log::info('OTP sent via WhatsApp', ['phone' => $data['phone'], 'otp' => $otp, 'method' => __METHOD__]);  // temporarily for testing
             } catch (\Exception $e) {
                 Log::error('Failed to send OTP via WhatsApp', ['phone' => $data['phone'], 'error' => $e->getMessage(), 'method' => __METHOD__]);
             }
@@ -74,11 +74,14 @@ class UserAuthService
         });
 
     }
-    public function logout(){
-        $user = auth()->user(); 
+
+    public function logout()
+    {
+        $user = auth()->user();
         if ($user) {
             $user->tokens()->delete();
         }
-        return true;   
+
+        return true;
     }
 }

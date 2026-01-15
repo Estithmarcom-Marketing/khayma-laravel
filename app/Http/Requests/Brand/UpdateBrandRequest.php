@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Brand;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateBrandRequest extends FormRequest
 {
@@ -26,8 +27,20 @@ class UpdateBrandRequest extends FormRequest
             'name_en' => 'sometimes|string|max:255',
             'description_ar' => 'nullable|string',
             'description_en' => 'nullable|string',
-            'slug_ar' => 'sometimes|string|max:255|unique:brands,slug_ar,'.$this->route('brand')->id,
-            'slug_en' => 'sometimes|string|max:255|unique:brands,slug_en,'.$this->route('brand')->id,
+            'slug_ar' => [
+                'sometimes',
+                'string',
+                'max:255',
+                Rule::unique('brands', 'slug_ar')->ignore($this->route('brand')),
+            ],
+            'slug_en' => [
+                'sometimes',
+                'string',
+                'max:255',
+                Rule::unique('brands', 'slug_en')->ignore($this->route('brand')),
+            ],
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
+
         ];
     }
 }

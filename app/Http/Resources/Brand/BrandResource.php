@@ -22,6 +22,7 @@ class BrandResource extends JsonResource
             'description_en' => $this->description_en,
             'slug_ar' => $this->slug_ar,
             'slug_en' => $this->slug_en,
+            'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('brand'))),
             'created_at' => $this->whenNotNull($this->created_at->toDateTimeString()),
             'updated_at' => $this->whenNotNull($this->updated_at->toDateTimeString()),
         ];

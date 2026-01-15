@@ -28,6 +28,7 @@ class UpdateCategoryRequest extends FormRequest
             'description_ar' => 'sometimes|nullable|text',
             'slug_en' => 'sometimes|string|max:255|unique:categories,slug_en,'.$this->route('category')->slug_en,
             'slug_ar' => 'sometimes|string|max:255|unique:categories,slug_ar,'.$this->route('category')->slug_ar,
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
         ];
     }
 }

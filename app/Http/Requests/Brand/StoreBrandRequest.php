@@ -28,6 +28,7 @@ class StoreBrandRequest extends FormRequest
             'description_en' => 'nullable|string',
             'slug_ar' => 'required|string|max:255|unique:brands,slug_ar',
             'slug_en' => 'required|string|max:255|unique:brands,slug_en',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
         ];
     }
 }

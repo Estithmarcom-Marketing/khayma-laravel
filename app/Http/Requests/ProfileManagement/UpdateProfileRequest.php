@@ -24,6 +24,7 @@ class UpdateProfileRequest extends FormRequest
         return [
             'name' => ['nullable', 'sometimes', 'string', 'max:255'],
             'email' => ['nullable', 'sometimes', 'string', 'email', 'max:255', 'unique:users,email,'.optional($this->user())->id],
+            'image' => ['nullable', 'sometimes', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:10240'],
         ];
     }
 }

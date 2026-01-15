@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
-    use SoftDeletes;
+    use InteractsWithMedia , SoftDeletes;
 
     protected $fillable = [
         'name_ar',
@@ -87,8 +89,6 @@ class Product extends Model
     {
         return $this->hasMany(Favourite::class);
     }
-
-  
 
     public function reviews()
     {

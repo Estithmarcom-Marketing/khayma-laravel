@@ -50,7 +50,7 @@ class BrandController extends Controller
         }
     }
 
-    public function update(UpdateBrandRequest $request, Brand $brand)
+    public function update(Brand $brand, UpdateBrandRequest $request)
     {
         try {
             $brand = $this->service->update($brand, $request->validated());

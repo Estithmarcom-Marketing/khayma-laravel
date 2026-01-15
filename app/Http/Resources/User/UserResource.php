@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
+            'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('profile'))),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'roles' => $this->whenLoaded('roles', RoleResource::collection($this->roles)),

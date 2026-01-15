@@ -119,8 +119,8 @@ class CategoryController extends Controller
     public function updateSubCategory(UpdateCategoryRequest $request, Category $category, Category $subCategory)
     {
         try {
+            
             $subCategory = $this->service->updateSubCategory($category, $subCategory, $request->validated());
-
             return ApiResponse::successResponse(['sub_category' => CategoryResource::make($subCategory)],
                 'Sub-category updated successfully',
                 Response::HTTP_OK);
@@ -188,39 +188,14 @@ class CategoryController extends Controller
         }
     }
 
-    // public function importSpreadsheet(ImportCategoryRequest $request)
-    // {
-    //     try {
-    //         $file = $request->file('file');
-
-    //         $this->spreadsheetService->import(new CategoriesImport, $file);
-
-    //         return ApiResponse::successResponse(
-    //             null,
-    //             'Categories imported successfully.',
-    //             Response::HTTP_OK
-    //         );
-
-    //     } catch (\Throwable $e) {
-    //         Log::error('Failed to import categories', [
-    //             'error' => $e->getMessage(),
-    //             'method' => __METHOD__,
-    //         ]);
-
-    //         return ApiResponse::errorResponse(
-    //             'Failed to import categories',
-    //             Response::HTTP_INTERNAL_SERVER_ERROR
-    //         );
-    //     }
-    // }
-     public function importSpreadsheet(ImportCategoryRequest $request)
+    public function importSpreadsheet(ImportCategoryRequest $request)
     {
         try {
             $file = $request->file('file');
 
             // Pass the file path to the import class
             $result = $this->spreadsheetService->import(
-                new CategoriesImport(),
+                new CategoriesImport,
                 $file
             );
 
@@ -244,7 +219,7 @@ class CategoryController extends Controller
             ]);
 
             return ApiResponse::errorResponse(
-                'Failed to import categories: ' . $e->getMessage(),
+                'Failed to import categories: '.$e->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -279,5 +254,4 @@ class CategoryController extends Controller
             'duration_seconds' => $stats['duration'] ?? 0,
         ];
     }
-
 }

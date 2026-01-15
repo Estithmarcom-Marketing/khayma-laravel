@@ -13,12 +13,13 @@ class StoreCategoryRequest extends FormRequest
     {
         return true;
     }
+
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
-     /**
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -32,6 +33,7 @@ class StoreCategoryRequest extends FormRequest
             'description_ar' => 'nullable|string|max:500',
             'slug_en' => 'required|string|max:255|unique:categories,slug_en',
             'slug_ar' => 'required|string|max:255|unique:categories,slug_ar',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
         ];
     }
 }

@@ -22,14 +22,22 @@ class CategoryResource extends JsonResource
             'slug_ar' => $this->slug_ar,
             'description_en' => $this->description_en,
             'description_ar' => $this->description_ar,
+            'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('category'))),
             'parent' => $this->whenLoaded('parent', function () {
-                return [
+                return $this->parent ? [
                     'id' => $this->parent->id,
                     'name_en' => $this->parent->name_en,
                     'name_ar' => $this->parent->name_ar,
-                ];
+                ] : null;
             }),
 
+            'children' => $this->whenLoaded('subCategories', function () {
+                return $this->children ? [
+                    'id' => $this->children->id,
+                    'name_en' => $this->children->name_en,
+                    'name_ar' => $this->children->name_ar,
+                ] : null;
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

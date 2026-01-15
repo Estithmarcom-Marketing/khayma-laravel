@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Brand extends Model
+class Brand extends Model implements HasMedia
 {
-    use SoftDeletes;
+    use InteractsWithMedia , SoftDeletes;
+
     protected $fillable = [
         'name_ar',
         'name_en',
@@ -20,5 +23,12 @@ class Brand extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('brand')
+            ->singleFile();
     }
 }
