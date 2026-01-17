@@ -10,7 +10,7 @@ class ProductService
     {
         return Product::query()
             ->published()
-            ->with('category', 'brand')
+            ->with('category', 'brand', 'media')
             ->orderBy('created_at', 'desc')
             ->cursorPaginate(10);
     }
@@ -18,13 +18,16 @@ class ProductService
     public function show(Product $product)
     {
         return $product->load([
-            'category',
-            'brand',
-            'productVariations.color',
-            'productVariations.size',
-            'productVariations.properties',
+            'category:id,name_ar,name_en',
+            'brand:id,name_ar,name_en',
+            'productVariations' => function ($q) {
+                $q->select('id', 'product_id', 'sku', 'price', 'stock_quantity', 'is_active', 'offer', 'offer_started_date', 'offer_expired_date', 'color_id', 'size_id');
+            },
+            'productVariations.color:id,name_ar,name_en,code',
+            'productVariations.size:id,name_ar,name_en',
+            'productVariations.properties:id,name_ar,name_en',
+            'media',
         ]);
-
     }
 
     public function store(array $data)
@@ -46,7 +49,13 @@ class ProductService
 
         ]);
 
-        return $produxt->load('category', 'brand')->refresh();
+        if (isset($data['images']) && is_array($data['images'])) {
+            foreach ($data['images'] as $image) {
+                $produxt->addMedia($image)->toMediaCollection('images');
+            }
+        }
+
+        return $produxt->load('category', 'brand', 'media')->refresh();
     }
 
     public function update(Product $product, array $data)
@@ -67,7 +76,14 @@ class ProductService
             'meta_description_en' => $data['meta_description_en'] ?? $product->meta_description_en,
         ]);
 
-        return $product->load('category', 'brand')->refresh();
+        if (isset($data['images']) && is_array($data['images'])) {
+            $product->clearMediaCollection('images');
+            foreach ($data['images'] as $image) {
+                $product->addMedia($image)->toMediaCollection('images');
+            }
+        }
+
+        return $product->load('category', 'brand', 'media')->refresh();
     }
 
     public function delete(Product $product)

@@ -39,6 +39,14 @@ class ProductResource extends JsonResource
                 ];
             }),
             'variations' => ProductVariationResource::collection($this->whenLoaded('productVariations')),
+            'images' => $this->whenLoaded('media', function () {
+                return $this->media->map(function ($media) {
+                    return [
+                        'name' => $media->name,
+                        'url' => $media->getFullUrl(),
+                    ];
+                });
+            }),
             'meta_title_ar' => $this->meta_title_ar,
             'meta_title_en' => $this->meta_title_en,
             'meta_description_ar' => $this->meta_description_ar,

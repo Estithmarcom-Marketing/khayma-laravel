@@ -22,12 +22,11 @@ Route::prefix('v1/admin')
 
         Route::prefix('auth')
             ->group(function () {
-                Route::post('store', [AdminAuthController::class, 'store']);
+                Route::post('store', [AdminAuthController::class, 'store'])->middleware('permission:store-admin');
                 Route::post('login', [AdminAuthController::class, 'login']);
                 Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
-
             ->group(function () {
                 Route::get('roles', [RolesPermissionsController::class, 'getAllRoles']);
                 Route::get('permissions', [RolesPermissionsController::class, 'getAllPermissions']);

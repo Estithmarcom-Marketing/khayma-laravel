@@ -48,6 +48,8 @@ class StoreProductRequest extends FormRequest
             'meta_title_en' => 'nullable|string|max:255',
             'meta_description_ar' => 'nullable|string|max:500',
             'meta_description_en' => 'nullable|string|max:500',
+            'images' => 'nullable|array|max:10',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
 
         ];
     }
