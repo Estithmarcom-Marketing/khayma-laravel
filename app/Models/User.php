@@ -14,13 +14,14 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory,HasRoles ,InteractsWithMedia ,Notifiable;
+    use HasApiTokens, HasFactory,HasRoles,InteractsWithMedia ,Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
+     protected $guard_name = 'api';
     protected $fillable = [
         'name',
         'email',

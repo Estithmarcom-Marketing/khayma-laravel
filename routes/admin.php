@@ -66,7 +66,6 @@ Route::prefix('v1/admin')
                 Route::patch('{cityShipment}', [CityShipmentController::class, 'update'])->middleware('permission:store-city-shipment');
                 Route::delete('{cityShipment}', [CityShipmentController::class, 'destroy'])->middleware('permission:delete-city-shipment');
             });
-
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('colors')
             ->group(function () {
