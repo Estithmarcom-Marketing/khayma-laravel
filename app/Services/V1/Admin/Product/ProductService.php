@@ -10,14 +10,14 @@ class ProductService
     {
         return Product::query()
             ->published()
-            ->with('category', 'brand', 'media')
+            ->with(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])
             ->orderBy('created_at', 'desc')
             ->cursorPaginate(10);
     }
 
     public function show(Product $product)
     {
-        return $product->load([
+        $product->load([
             'category:id,name_ar,name_en',
             'brand:id,name_ar,name_en',
             'productVariations' => function ($q) {
@@ -26,8 +26,11 @@ class ProductService
             'productVariations.color:id,name_ar,name_en,code',
             'productVariations.size:id,name_ar,name_en',
             'productVariations.properties:id,name_ar,name_en',
-            'media',
+            'media:id,model_id,name,file_name,collection_name,disk',
         ]);
+
+        return $product;
+
     }
 
     public function store(array $data)
@@ -55,7 +58,7 @@ class ProductService
             }
         }
 
-        return $produxt->load('category', 'brand', 'media')->refresh();
+        return $produxt->load(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])->refresh();
     }
 
     public function update(Product $product, array $data)
@@ -83,7 +86,7 @@ class ProductService
             }
         }
 
-        return $product->load('category', 'brand', 'media')->refresh();
+        return $product->load(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])->refresh();
     }
 
     public function delete(Product $product)

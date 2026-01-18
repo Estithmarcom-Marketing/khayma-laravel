@@ -43,7 +43,7 @@ class ProductResource extends JsonResource
                 return $this->media->map(function ($media) {
                     return [
                         'name' => $media->name,
-                        'url' => $media->getFullUrl(),
+                        'url' => $media->original_url,
                     ];
                 });
             }),
