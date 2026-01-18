@@ -63,6 +63,16 @@ class BrandSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name_ar' => 'خيمة',
+                'name_en' => 'Khayma',
+                'description_ar' => 'شركة رائدة في صناعة الخيم والجلسات البرية',
+                'description_en' => 'Leading company in the manufacture of tents and outdoor seating',
+                'slug_ar' => 'خيمة',
+                'slug_en' => 'khayma',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ];
         Brand::insert($brands);
     }
