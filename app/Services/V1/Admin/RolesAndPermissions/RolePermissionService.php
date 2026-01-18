@@ -3,6 +3,7 @@
 namespace App\Services\V1\Admin\RolesAndPermissions;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -81,8 +82,6 @@ class RolePermissionService
             ->paginate(10);
     }
 
- 
-
     public function getUserRoles(User $user)
     {
 
@@ -110,5 +109,37 @@ class RolePermissionService
 
     }
 
-   
+    public function storeRoleWithPermissions(array $data)
+    {
+
+        return DB::transaction(function () use ($data) {
+            $role = Role::create([
+                'name' => $data['name'],
+                'guard_name' => 'api',
+            ]);
+            if (isset($data['permissions'])) {
+                $permissionIds = collect($data['permissions'])->pluck('id');
+                $permissions = Permission::whereIn('id', $permissionIds)->get();
+                $role->syncPermissions($permissions);
+            }
+
+            return $role->refresh()->load('permissions');
+        });
+    }
+
+    public function updateRoleWithPermissions(Role $role, array $data)
+    {
+        return DB::transaction(function () use ($role, $data) {
+            $role->update([
+                'name' => $data['name'] ?? $role->name,
+            ]);
+            if (isset($data['permissions'])) {
+                $permissionIds = collect($data['permissions'])->pluck('id');
+                $permissions = Permission::whereIn('id', $permissionIds)->get();
+                $role->syncPermissions($permissions);
+            }
+
+            return $role->refresh()->load('permissions');
+        });
+    }
 }

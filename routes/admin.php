@@ -45,6 +45,9 @@ Route::prefix('v1/admin')
                 Route::get('roles/{role}/users', [RolesPermissionsController::class, 'getUsersByRole']);
 
                 Route::get('permissions/{permission}/roles', [RolesPermissionsController::class, 'getRolesByPermission']);
+
+                Route::post('roles-with-permissions', [RolesPermissionsController::class, 'storeRoleWithPermissions']); // the url is temporary for testing and will be updated when be accepted
+                Route::patch('roles/{role}', [RolesPermissionsController::class, 'updateRoleWithPermissions']);
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('cities')

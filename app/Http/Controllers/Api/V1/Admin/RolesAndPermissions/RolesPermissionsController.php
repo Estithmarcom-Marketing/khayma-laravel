@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1\Admin\RolesAndPermissions;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Role\StoreRoleRequest;
+use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Http\Resources\RolesAndPermissions\PermissionResource;
 use App\Http\Resources\RolesAndPermissions\RoleResource;
 use App\Http\Resources\User\UserResource;
@@ -200,6 +202,32 @@ class RolesPermissionsController extends Controller
             Log::error('Failed to fetch roles by permission', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch roles by permission', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function storeRoleWithPermissions(StoreRoleRequest $request)
+    {
+        try {
+            $role = $this->service->storeRoleWithPermissions($request->validated());
+
+            return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Role created successfully', Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            Log::error('Failed to create role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to create role', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateRoleWithPermissions(UpdateRoleRequest $request, Role $role)
+    {
+        try {
+            $role = $this->service->updateRoleWithPermissions($role, $request->validated());
+
+            return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Role updated successfully', Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to update role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to update role', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
