@@ -148,8 +148,6 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    
-
     public function getRolesByUser(User $user)
     {
         try {
@@ -204,6 +202,4 @@ class RolesPermissionsController extends Controller
             return ApiResponse::errorResponse('Failed to fetch roles by permission', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    
 }

@@ -54,7 +54,7 @@ class ProductService
 
         if (isset($data['images']) && is_array($data['images'])) {
             foreach ($data['images'] as $image) {
-                $produxt->addMedia($image)->toMediaCollection('images');
+                $produxt->addMedia($image)->toMediaCollection('products');
             }
         }
 
@@ -80,12 +80,11 @@ class ProductService
         ]);
 
         if (isset($data['images']) && is_array($data['images'])) {
-            $product->clearMediaCollection('images');
+            $product->clearMediaCollection('products');
             foreach ($data['images'] as $image) {
-                $product->addMedia($image)->toMediaCollection('images');
+                $product->addMedia($image)->toMediaCollection('products');
             }
         }
-
         return $product->load(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])->refresh();
     }
 

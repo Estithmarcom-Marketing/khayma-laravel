@@ -109,7 +109,7 @@ class CategoryService
     {
         return $category
             ->subCategories()
-            ->with(['parent', 'media'])
+            ->with(['parent', 'media:id,model_id,name,file_name,collection_name,disk'])
             ->paginate(10);
     }
 

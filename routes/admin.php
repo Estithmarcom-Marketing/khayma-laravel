@@ -22,11 +22,11 @@ Route::prefix('v1/admin')
 
         Route::prefix('auth')
             ->group(function () {
-                Route::post('store', [AdminAuthController::class, 'store'])->middleware('permission:store-admin');
-                Route::post('login', [AdminAuthController::class, 'login']);
+                Route::post('store', [AdminAuthController::class, 'store'])->middleware(['permission:store-admin', 'throttle:10,1']);
+                Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:10,1');
                 Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:60,1', 'role:super-admin'])
             ->group(function () {
                 Route::get('roles', [RolesPermissionsController::class, 'getAllRoles']);
                 Route::get('permissions', [RolesPermissionsController::class, 'getAllPermissions']);
@@ -46,163 +46,158 @@ Route::prefix('v1/admin')
 
                 Route::get('permissions/{permission}/roles', [RolesPermissionsController::class, 'getRolesByPermission']);
             });
-
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('cities')
             ->group(function () {
-                Route::get('', [CityController::class, 'index']);
-                Route::post('', [CityController::class, 'store']);
-                Route::get('active', [CityController::class, 'getActive']);
-                Route::get('with-shipments', [CityController::class, 'listWithShipments']);
-                Route::patch('{city}', [CityController::class, 'update']);
-                Route::get('{city}', [CityController::class, 'show']);
-                Route::delete('{city}', [CityController::class, 'destroy']);
+                Route::get('', [CityController::class, 'index'])->middleware('permission:read-city');
+                Route::post('', [CityController::class, 'store'])->middleware('permission:store-city');
+                Route::get('active', [CityController::class, 'getActive'])->middleware('permission:read-city');
+                Route::get('shipments', [CityController::class, 'listWithShipments'])->middleware('permission:read-city');
+                Route::patch('{city}', [CityController::class, 'update'])->middleware('permission:store-city');
+                Route::get('{city}', [CityController::class, 'show'])->middleware('permission:read-city');
+                Route::delete('{city}', [CityController::class, 'destroy'])->middleware('permission:delete-city');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('city-shipments')
             ->group(function () {
-                Route::get('', [CityShipmentController::class, 'index']);
-                Route::get('{cityShipment}', [CityShipmentController::class, 'show']);
-                Route::post('cities/{city}', [CityShipmentController::class, 'store']);
-                Route::patch('{cityShipment}', [CityShipmentController::class, 'update']);
-                Route::delete('{cityShipment}', [CityShipmentController::class, 'destroy']);
+                Route::get('', [CityShipmentController::class, 'index'])->middleware('permission:read-city-shipment');
+                Route::get('{cityShipment}', [CityShipmentController::class, 'show'])->middleware('permission:read-city-shipment');
+                Route::post('cities/{city}', [CityShipmentController::class, 'store'])->middleware('permission:store-city-shipment');
+                Route::patch('{cityShipment}', [CityShipmentController::class, 'update'])->middleware('permission:store-city-shipment');
+                Route::delete('{cityShipment}', [CityShipmentController::class, 'destroy'])->middleware('permission:delete-city-shipment');
             });
 
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('colors')
             ->group(function () {
-                Route::get('', [ColorController::class, 'index']);
-                Route::post('', [ColorController::class, 'store']);
-                Route::patch('{color}', [ColorController::class, 'update']);
-                Route::get('{color}', [ColorController::class, 'show']);
-                Route::delete('{color}', [ColorController::class, 'destroy']);
+                Route::get('', [ColorController::class, 'index'])->middleware('permission:read-colors');
+                Route::post('', [ColorController::class, 'store'])->middleware('permission:store-color');
+                Route::patch('{color}', [ColorController::class, 'update'])->middleware('permission:store-color');
+                Route::get('{color}', [ColorController::class, 'show'])->middleware('permission:read-colors');
+                Route::delete('{color}', [ColorController::class, 'destroy'])->middleware('permission:delete-color');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('sizes')
             ->group(function () {
-                Route::get('', [SizeController::class, 'index']);
-                Route::post('', [SizeController::class, 'store']);
-                Route::patch('{size}', [SizeController::class, 'update']);
-                Route::get('{size}', [SizeController::class, 'show']);
-                Route::delete('{size}', [SizeController::class, 'destroy']);
+                Route::get('', [SizeController::class, 'index'])->middleware('permission:read-sizes');
+                Route::post('', [SizeController::class, 'store'])->middleware('permission:store-size');
+                Route::patch('{size}', [SizeController::class, 'update'])->middleware('permission:store-size');
+                Route::get('{size}', [SizeController::class, 'show'])->middleware('permission:read-sizes');
+                Route::delete('{size}', [SizeController::class, 'destroy'])->middleware('permission:delete-size');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('brands')
             ->group(function () {
-                Route::get('', [BrandController::class, 'index']);
-                Route::post('', [BrandController::class, 'store']);
-                Route::patch('{brand}', [BrandController::class, 'update']);
-                Route::get('{brand}', [BrandController::class, 'show']);
-                Route::delete('{brand}', [BrandController::class, 'destroy']);
+                Route::get('', [BrandController::class, 'index'])->middleware('permission:read-brands');
+                Route::post('', [BrandController::class, 'store'])->middleware('permission:store-brand');
+                Route::patch('{brand}', [BrandController::class, 'update'])->middleware('permission:store-brand');
+                Route::get('{brand}', [BrandController::class, 'show'])->middleware('permission:read-brands');
+                Route::delete('{brand}', [BrandController::class, 'destroy'])->middleware('permission:delete-brand');
             });
-
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('promo-codes')
             ->group(function () {
-                Route::get('', [PromoCodeController::class, 'index']);
-                Route::get('active', [PromoCodeController::class, 'getActive']);
-                Route::post('', [PromoCodeController::class, 'store']);
-                Route::patch('{promoCode}', [PromoCodeController::class, 'update']);
-                Route::get('{promoCode}', [PromoCodeController::class, 'show']);
-                Route::delete('{promoCode}', [PromoCodeController::class, 'destroy']);
+                Route::get('', [PromoCodeController::class, 'index'])->middleware('permission:read-promo-codes');
+                Route::get('active', [PromoCodeController::class, 'getActive'])->middleware('permission:read-promo-codes');
+                Route::post('', [PromoCodeController::class, 'store'])->middleware('permission:store-promo-code');
+                Route::patch('{promoCode}', [PromoCodeController::class, 'update'])->middleware('permission:store-promo-code');
+                Route::get('{promoCode}', [PromoCodeController::class, 'show'])->middleware('permission:read-promo-codes');
+                Route::delete('{promoCode}', [PromoCodeController::class, 'destroy'])->middleware('permission:delete-promo-code');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('delivery-methods')
             ->group(function () {
-                Route::get('', [DeliveryMethodController::class, 'index']);
-                Route::get('active', [DeliveryMethodController::class, 'getActive']);
-                Route::post('', [DeliveryMethodController::class, 'store']);
-                Route::patch('{deliveryMethod}', [DeliveryMethodController::class, 'update']);
-                Route::get('{deliveryMethod}', [DeliveryMethodController::class, 'show']);
-                Route::delete('{deliveryMethod}', [DeliveryMethodController::class, 'destroy']);
+                Route::get('', [DeliveryMethodController::class, 'index'])->middleware('permission:read-delivery-methods');
+                Route::get('active', [DeliveryMethodController::class, 'getActive'])->middleware('permission:read-delivery-methods');
+                Route::post('', [DeliveryMethodController::class, 'store'])->middleware('permission:store-delivery-method');
+                Route::patch('{deliveryMethod}', [DeliveryMethodController::class, 'update'])->middleware('permission:store-delivery-method');
+                Route::get('{deliveryMethod}', [DeliveryMethodController::class, 'show'])->middleware('permission:read-delivery-methods');
+                Route::delete('{deliveryMethod}', [DeliveryMethodController::class, 'destroy'])->middleware('permission:delete-delivery-method');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('payment-methods')
             ->group(function () {
-                Route::get('', [PaymentMethodController::class, 'index']);
-                Route::get('active', [PaymentMethodController::class, 'getActive']);
-                Route::post('', [PaymentMethodController::class, 'store']);
-                Route::patch('{paymentMethod}', [PaymentMethodController::class, 'update']);
-                Route::get('{paymentMethod}', [PaymentMethodController::class, 'show']);
-                Route::delete('{paymentMethod}', [PaymentMethodController::class, 'destroy']);
+                Route::get('', [PaymentMethodController::class, 'index'])->middleware('permission:read-payment-methods');
+                Route::get('active', [PaymentMethodController::class, 'getActive'])->middleware('permission:read-payment-methods');
+                Route::post('', [PaymentMethodController::class, 'store'])->middleware('permission:store-payment-method');
+                Route::patch('{paymentMethod}', [PaymentMethodController::class, 'update'])->middleware('permission:store-payment-method');
+                Route::get('{paymentMethod}', [PaymentMethodController::class, 'show'])->middleware('permission:read-payment-methods');
+                Route::delete('{paymentMethod}', [PaymentMethodController::class, 'destroy'])->middleware('permission:delete-payment-method');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('payment-gateways')
-
             ->group(function () {
-                Route::get('', [PaymentGatewayController::class, 'index']);
-                Route::get('active', [PaymentGatewayController::class, 'getActive']);
-                Route::get('{paymentGateway}', [PaymentGatewayController::class, 'show']);
-                Route::post('', [PaymentGatewayController::class, 'store']);
-                Route::patch('{paymentGateway}', [PaymentGatewayController::class, 'update']);
-                Route::delete('{paymentGateway}', [PaymentGatewayController::class, 'destroy']);
+                Route::get('', [PaymentGatewayController::class, 'index'])->middleware('permission:read-payment-gateways');
+                Route::get('active', [PaymentGatewayController::class, 'getActive'])->middleware('permission:read-payment-gateways');
+                Route::get('{paymentGateway}', [PaymentGatewayController::class, 'show'])->middleware('permission:read-payment-gateways');
+                Route::post('', [PaymentGatewayController::class, 'store'])->middleware('permission:store-payment-gateway');
+                Route::patch('{paymentGateway}', [PaymentGatewayController::class, 'update'])->middleware('permission:store-payment-gateway');
+                Route::delete('{paymentGateway}', [PaymentGatewayController::class, 'destroy'])->middleware('permission:delete-payment-gateway');
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:60,1', 'auth:sanctum'])
             ->prefix('categories')
             ->scopeBindings()
             ->group(function () {
-
-                Route::get('', [CategoryController::class, 'index']);
-                Route::post('', [CategoryController::class, 'store']);
-                Route::get('export-csv', [CategoryController::class, 'exportCsv']);
-                Route::get('export-excel', [CategoryController::class, 'exportExcel']);
+                Route::get('', [CategoryController::class, 'index'])->middleware('permission:read-categories');
+                Route::post('', [CategoryController::class, 'store'])->middleware('permission:store-category');
+                Route::get('export-csv', [CategoryController::class, 'exportCsv'])->middleware('permission:read-categories');
+                Route::get('export-excel', [CategoryController::class, 'exportExcel'])->middleware('permission:read-categories');
                 Route::get('{category}', [CategoryController::class, 'show']);
-                Route::get('{category}/sub-categories', [CategoryController::class, 'listSubCategories']);
+                Route::get('{category}/sub-categories', [CategoryController::class, 'listSubCategories'])->middleware('permission:read-categories');
 
-                Route::post('import', [CategoryController::class, 'importSpreadsheet']);
-                Route::patch('{category}', [CategoryController::class, 'update'])->middleware('auth:sanctum');
-                Route::delete('{category}', [CategoryController::class, 'destroy'])->middleware('auth:sanctum');
-                Route::post('{category}/sub-categories', [CategoryController::class, 'storeSubCategory'])->middleware('auth:sanctum');
-                Route::patch('{category}/sub-categories/{subCategory}', [CategoryController::class, 'updateSubCategory'])->middleware('auth:sanctum');
-                Route::delete('{category}/sub-categories/{subCategory}', [CategoryController::class, 'destroySubCategory'])->middleware('auth:sanctum');
+                Route::post('import', [CategoryController::class, 'importSpreadsheet'])->middleware('permission:store-category');
+                Route::patch('{category}', [CategoryController::class, 'update'])->middleware('permission:store-category');
+                Route::delete('{category}', [CategoryController::class, 'destroy'])->middleware('permission:delete-category');
+                Route::post('{category}/sub-categories', [CategoryController::class, 'storeSubCategory'])->middleware('permission:store-category');
+                Route::patch('{category}/sub-categories/{subCategory}', [CategoryController::class, 'updateSubCategory'])->middleware('permission:store-category');
+                Route::delete('{category}/sub-categories/{subCategory}', [CategoryController::class, 'destroySubCategory'])->middleware('permission:delete-category');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('properties')
             ->group(function () {
-                Route::get('', [PropertyController::class, 'index']);
-                Route::post('', [PropertyController::class, 'store']);
-                Route::patch('{property}', [PropertyController::class, 'update']);
-                Route::get('{property}', [PropertyController::class, 'show']);
-                Route::delete('{property}', [PropertyController::class, 'destroy']);
+                Route::get('', [PropertyController::class, 'index'])->middleware('permission:read-properties');
+                Route::post('', [PropertyController::class, 'store'])->middleware('permission:store-property');
+                Route::patch('{property}', [PropertyController::class, 'update'])->middleware('permission:store-property');
+                Route::get('{property}', [PropertyController::class, 'show'])->middleware('permission:read-properties');
+                Route::delete('{property}', [PropertyController::class, 'destroy'])->middleware('permission:delete-property');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('products')
             ->group(function () {
-                Route::get('', [ProductController::class, 'index']);
-                Route::get('{product}', [ProductController::class, 'show']);
-                Route::post('', [ProductController::class, 'store']);
-                Route::patch('{product}', [ProductController::class, 'update']);
-                Route::delete('{product}', [ProductController::class, 'destroy']);
+                Route::get('', [ProductController::class, 'index'])->middleware('permission:read-products');
+                Route::get('{product}', [ProductController::class, 'show'])->middleware('permission:read-products');
+                Route::post('', [ProductController::class, 'store'])->middleware('permission:store-product');
+                Route::patch('{product}', [ProductController::class, 'update'])->middleware('permission:store-product');
+                Route::delete('{product}', [ProductController::class, 'destroy'])->middleware('permission:delete-product');
 
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('products/{product}/variations')
             ->scopeBindings()
             ->group(function () {
-                Route::get('', [ProductController::class, 'listProductVariations']);
-                Route::get('{productVariation}', [ProductController::class, 'showProductVariation']);
-                Route::post('', [ProductController::class, 'storeProductVariation']);
-                Route::patch('{productVariation}', [ProductController::class, 'updateProductVariation']);
-                Route::delete('{productVariation}', [ProductController::class, 'destroyProductVariation']);
+                Route::get('', [ProductController::class, 'listProductVariations'])->middleware('permission:read-products');
+                Route::get('{productVariation}', [ProductController::class, 'showProductVariation'])->middleware('permission:read-products');
+                Route::post('', [ProductController::class, 'storeProductVariation'])->middleware('permission:store-product');
+                Route::patch('{productVariation}', [ProductController::class, 'updateProductVariation'])->middleware('permission:store-product');
+                Route::delete('{productVariation}', [ProductController::class, 'destroyProductVariation'])->middleware('permission:delete-product');
 
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('products/{product}/variations/{productVariation}/properties')
             ->scopeBindings()
             ->group(function () {
-                Route::get('', [ProductController::class, 'listProductVariationProperties']);
-                Route::get('{property}', [ProductController::class, 'showProductVariationProperty']);
-                Route::post('', [ProductController::class, 'storeProductVariationProperty']);
-                Route::delete('{property}', [ProductController::class, 'destroyProductVariationProperty']);
+                Route::get('', [ProductController::class, 'listProductVariationProperties'])->middleware('permission:read-products');
+                Route::get('{property}', [ProductController::class, 'showProductVariationProperty'])->middleware('permission:read-products');
+                Route::post('', [ProductController::class, 'storeProductVariationProperty'])->middleware('permission:store-product');
+                Route::delete('{property}', [ProductController::class, 'destroyProductVariationProperty'])->middleware('permission:delete-product');
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('questions')
             ->group(function () {
-                Route::get('', [CommonQuestionController::class, 'index']);
-                Route::post('', [CommonQuestionController::class, 'store']);
-                Route::patch('{commonQuestion}', [CommonQuestionController::class, 'update']);
-                Route::get('{commonQuestion}', [CommonQuestionController::class, 'show']);
-                Route::delete('{commonQuestion}', [CommonQuestionController::class, 'destroy']);
+                Route::get('', [CommonQuestionController::class, 'index'])->middleware('permission:read-questions');
+                Route::post('', [CommonQuestionController::class, 'store'])->middleware('permission:store-question');
+                Route::patch('{commonQuestion}', [CommonQuestionController::class, 'update'])->middleware('permission:store-question');
+                Route::get('{commonQuestion}', [CommonQuestionController::class, 'show'])->middleware('permission:read-questions');
+                Route::delete('{commonQuestion}', [CommonQuestionController::class, 'destroy'])->middleware('permission:delete-question');
             });
-
     });

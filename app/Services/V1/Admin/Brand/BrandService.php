@@ -9,7 +9,7 @@ class BrandService
 {
     public function list()
     {
-        return Brand::with('media')->paginate(10);
+        return Brand::with('media:id,model_id,name,file_name,collection_name,disk')->paginate(10);
     }
 
     public function store(array $data)
@@ -52,7 +52,7 @@ class BrandService
 
     public function show(Brand $brand)
     {
-        return $brand->load(['media']);
+        return $brand->load(['media:id,model_id,name,file_name,collection_name,disk']);
     }
 
     public function delete(Brand $brand)
