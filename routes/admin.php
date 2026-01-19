@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\AdminManagment\AdminManagmentController;
 use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
@@ -19,10 +20,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/admin')
     ->group(function () {
-
+        Route::post('', [AdminManagmentController::class, 'store'])->middleware(['permission:store-admin', 'throttle:10,1']);
         Route::prefix('auth')
             ->group(function () {
-                Route::post('store', [AdminAuthController::class, 'store'])->middleware(['permission:store-admin', 'throttle:10,1']);
                 Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:10,1');
                 Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
             });

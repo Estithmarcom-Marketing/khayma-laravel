@@ -15,24 +15,7 @@ class AdminAuthController extends Controller
 {
     public function __construct(protected AdminAuthService $service) {}
 
-    public function store(RegisterRequest $request)
-    {
-        try {
-            $validated = $request->validated();
-            $data = $this->service->store($validated);
-
-            Log::info('Admin registered successfully', ['admin_id' => $data['admin']->id]);
-
-            return ApiResponse::successResponse(['admin' => new UserResource($data['admin']), 'token' => $data['token']],
-                'Admin registered successfully',
-                Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            Log::error('Admin registration failed', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-
-            return ApiResponse::errorResponse('Admin registration failed', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-    }
+   
 
     public function login(LoginRequest $request)
     {

@@ -222,7 +222,6 @@ class RolesPermissionsController extends Controller
     {
         try {
             $role = $this->service->updateRoleWithPermissions($role, $request->validated());
-
             return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Role updated successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to update role', ['error' => $e->getMessage(), 'method' => __METHOD__]);

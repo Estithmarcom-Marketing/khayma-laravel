@@ -26,6 +26,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'email:rfc,dns', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
             'phone' => ['required', 'string', 'max:255'],
+            'role_id' => ['sometimes', 'exists:roles,id'],
         ];
     }
 }

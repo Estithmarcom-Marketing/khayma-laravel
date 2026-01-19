@@ -7,16 +7,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminAuthService
 {
-    public function store(array $data)
-    {
-        $data['password'] = Hash::make($data['password']);
-        $data['is_guest'] = false;
-
-        $user = User::create($data);
-        $token = $user->createToken('token')->plainTextToken;
-
-        return ['admin' => $user, 'token' => $token];
-    }
+    
 
     public function login(array $data)
     {
