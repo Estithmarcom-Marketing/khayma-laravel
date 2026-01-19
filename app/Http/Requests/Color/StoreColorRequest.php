@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Color;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreColorRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class StoreColorRequest extends FormRequest
         return [
             'name_en' => 'required|string|max:255',
             'name_ar' => 'required|string|max:255',
-            'code' => 'required|string|max:255|unique:colors,code',
+            'code' => ['required', 'string', 'max:255', Rule::unique('colors', 'code')->whereNull('deleted_at')],
         ];
     }
 }

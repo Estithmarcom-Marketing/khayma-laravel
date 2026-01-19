@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Color;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateColorRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class UpdateColorRequest extends FormRequest
         return [
             'name_en' => 'sometimes|string|max:255',
             'name_ar' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:255|unique:colors,code,'.$this->color->id,
+            'code' => ['sometimes', 'string', 'max:255', Rule::unique('colors', 'code')->whereNull('deleted_at')->ignore($this->route('color')->id)],
         ];
     }
 }
