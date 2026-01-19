@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Admin\City\CityShipmentController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
+use App\Http\Controllers\Api\V1\Admin\Home\HomeManagementController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Admin\Product\ProductController;
@@ -201,5 +202,13 @@ Route::prefix('v1/admin')
                 Route::patch('{commonQuestion}', [CommonQuestionController::class, 'update'])->middleware('permission:store-question');
                 Route::get('{commonQuestion}', [CommonQuestionController::class, 'show'])->middleware('permission:read-questions');
                 Route::delete('{commonQuestion}', [CommonQuestionController::class, 'destroy'])->middleware('permission:delete-question');
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('banners')
+            ->group(function () {
+                Route::get('', [HomeManagementController::class, 'getBanners']);
+                Route::get('home', [HomeManagementController::class, 'getHomeBanners']);
+                Route::post('', [HomeManagementController::class, 'storeBanners']);
+                Route::delete('{banner}', [HomeManagementController::class, 'destroy']);
             });
     });

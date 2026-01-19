@@ -100,7 +100,6 @@ class CategoryService
             if (isset($data['image'])) {
                 $subCategory->addMedia($data['image'])->toMediaCollection('category');
             }
-
             return $subCategory->refresh();
         });
     }
@@ -118,8 +117,6 @@ class CategoryService
         if ($subCategory->parent_id !== $category->id) {
             throw new \Exception('The specified sub-category does not belong to the given category.');
         }
-
         $subCategory->clearMediaCollection('category')->delete();
-
     }
 }

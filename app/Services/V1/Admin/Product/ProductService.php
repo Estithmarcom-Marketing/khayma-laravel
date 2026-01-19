@@ -78,7 +78,6 @@ class ProductService
             'meta_description_ar' => $data['meta_description_ar'] ?? $product->meta_description_ar,
             'meta_description_en' => $data['meta_description_en'] ?? $product->meta_description_en,
         ]);
-
         if (isset($data['images']) && is_array($data['images'])) {
             $product->clearMediaCollection('products');
             foreach ($data['images'] as $image) {
