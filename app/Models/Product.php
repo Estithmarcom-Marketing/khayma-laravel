@@ -42,9 +42,21 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Brand::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
+
     public function orders()
     {
-        return $this->belongsToMany(Order::class);
+        return $this->hasManyThrough(
+            Order::class,
+            OrderProduct::class,
+            'product_variation_id',
+            'id',
+            'id',
+            'order_id'
+        );
     }
 
     public function productVariations()

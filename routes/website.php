@@ -66,7 +66,12 @@ Route::prefix('v1/user')
         Route::middleware('throttle:60,1')
             ->prefix('home')
             ->group(function () {
-                Route::get('', [HomeController::class, 'getHomeBanners']);
-                
+                Route::get('banners', [HomeController::class, 'getHomeBanners']);
+                Route::get('categories', [HomeController::class, 'getHomeCategories']);
+                Route::get('latest-products', [HomeController::class, 'getLatestProducts']);
+                Route::get('common-products', [HomeController::class, 'getCommonProducts']);
+                Route::get('most-ordered-products', [HomeController::class, 'getMostOrderdProducts']);
+                Route::get('reviews', [HomeController::class, 'getHomeReviews']);
+                Route::get('common-questions', [HomeController::class, 'getCommonQuestions']);
             });
     });

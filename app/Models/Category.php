@@ -19,7 +19,6 @@ class Category extends Model implements HasMedia
         'description_en',
         'description_ar',
         'parent_id',
-
     ];
 
     public function products()

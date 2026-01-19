@@ -32,12 +32,16 @@ class CategoryResource extends JsonResource
             }),
 
             'children' => $this->whenLoaded('subCategories', function () {
-                return $this->children ? [
-                    'id' => $this->children->id,
-                    'name_en' => $this->children->name_en,
-                    'name_ar' => $this->children->name_ar,
-                ] : null;
+                return $this->subCategories->map(function ($child) {
+                    return [
+                        'id' => $child->id,
+                        'name_en' => $child->name_en,
+                        'name_ar' => $child->name_ar,
+                        'image' => $this->whenLoaded('media', $this->whenNotNull($child->getFirstMediaUrl('category'))),
+                    ];
+                });
             }),
+
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
