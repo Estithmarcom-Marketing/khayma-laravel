@@ -29,7 +29,6 @@ class UserAuthService
                 'is_used' => false,
             ]);
             $phoneNumber = ltrim($data['phone'], '+');
-
             try {
                 Hypersender::whatsapp()
                     ->safeSendTextMessage($phoneNumber.'@c.us',

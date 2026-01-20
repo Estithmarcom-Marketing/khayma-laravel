@@ -11,14 +11,14 @@ class FavouriteService
     public function list()
     {
         $user = auth('sanctum')->user();
-        $favourites = $user->faviourites()->with(['product', 'product.variations'])->paginate(10);
+        $favourites = $user->faviourites()->with(['product', 'product.productVariations', 'product.media'])->paginate(10);
 
         return $favourites;
     }
 
     public function show(Favourite $favourite)
     {
-        return $favourite->load(['product', 'product.variations']);
+        return $favourite->load(['product', 'product.productVariations', 'product.media']);
     }
 
     public function store(Product $product)

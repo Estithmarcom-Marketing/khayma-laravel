@@ -19,9 +19,9 @@ use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsContro
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1/admin')
+Route::prefix('admin/v1')
     ->group(function () {
-        Route::post('', [AdminManagmentController::class, 'store'])->middleware(['permission:store-admin', 'throttle:10,1']);
+        Route::post('store', [AdminManagmentController::class, 'store'])->middleware(['permission:store-admin', 'throttle:10,1']);
         Route::prefix('auth')
             ->group(function () {
                 Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:10,1');
