@@ -19,7 +19,8 @@ class UserAuthService
     public function sendOtp(array $data)
     {
         return DB::transaction(function () use ($data) {
-            $otp = $this->generateOtp();
+            // $otp = $this->generateOtp();
+            $otp = 1234;
 
             OtpCode::create([
                 'phone' => $data['phone'],
