@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Api\V1\User\Address\AddressController;
-use App\Http\Controllers\Api\V1\User\Auth\UserAuthController;
-use App\Http\Controllers\Api\V1\User\Cart\CartController;
-use App\Http\Controllers\Api\V1\User\Favourite\FavouriteController;
-use App\Http\Controllers\Api\V1\User\Home\HomeController;
-use App\Http\Controllers\Api\V1\User\ProductReminder\ProductReminderController;
-use App\Http\Controllers\Api\V1\User\ProfileManagment\ProfileManagmentController;
-use App\Http\Controllers\Api\V1\User\Review\ReviewController;
+use App\Http\Controllers\Api\V1\Website\Address\AddressController;
+use App\Http\Controllers\Api\V1\Website\Auth\UserAuthController;
+use App\Http\Controllers\Api\V1\Website\Cart\CartController;
+use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
+use App\Http\Controllers\Api\V1\Website\Home\HomeController;
+use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
+use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
+use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('website/v1')
