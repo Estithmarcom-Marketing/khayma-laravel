@@ -78,7 +78,7 @@ class HomeService
     public function getHomeReviews()
     {
         return Review::query()
-            ->with(['product:id,name_ar,name_en,slug_ar,slug_en', 'user:id,name'])
+            ->with(['product:id,name_ar,name_en,slug_ar,slug_en', 'user:id,name', 'user.media'])
             ->where(function ($q) {
                 $q->where('rating', '>', 4);
             })

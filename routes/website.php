@@ -7,9 +7,10 @@ use App\Http\Controllers\Api\V1\User\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\User\Home\HomeController;
 use App\Http\Controllers\Api\V1\User\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\User\ProfileManagment\ProfileManagmentController;
+use App\Http\Controllers\Api\V1\User\Review\ReviewController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1/user')
+Route::prefix('website/v1')
     ->group(function () {
 
         Route::middleware('throttle:10,1')
@@ -26,7 +27,6 @@ Route::prefix('v1/user')
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
                 Route::patch('', [ProfileManagmentController::class, 'update']);
             });
-
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('addresses')
             ->group(function () {
@@ -62,6 +62,15 @@ Route::prefix('v1/user')
                 Route::get('{productReminder}', [ProductReminderController::class, 'show']);
                 Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
                 Route::delete('{productReminder}', [ProductReminderController::class, 'destroy']);
+            });
+        Route::middleware(['throttle:60,1', 'auth:sanctum'])
+            ->prefix('reviews')
+            ->group(function () {
+                Route::get('', [ReviewController::class, 'getMyReviews']);
+                Route::get('products/{product}', [ReviewController::class, 'getProductReviews']);
+                Route::post('', [ReviewController::class, 'store']);
+                Route::patch('{review}', [ReviewController::class, 'update']);
+                Route::delete('{review}', [ReviewController::class, 'destroy']);
             });
         Route::middleware('throttle:60,1')
             ->prefix('home')

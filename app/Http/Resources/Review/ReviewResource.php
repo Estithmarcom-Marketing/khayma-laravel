@@ -25,12 +25,14 @@ class ReviewResource extends JsonResource
                     'name_ar' => $this->product->name_ar,
                     'slug_ar' => $this->product->slug_ar,
                     'slug_en' => $this->product->slug_en,
+                    'image' => $this->whenNotNull($this->product->getFirstMediaUrl('products')),
                 ];
             }),
             'user' => $this->whenLoaded('user', function () {
                 return [
                     'id' => $this->user->id,
                     'name' => $this->user->name,
+                    'image' => $this->whenNotNull($this->user->getFirstMediaUrl('profile')),
                 ];
             }),
             'created_at' => $this->created_at,
