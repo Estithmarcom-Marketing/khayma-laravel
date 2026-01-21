@@ -10,20 +10,26 @@ class FavouriteService
 {
     public function list()
     {
-        $user = auth('sanctum')->user();
-        $favourites = $user->faviourites()->with(['product', 'product.productVariations', 'product.media'])->paginate(10);
+        $user = auth()->user();
+        $favourites = $user->faviourites()->with(['product:id,name_ar,name_en,slug_ar,slug_en,description_ar,description_en,category_id,brand_id',
+            'product.productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
+            'product.media:id,model_id,name,file_name,collection_name,disk'])
+            ->paginate(10);
 
         return $favourites;
     }
 
     public function show(Favourite $favourite)
     {
-        return $favourite->load(['product', 'product.productVariations', 'product.media']);
+        return $favourite->load(['product:id,name_ar,name_en,slug_ar,slug_en,description_ar,description_en,category_id,brand_id',
+            'product.productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
+            'product.productVariations.properties:id,name_ar,name_en',
+            'product.media:id,model_id,name,file_name,collection_name,disk']);
     }
 
     public function store(Product $product)
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
         $favourite = $user->faviourites()->create([
             'product_id' => $product->id, ]);
@@ -34,7 +40,7 @@ class FavouriteService
     public function deleteProductFromFavourite(Favourite $favourite)
     {
         return DB::transaction(function () use ($favourite) {
-            $user = auth('sanctum')->user();
+            $user = auth()->user();
             $favourite = $user->faviourites()->where('product_id', $favourite->product_id)->first();
             if (! $favourite) {
                 return false;

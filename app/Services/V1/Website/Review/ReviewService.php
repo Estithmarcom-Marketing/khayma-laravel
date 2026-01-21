@@ -9,7 +9,7 @@ class ReviewService
 {
     public function store(array $data)
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
         if ($user->reviews()->where('product_id', $data['product_id'])->exists()) {
 
             $review = $user->reviews()->where('product_id', $data['product_id'])->first();
@@ -45,11 +45,19 @@ class ReviewService
 
     public function getMyReviews()
     {
-        return auth('sanctum')->user()->reviews()->with('product.media')->paginate(10);
+        return auth()->user()->reviews()->with('product.media')->paginate(10);
     }
 
     public function getReviews(Product $product)
     {
-        return $product->reviews()->with(['user.media'])->paginate(10);
+        $user = auth()->user();
+
+        $reviewsQuery = $product->reviews()->with(['user.media']);
+
+        if ($user) {
+            $reviewsQuery->orderByRaw('user_id = ? DESC', [$user->id]);
+        }
+
+        return $reviewsQuery->paginate(10);
     }
 }

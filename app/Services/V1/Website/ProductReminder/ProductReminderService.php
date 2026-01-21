@@ -9,15 +9,22 @@ class ProductReminderService
 {
     public function list()
     {
-        $user = auth('sanctum')->user();
-        $productReminders = $user->productReminders()->with(['productVariation'])->paginate(10);
+        $user = auth()->user();
+        $productReminders = $user->productReminders()->with(
+            ['productVariation',
+                'productVariation.color:id,name_en,name_ar,code',
+                'productVariation.size:id,name_en,name_ar',
+                'productVariation.properties:id,name_en,name_ar',
+                'productVariation.product:id,name_en,name_ar,slug_en,slug_ar,brand_id,category_id,description_en,description_ar',
+                'productVariation.product.media:id,model_id,name,file_name,collection_name,disk'])
+            ->paginate(10);
 
         return $productReminders;
     }
 
     public function store(ProductVariation $productvariation)
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
         return $user->productReminders()->create([
             'product_variation_id' => $productvariation->id,
@@ -31,6 +38,11 @@ class ProductReminderService
 
     public function show(ProductReminder $productReminder)
     {
-        return $productReminder->load(['productVariation', 'productVariation.color', 'productVariation.size']);
+        return $productReminder->load(['productVariation',
+            'productVariation.color:id,name_en,name_ar,code',
+            'productVariation.size:id,name_en,name_ar',
+            'productVariation.properties:id,name_en,name_ar',
+            'productVariation.product:id,name_en,name_ar,slug_en,slug_ar,brand_id,category_id,description_en,description_ar',
+            'productVariation.product.media:id,model_id,name,file_name,collection_name,disk']);
     }
 }

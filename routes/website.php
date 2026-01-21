@@ -64,14 +64,14 @@ Route::prefix('website/v1')
                 Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
                 Route::delete('{productReminder}', [ProductReminderController::class, 'destroy']);
             });
-        Route::middleware(['throttle:60,1', 'auth:sanctum'])
+        Route::middleware(['throttle:60,1'])
             ->prefix('reviews')
             ->group(function () {
-                Route::get('', [ReviewController::class, 'getMyReviews']);
+                Route::get('', [ReviewController::class, 'getMyReviews'])->middleware('auth:sanctum');
                 Route::get('products/{product}', [ReviewController::class, 'getProductReviews']);
-                Route::post('', [ReviewController::class, 'store']);
-                Route::patch('{review}', [ReviewController::class, 'update']);
-                Route::delete('{review}', [ReviewController::class, 'destroy']);
+                Route::post('', [ReviewController::class, 'store'])->middleware('auth:sanctum');
+                Route::patch('{review}', [ReviewController::class, 'update'])->middleware('auth:sanctum');
+                Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware('auth:sanctum');
             });
         Route::middleware('throttle:60,1')
             ->prefix('home')
