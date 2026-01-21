@@ -24,6 +24,8 @@ class ProductResource extends JsonResource
             'slug_ar' => $this->slug_ar,
             'slug_en' => $this->slug_en,
             'is_published' => $this->is_published,
+            'is_favorite' =>(bool) $this->is_favorite,
+            'is_in_cart' =>(bool) $this->is_in_cart,
             'category' => $this->whenLoaded('category', function () {
                 return [
                     'id' => $this->category->id,
@@ -47,13 +49,17 @@ class ProductResource extends JsonResource
                     ];
                 });
             }),
+            'rating' => [
+                'average' => round((float) ($this->reviews_avg_rating ?? 0), 1),
+                'count' => (int) ($this->reviews_count ?? 0),
+                'has_reviews' => $this->reviews_count > 0,
+            ],
             'meta_title_ar' => $this->meta_title_ar,
             'meta_title_en' => $this->meta_title_en,
             'meta_description_ar' => $this->meta_description_ar,
             'meta_description_en' => $this->meta_description_en,
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
-
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

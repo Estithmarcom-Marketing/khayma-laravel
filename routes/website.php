@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Website\Auth\UserAuthController;
 use App\Http\Controllers\Api\V1\Website\Cart\CartController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
+use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
@@ -82,5 +83,11 @@ Route::prefix('website/v1')
                 Route::get('most-ordered-products', [HomeController::class, 'getMostOrderdProducts']);
                 Route::get('reviews', [HomeController::class, 'getHomeReviews']);
                 Route::get('common-questions', [HomeController::class, 'getCommonQuestions']);
+            });
+        Route::middleware('throttle:60,1')
+            ->prefix('products')
+            ->group(function () {
+                Route::get('', [ProductController::class, 'filter']);
+                Route::get('{id}', [ProductController::class, 'show']);
             });
     });

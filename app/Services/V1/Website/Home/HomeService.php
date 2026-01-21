@@ -36,7 +36,7 @@ class HomeService
     {
         return Product::query()
             ->published()
-            ->with(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id', 'media:id,model_id,name,file_name,collection_name,disk'])
+            ->with(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id', 'productVariations.color:id,name_ar,name_en,code', 'productVariations.size:id,name_ar,name_en', 'productVariations.properties:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])
             ->latest()
             ->paginate(10);
     }

@@ -46,6 +46,17 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(OrderProduct::class);
     }
+    public function cartItems(): HasManyThrough
+{
+    return $this->hasManyThrough(
+        CartProduct::class,
+        ProductVariation::class,
+        'product_id',            
+        'product_variation_id', 
+        'id',               
+        'id'                     
+    );
+}
 
     public function orders()
     {

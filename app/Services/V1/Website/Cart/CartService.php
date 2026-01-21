@@ -18,7 +18,9 @@ class CartService
     {
         $user = auth('sanctum')->user();
 
-        return $user->cart->items->load('productVariation');
+        return $user->cart->items->load(['productVariation' => function ($query) {
+            $query->with('product');
+        }]);
     }
 
     public function addItem(ProductVariation $productVariation, array $data)
