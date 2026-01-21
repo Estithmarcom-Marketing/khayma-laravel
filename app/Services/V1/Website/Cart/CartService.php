@@ -9,23 +9,28 @@ class CartService
 {
     public function getCart()
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
         return $user->cart;
     }
 
     public function getCartItems()
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
-        return $user->cart->items->load(['productVariation' => function ($query) {
-            $query->with('product');
-        }]);
+        return $user->cart->items->load([
+            'productVariation.product:id,name_en,name_ar,slug_en,slug_ar,brand_id,category_id,description_en,description_ar',
+            'productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
+            'productVariation.color:id,name_en,name_ar,code',
+            'productVariation.size:id,name_en,name_ar',
+            'productVariation.properties:id,name_en,name_ar',
+        ]);
+
     }
 
     public function addItem(ProductVariation $productVariation, array $data)
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
         return $user->cart->items()->create([
             'product_variation_id' => $productVariation->id,
@@ -35,7 +40,7 @@ class CartService
 
     public function updateItem(CartProduct $cartProduct, array $data)
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
         $item = $user->cart->items()->where('id', $cartProduct->id)->firstOrFail();
         $item->update([
@@ -47,14 +52,14 @@ class CartService
 
     public function removeItem(CartProduct $cartProduct)
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
         return $user->cart->items()->where('id', $cartProduct->id)->delete();
     }
 
     public function clearCart()
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
 
         return $user->cart->items()->delete();
     }
