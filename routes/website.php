@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Website\Address\AddressController;
 use App\Http\Controllers\Api\V1\Website\Auth\UserAuthController;
 use App\Http\Controllers\Api\V1\Website\Cart\CartController;
+use App\Http\Controllers\Api\V1\Website\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Website\Color\ColorController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
@@ -104,5 +105,11 @@ Route::prefix('website/v1')
             ->group(function () {
                 Route::get('', [ColorController::class, 'index']);
                 Route::get('{id}', [ColorController::class, 'show']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('categories')
+            ->group(function () {
+                Route::get('', [CategoryController::class, 'index']);
+                Route::get('{id}', [CategoryController::class, 'show']);
             });
     });
