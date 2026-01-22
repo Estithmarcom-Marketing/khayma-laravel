@@ -19,8 +19,8 @@ class ColorResource extends JsonResource
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
             'code' => $this->code,
-            'created_at' => $this->whenNotNull($this->created_at?->toDateTimeString()),
-            'updated_at' => $this->whenNotNull($this->updated_at?->toDateTimeString()),
+            'created_at' => $this->whenNotNull($this->created_at),
+            'updated_at' => $this->whenNotNull($this->updated_at),
         ];
     }
 }

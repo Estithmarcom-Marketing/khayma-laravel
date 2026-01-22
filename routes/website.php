@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Website\Address\AddressController;
 use App\Http\Controllers\Api\V1\Website\Auth\UserAuthController;
 use App\Http\Controllers\Api\V1\Website\Cart\CartController;
+use App\Http\Controllers\Api\V1\Website\Color\ColorController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
 use App\Http\Controllers\Api\V1\Website\Order\OrderController;
@@ -99,6 +99,10 @@ Route::prefix('website/v1')
                 Route::get('', [OrderController::class, 'index']);
                 Route::get('{id}', [OrderController::class, 'show']);
             });
-
- 
+        Route::middleware(['throttle:60,1'])
+            ->prefix('colors')
+            ->group(function () {
+                Route::get('', [ColorController::class, 'index']);
+                Route::get('{id}', [ColorController::class, 'show']);
+            });
     });
