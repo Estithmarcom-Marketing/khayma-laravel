@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Website\Address\AddressController;
 use App\Http\Controllers\Api\V1\Website\Auth\UserAuthController;
 use App\Http\Controllers\Api\V1\Website\Cart\CartController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
+use App\Http\Controllers\Api\V1\Website\Order\OrderController;
 use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
@@ -90,4 +92,13 @@ Route::prefix('website/v1')
                 Route::get('', [ProductController::class, 'filter']);
                 Route::get('{id}', [ProductController::class, 'show']);
             });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('orders')
+            ->group(function () {
+                Route::post('', [OrderController::class, 'store']);
+                Route::get('', [OrderController::class, 'index']);
+                Route::get('{id}', [OrderController::class, 'show']);
+            });
+
+ 
     });

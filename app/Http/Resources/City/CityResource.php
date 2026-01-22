@@ -19,12 +19,12 @@ class CityResource extends JsonResource
             'id' => $this->id,
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
-            'is_active' => $this->is_active,
-            'can_ship' => $this->can_ship,
+            'is_active' => $this->whenNotNull($this->is_active),
+            'can_ship' => $this->whenNotNull($this->can_ship),
             'shipments' => $this->whenLoaded('shipments', CityShipmentResource::collection($this->shipments)
             ),
-            'created_at' => $this->whenNotNull($this->created_at?->toDateTimeString()),
-            'updated_at' => $this->whenNotNull($this->updated_at?->toDateTimeString()),
+            'created_at' => $this->whenNotNull($this->created_at),
+            'updated_at' => $this->whenNotNull($this->updated_at),
         ];
     }
 }

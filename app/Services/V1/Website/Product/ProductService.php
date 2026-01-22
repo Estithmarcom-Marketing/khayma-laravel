@@ -15,13 +15,13 @@ class ProductService
         $query = Product::published()
             ->withAvg('reviews', 'rating')
             ->withCount('reviews');
-        $this->category($query, $filters);
-        $this->price($query, $filters);
-        $this->brand($query, $filters);
-        $this->color($query, $filters);
-        $this->rating($query, $filters);
-        $this->offer($query, $filters);
-        $this->search($query, $filters);
+        $this->filterByCategory($query, $filters);
+        $this->filterByPrice($query, $filters);
+        $this->filterByBrand($query, $filters);
+        $this->filterByColor($query, $filters);
+        $this->filterByRating($query, $filters);
+        $this->filterByOffer($query, $filters);
+        $this->filterBySearch($query, $filters);
 
         return $query
             ->withExists([
@@ -40,7 +40,7 @@ class ProductService
             ->paginate(10);
     }
 
-    private function category($query, array $filters): void
+    private function filterByCategory($query, array $filters): void
     {
         if (empty($filters['categories']) && empty($filters['subcategories'])) {
             return;
@@ -59,7 +59,7 @@ class ProductService
 
     }
 
-    private function price($query, array $filters): void
+    private function filterByPrice($query, array $filters): void
     {
         if (! isset($filters['min_price']) && ! isset($filters['max_price'])) {
             return;
@@ -80,7 +80,7 @@ class ProductService
         });
     }
 
-    private function brand($query, array $filters): void
+    private function filterByBrand($query, array $filters): void
     {
         if (empty($filters['brands'])) {
             return;
@@ -89,7 +89,7 @@ class ProductService
         $query->whereIn('brand_id', $filters['brands']);
     }
 
-    private function color($query, array $filters): void
+    private function filterByColor($query, array $filters): void
     {
         if (empty($filters['colors'])) {
             return;
@@ -100,7 +100,7 @@ class ProductService
         });
     }
 
-    private function rating($query, array $filters): void
+    private function filterByRating($query, array $filters): void
     {
         if (! isset($filters['rating'])) {
             return;
@@ -108,7 +108,7 @@ class ProductService
         $query->having('reviews_avg_rating', '>=', $filters['rating']);
     }
 
-    private function offer($query, array $filters): void
+    private function filterByOffer($query, array $filters): void
     {
         if (empty($filters['has_offer'])) {
             return;
@@ -123,7 +123,7 @@ class ProductService
         });
     }
 
-    private function search($query, array $filters): void
+    private function filterBySearch($query, array $filters): void
     {
         if (empty($filters['search'])) {
             return;

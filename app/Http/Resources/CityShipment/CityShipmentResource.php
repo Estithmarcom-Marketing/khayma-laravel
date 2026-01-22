@@ -19,8 +19,6 @@ class CityShipmentResource extends JsonResource
             'cost' => $this->cost,
             'estimated_delivery_days' => $this->estimated_delivery_days,
             'city_id' => $this->city_id,
-            'city_name_en' => $this->city->name_en,
-            'city_name_ar' => $this->city->name_ar,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

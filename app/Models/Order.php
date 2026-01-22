@@ -13,7 +13,6 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'address_id',
-        'payment_gateway_id',
         'delivery_method_id',
         'total_price',
         'subtotal_price',
@@ -25,11 +24,11 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'total_price' => 'decimal,2',
-        'subtotal_price' => 'decimal,2',
-        'shipping_cost' => 'decimal,2',
-        'tax_amount' => 'decimal,2',
-        'discount_amount' => 'decimal,2',
+        'total_price' => 'decimal:2',
+        'subtotal_price' => 'decimal:2',
+        'shipping_cost' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'status' => OrderStatusEnum::class,
     ];
 
@@ -37,7 +36,6 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
-  
 
     public function address()
     {

@@ -20,10 +20,10 @@ class AddressResource extends JsonResource
             'name' => $this->name,
             'value' => $this->value,
             'city' => $this->whenLoaded('city', CityResource::make($this->city)),
-            'is_default' => $this->is_default,
+            'is_default' => (bool) $this->is_default,
             'additional_info' => $this->additional_info,
-            'created_at' => $this->whenNotNull($this->created_at?->toDateTimeString()),
-            'updated_at' => $this->whenNotNull($this->updated_at?->toDateTimeString()),
+            'created_at' => $this->whenNotNull($this->created_at),
+            'updated_at' => $this->whenNotNull($this->updated_at),
         ];
     }
 }
