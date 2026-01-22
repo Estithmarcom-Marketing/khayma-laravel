@@ -14,7 +14,8 @@ use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentControl
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('website/v1')
+Route::middleware('tokenfromcookie')
+    ->prefix('website/v1')
     ->group(function () {
 
         Route::middleware('throttle:10,1')
@@ -22,7 +23,7 @@ Route::prefix('website/v1')
             ->group(function () {
                 Route::post('otp', [UserAuthController::class, 'sendOtp']);
                 Route::post('login', [UserAuthController::class, 'login']);
-                Route::post('logout', [UserAuthController::class, 'logout'])->middleware('auth:sanctum');
+                Route::post('logout', [UserAuthController::class, 'logout'])->middleware(['auth:sanctum']);
 
             });
         Route::middleware(['throttle:10,1', 'auth:sanctum'])
@@ -70,11 +71,11 @@ Route::prefix('website/v1')
         Route::middleware(['throttle:60,1'])
             ->prefix('reviews')
             ->group(function () {
-                Route::get('', [ReviewController::class, 'getMyReviews'])->middleware('auth:sanctum');
+                Route::get('', [ReviewController::class, 'getMyReviews'])->middleware(['auth:sanctum']);
                 Route::get('products/{product}', [ReviewController::class, 'getProductReviews']);
-                Route::post('', [ReviewController::class, 'store'])->middleware('auth:sanctum');
-                Route::patch('{review}', [ReviewController::class, 'update'])->middleware('auth:sanctum');
-                Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware('auth:sanctum');
+                Route::post('', [ReviewController::class, 'store'])->middleware(['auth:sanctum']);
+                Route::patch('{review}', [ReviewController::class, 'update'])->middleware(['auth:sanctum']);
+                Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware(['auth:sanctum']);
             });
         Route::middleware('throttle:60,1')
             ->prefix('home')

@@ -33,12 +33,25 @@ class UserAuthController extends Controller
     public function login(UserLoginRequest $request)
     {
         try {
-            $validated = $request->validated();
-            $data = $this->service->login($validated);
 
-            return ApiResponse::successResponse(['user' => UserResource::make($data['user']), 'token' => $data['token']],
+            $data = $this->service->login($request->validated());
+
+            $minutes = $request->remember_me ? 60 * 24 * 14 : 60 * 24;
+            $cookie = cookie('access_token',
+                $data['token'],
+                $minutes,
+                '/',
+                null,
+                true,
+                true,
+                false,
+                'None'
+            );
+            return ApiResponse::successResponse(
+                ['user' => UserResource::make($data['user']), 'token' => $data['token']],
                 'User logged in successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK)
+                ->cookie($cookie);
 
         } catch (\Exception $e) {
             Log::error('Failed to login user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
@@ -51,8 +64,19 @@ class UserAuthController extends Controller
     {
         try {
             $this->service->logout();
+            $cookie = cookie(
+                'access_token',
+                '',
+                -1,
+                '/',
+                null,
+                true,
+                true,
+                false,
+                'None'
+            );
 
-            return ApiResponse::successResponse(null, 'User logged out successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(null, 'User logged out successfully', Response::HTTP_OK)->cookie($cookie);
         } catch (\Exception $e) {
             Log::error('Failed to logout user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

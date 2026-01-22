@@ -24,6 +24,7 @@ class UserLoginRequest extends FormRequest
         return [
             'phone' => 'required|phone:AUTO',
             'otp_code' => 'required|string|max:50',
+            'remember_me' => 'sometimes|boolean',
 
         ];
     }
