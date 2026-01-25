@@ -14,6 +14,7 @@ class ProductService
         $cartId = $user?->cart?->id;
         $query = Product::published()
             ->withAvg('reviews', 'rating')
+            ->withMin('productVariations', 'price')
             ->withCount('reviews');
         $this->filterByCategory($query, $filters);
         $this->filterByPrice($query, $filters);
@@ -162,6 +163,7 @@ class ProductService
         ])
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
+            ->withMin('productVariations', 'price')
             ->firstOrFail();
 
         return $product;
