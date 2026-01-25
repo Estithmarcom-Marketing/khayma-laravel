@@ -19,13 +19,13 @@ class CategoryController extends Controller
 
             return ApiResponse::successResponse(
                 ['categories' => CategoryResource::collection($categories)],
-                'Categories listed successfully',
+                __('category.listed_all'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             \Log::error('Failed to list categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(
-                'Failed to list categories',
+                __('category.list_all_failed'),
                 Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -37,13 +37,13 @@ class CategoryController extends Controller
 
             return ApiResponse::successResponse(
                 ['category' => new CategoryResource($category)],
-                'Category listed successfully',
+                __('category.listed_one'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             \Log::error('Failed to list category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(
-                'Failed to list category',
+                __('category.list_one_failed'),
                 Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
