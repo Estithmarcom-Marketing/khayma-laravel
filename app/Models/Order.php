@@ -10,6 +10,10 @@ class Order extends Model
 {
     use HasUuids;
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected $fillable = [
         'user_id',
         'address_id',

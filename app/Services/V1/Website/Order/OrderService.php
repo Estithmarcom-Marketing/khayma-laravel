@@ -39,11 +39,11 @@ class OrderService
             $shipping_cost = $this->getShippingCost($data['address_id']);
             $promo_code = $this->getPromoCode($data['promo_code']);
             $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code);
+
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'address_id' => $data['address_id'],
                 'delivery_method_id' => $data['delivery_method_id'],
-                'paument_gateway_id' => null,
                 'subtotal_price' => $subtotal,
                 'shipping_cost' => $shipping_cost ?? 0,
                 'discount_amount' => $total['discount'] ?? 0,
@@ -58,6 +58,7 @@ class OrderService
                 ]);
             }
 
+            // call payment
             return $order->load([
                 'items.productVariation.product',
                 'address',
@@ -101,7 +102,6 @@ class OrderService
         $total = ($subtotal + $shipping_cost) - $discount;
 
         return ['total' => $total, 'discount' => $discount];
-
     }
 
     public function show($id)

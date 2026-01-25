@@ -41,7 +41,6 @@ class ProductSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
-
             [
                 'name_ar' => 'خيمة بر عائلية',
                 'name_en' => 'Family Tent',

@@ -21,7 +21,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @var list<string>
      */
-     protected $guard_name = 'api';
+    protected $guard_name = 'api';
+
     protected $fillable = [
         'name',
         'email',
@@ -82,6 +83,11 @@ class User extends Authenticatable implements HasMedia
     public function productReminders()
     {
         return $this->hasMany(ProductReminder::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 
     public function registerMediaCollections(): void

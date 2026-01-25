@@ -24,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'tokenfromcookie' => \App\Http\Middleware\TokenFromCookie::class,
 
         ]);
+        $middleware->priority([
+            \App\Http\Middleware\TokenFromCookie::class,
+            \Illuminate\Auth\Middleware\Authenticate::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

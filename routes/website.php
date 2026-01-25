@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Website\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Website\Color\ColorController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
+use App\Http\Controllers\Api\V1\Website\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Website\Order\OrderController;
 use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
@@ -112,5 +113,13 @@ Route::middleware('tokenfromcookie')
             ->group(function () {
                 Route::get('', [CategoryController::class, 'index']);
                 Route::get('{id}', [CategoryController::class, 'show']);
+            });
+
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('notifications')
+            ->group(function () {
+                Route::get('', [NotificationController::class, 'index']);
+                Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
+                Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
     });

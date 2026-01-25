@@ -19,13 +19,11 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status->value,
-            'prices' => [
-                'subtotal' => $this->subtotal_price,
-                'tax' => $this->tax_amount,
-                'shipping' => $this->shipping_cost,
-                'discount' => $this->discount_amount,
-                'total' => $this->total_price,
-            ],
+            'subtotal' => $this->subtotal_price,
+            'tax' => $this->tax_amount,
+            'shipping' => $this->shipping_cost,
+            'discount' => $this->discount_amount,
+            'total' => $this->total_price,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
             'address' => new AddressResource($this->whenLoaded('address')),
             'delivery_method' => new DeliveryMethodResource($this->whenLoaded('deliveryMethod')),
