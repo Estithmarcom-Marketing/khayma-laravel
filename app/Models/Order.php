@@ -25,6 +25,7 @@ class Order extends Model
         'discount_amount',
         'promo_code',
         'status',
+        'delivered_at',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class Order extends Model
         'tax_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'status' => OrderStatusEnum::class,
+        'delivered_at' => 'datetime',
     ];
 
     public function user()

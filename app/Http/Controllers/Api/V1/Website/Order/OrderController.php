@@ -26,6 +26,19 @@ class OrderController extends Controller
         }
     }
 
+    public function cancel($id)
+    {
+        try {
+            $order = $this->service->cancel($id);
+
+            return ApiResponse::successResponse(['order' => OrderResource::make($order)], 'Order canceled successfully', Response::HTTP_OK);
+        } catch (\Exception $e) {
+            \Log::error('Failed to cancel order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to cancel order', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function show($id)
     {
         try {
@@ -51,4 +64,22 @@ class OrderController extends Controller
             return ApiResponse::errorResponse('Failed to fetch orders', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function listCanceled()
+    {
+        try {
+            $orders = $this->service->listCanceled();
+            $orders = OrderResource::collection($orders)->response()->getData(true);
+
+            return ApiResponse::successResponse(
+                ['orders' => $orders['data'],
+                    'meta' => $orders['meta'],
+                    'links' => $orders['links']], 'Orders Fetched Successfully', Response::HTTP_OK);
+        } catch (\Exception $e) {
+            \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to fetch orders', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

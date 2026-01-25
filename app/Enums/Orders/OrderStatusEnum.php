@@ -8,7 +8,7 @@ enum OrderStatusEnum: string
     case PROCESSING = 'processing';
     case SHIPPED = 'shipped';
     case DELIVERED = 'delivered';
-    case CANCELLED = 'cancelled';
+    case CANCELED = 'canceled';
 
     public static function all(): array
     {
@@ -17,7 +17,7 @@ enum OrderStatusEnum: string
             self::PROCESSING->value,
             self::SHIPPED->value,
             self::DELIVERED->value,
-            self::CANCELLED->value,
+            self::CANCELED->value,
         ];
     }
 }

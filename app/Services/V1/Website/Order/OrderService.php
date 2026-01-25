@@ -17,7 +17,8 @@ class OrderService
         return DB::transaction(function () use ($data) {
 
             $subtotal = 0;
-
+            $user = auth()->user();
+            $data['items'] = $user->cart->items()->get();
             foreach ($data['items'] as $item) {
                 $variation = ProductVariation::lockForUpdate()->findOrFail(
                     $item['product_variation_id']
@@ -59,6 +60,9 @@ class OrderService
             }
 
             // call payment
+
+            $user->cart->items()->delete();
+
             return $order->load([
                 'items.productVariation.product',
                 'address',
@@ -122,4 +126,30 @@ class OrderService
             'deliveryMethod:id,name_ar,name_en',
         ])->paginate(10);
     }
+
+    public function listCanceled()
+    {
+        return auth()->user()->orders()->where('status', OrderStatusEnum::CANCELED)->with([
+            'items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
+            'address:id,name,value,city_id,additional_info',
+            'deliveryMethod:id,name_ar,name_en',
+        ])->paginate(10);
+    }
+
+    public function cancel($id)
+    {
+        $order = Order::findOrFail($id);
+
+        if (($order->status == OrderStatusEnum::PENDING || $order->status == OrderStatusEnum::PROCESSING) && $order->user_id == auth()->id() && $order->created_at->diffInHours() < 72) {
+            $order->update(['status' => OrderStatusEnum::CANCELED]);
+
+            // call refund
+            return $order;
+        } else {
+            throw new \Exception('Order cannot be canceled');
+        }
+
+    }
+
+   
 }

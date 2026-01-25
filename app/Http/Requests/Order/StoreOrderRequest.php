@@ -26,9 +26,7 @@ class StoreOrderRequest extends FormRequest
             'payment_gateway_id' => ['nullable',  'exists:payment_gateways,id'],
             'delivery_method_id' => ['required', 'exists:delivery_methods,id'],
             'promo_code' => ['nullable', 'string', 'max:50'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.product_variation_id' => ['required', 'exists:product_variations,id'],
-            'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'cart_items' => ['exists:cart_items,id'],
         ];
     }
 }

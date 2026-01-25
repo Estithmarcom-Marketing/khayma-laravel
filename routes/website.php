@@ -100,7 +100,9 @@ Route::middleware('tokenfromcookie')
             ->group(function () {
                 Route::post('', [OrderController::class, 'store']);
                 Route::get('', [OrderController::class, 'index']);
+                Route::get('canceled', [OrderController::class, 'listCanceled']);
                 Route::get('{id}', [OrderController::class, 'show']);
+                Route::post('{id}/cancel', [OrderController::class, 'cancel']);
             });
         Route::middleware(['throttle:60,1'])
             ->prefix('colors')
