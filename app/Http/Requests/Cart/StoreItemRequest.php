@@ -22,7 +22,9 @@ class StoreItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity' => 'required|integer|min:1',
+            'items' => 'required|array',
+            'items.*.product_variation_id' => 'required|exists:product_variations,id',
+            'items.*.quantity' => 'required|integer|min:1',
         ];
     }
 }

@@ -42,10 +42,10 @@ class CartController extends Controller
         }
     }
 
-    public function addToCart(ProductVariation $productVariation, StoreItemRequest $request)
+    public function addToCart( StoreItemRequest $request)
     {
         try {
-            $cartItem = $this->service->addItem($productVariation, $request->validated());
+            $cartItem = $this->service->addItems( $request->validated());
 
             return ApiResponse::successResponse(
                 ['cart_item' => $cartItem],

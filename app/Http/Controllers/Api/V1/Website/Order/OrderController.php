@@ -18,11 +18,11 @@ class OrderController extends Controller
         try {
             $order = $this->service->store($request->validated());
 
-            return ApiResponse::successResponse(['order' => OrderResource::make($order)], 'Order created successfully', Response::HTTP_CREATED);
+            return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.created'), Response::HTTP_CREATED);
         } catch (\Exception $e) {
             \Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to create order', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('orders.error_create'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -31,11 +31,11 @@ class OrderController extends Controller
         try {
             $order = $this->service->cancel($id);
 
-            return ApiResponse::successResponse(['order' => OrderResource::make($order)], 'Order canceled successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.canceled'), Response::HTTP_OK);
         } catch (\Exception $e) {
             \Log::error('Failed to cancel order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to cancel order', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('orders.error_cancel'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -44,11 +44,11 @@ class OrderController extends Controller
         try {
             $order = $this->service->show($id);
 
-            return ApiResponse::successResponse(['order' => OrderResource::make($order)], 'Order Fetched Successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.shown'), Response::HTTP_OK);
         } catch (\Exception $e) {
             \Log::error('Failed to fetch order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch order', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('orders.error_show'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,12 +56,18 @@ class OrderController extends Controller
     {
         try {
             $orders = $this->service->list();
+            $orders = OrderResource::collection($orders)->response()->getData(true);
 
-            return ApiResponse::successResponse(['orders' => OrderResource::collection($orders)], 'Orders Fetched Successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(
+                ['orders' =>$orders['data'],
+                    'meta' => $orders['meta'],
+                    'links' => $orders['links']],
+                __('orders.fetched'),
+                Response::HTTP_OK);
         } catch (\Exception $e) {
             \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch orders', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,12 +80,11 @@ class OrderController extends Controller
             return ApiResponse::successResponse(
                 ['orders' => $orders['data'],
                     'meta' => $orders['meta'],
-                    'links' => $orders['links']], 'Orders Fetched Successfully', Response::HTTP_OK);
+                    'links' => $orders['links']], __('orders.fetched'), Response::HTTP_OK);
         } catch (\Exception $e) {
             \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch orders', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 }

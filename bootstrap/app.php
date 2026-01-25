@@ -22,12 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'tokenfromcookie' => \App\Http\Middleware\TokenFromCookie::class,
+            'locale' => \App\Http\Middleware\SetLocale::class,
 
         ]);
         $middleware->priority([
             \App\Http\Middleware\TokenFromCookie::class,
             \Illuminate\Auth\Middleware\Authenticate::class,
-        ]);
+            \App\Http\Middleware\SetLocale::class, ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentControl
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('tokenfromcookie')
+Route::middleware(['tokenfromcookie','locale'])
     ->prefix('website/v1')
     ->group(function () {
 
@@ -44,11 +44,10 @@ Route::middleware('tokenfromcookie')
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('cart')
-            ->scopeBindings()
             ->group(function () {
                 Route::get('', [CartController::class, 'getCart']);
                 Route::get('{cart}', [CartController::class, 'getCartItems']);
-                Route::post('items/{productVariation}', [CartController::class, 'addToCart']);
+                Route::post('items', [CartController::class, 'addToCart']);
                 Route::patch('items/{cartProduct}', [CartController::class, 'updateCartItem']);
                 Route::delete('items/{cartProduct}', [CartController::class, 'removeCartItem']);
                 Route::delete('', [CartController::class, 'clearCart']);

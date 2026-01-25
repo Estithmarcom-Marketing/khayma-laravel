@@ -38,8 +38,10 @@ class OrderService
                 $variation->decrement('stock_quantity', $item['quantity']);
             }
             $shipping_cost = $this->getShippingCost($data['address_id']);
-            $promo_code = $this->getPromoCode($data['promo_code']);
-            $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code);
+            if (isset($data['promo_code']) && $data['promo_code'] != null) {
+                $promo_code = $this->getPromoCode($data['promo_code']);
+            }
+            $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code ?? null);
 
             $order = Order::create([
                 'user_id' => auth()->id(),
@@ -150,6 +152,4 @@ class OrderService
         }
 
     }
-
-   
 }

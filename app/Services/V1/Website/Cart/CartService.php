@@ -3,7 +3,6 @@
 namespace App\Services\V1\Website\Cart;
 
 use App\Models\CartProduct;
-use App\Models\ProductVariation;
 
 class CartService
 {
@@ -28,14 +27,11 @@ class CartService
 
     }
 
-    public function addItem(ProductVariation $productVariation, array $data)
+    public function addItems(array $data)
     {
         $user = auth()->user();
 
-        return $user->cart->items()->create([
-            'product_variation_id' => $productVariation->id,
-            'quantity' => $data['quantity'],
-        ]);
+        return $user->cart->items()->createMany($data['items']);
     }
 
     public function updateItem(CartProduct $cartProduct, array $data)

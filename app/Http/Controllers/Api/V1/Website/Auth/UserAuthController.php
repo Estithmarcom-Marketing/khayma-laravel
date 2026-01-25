@@ -35,20 +35,19 @@ class UserAuthController extends Controller
         try {
 
             $data = $this->service->login($request->validated());
-
             $minutes = $request->remember_me ? 60 * 24 * 14 : 60 * 24;
             $cookie = cookie('access_token',
                 $data['token'],
                 $minutes,
                 '/',
                 null,
-                true,
+                false,
                 true,
                 false,
                 'None'
             );
             return ApiResponse::successResponse(
-                ['user' => UserResource::make($data['user']), 'token' => $data['token']],
+                ['user' => UserResource::make($data['user']),'token' => $data['token']],
                 'User logged in successfully',
                 Response::HTTP_OK)
                 ->cookie($cookie);

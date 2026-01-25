@@ -24,11 +24,11 @@ class AddressController extends Controller
 
             return ApiResponse::successResponse([
                 'addresses' => AddressResource::collection($addresses),
-            ], 'Addresses fetched successfully', Response::HTTP_OK);
+            ], __('address.fetched_all'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch addresses', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch addresses', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('address.fetch_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -41,13 +41,15 @@ class AddressController extends Controller
             $address = $this->service->store($user, $validated);
             $address->load('city');
 
-            return ApiResponse::successResponse([
-                'address' => AddressResource::make($address),
-            ], 'Address stored successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(
+                [
+                    'address' => AddressResource::make($address)],
+                __('address.store_success'),
+                Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to store address', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to store address', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('address.store_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -59,11 +61,11 @@ class AddressController extends Controller
 
             return ApiResponse::successResponse([
                 'address' => AddressResource::make($address),
-            ], 'Address updated successfully', Response::HTTP_OK);
+            ], __('address.updated_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to update address', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to update address', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('address.update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,13 +76,13 @@ class AddressController extends Controller
 
             return ApiResponse::successResponse(
                 null,
-                'Address deleted successfully',
+                __('address.delete_success'),
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
             Log::error('Failed to delete address', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to delete address', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('address.delete_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -91,11 +93,11 @@ class AddressController extends Controller
 
             return ApiResponse::successResponse([
                 'address' => AddressResource::make($address),
-            ], 'Address fetched successfully', Response::HTTP_OK);
+            ], __('address.fetched_one'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch address', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch address', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('address.fetch_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
