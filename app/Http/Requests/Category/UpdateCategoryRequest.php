@@ -24,10 +24,10 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'name_en' => 'sometimes|string|max:255',
             'name_ar' => 'sometimes|string|max:255',
-            'description_en' => 'sometimes|nullable|text',
-            'description_ar' => 'sometimes|nullable|text',
-            'slug_en' => 'sometimes|string|max:255|unique:categories,slug_en,'.$this->route('category')->slug_en,
-            'slug_ar' => 'sometimes|string|max:255|unique:categories,slug_ar,'.$this->route('category')->slug_ar,
+            'description_en' => 'sometimes|nullable',
+            'description_ar' => 'sometimes|nullable',
+            'slug_en' => 'sometimes|string|max:255|unique:categories,slug_en,'.$this->route('category')->id,
+            'slug_ar' => 'sometimes|string|max:255|unique:categories,slug_ar,'.$this->route('category')->id,
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
         ];
     }
