@@ -33,9 +33,9 @@ class ProductVariationSeeder extends Seeder
                     'price' => rand(100, 1000),
                     'sku' => 'SKU-'.strtoupper(substr($product->slug_en, 0, 3)).'-'.$i.rand(1000, 9999),
                     'is_active' => true,
-                    'offer' => null,
-                    'offer_started_date' => null,
-                    'offer_expired_date' => null,
+                    'offer' => rand(0, 60),
+                    'offer_started_date' => $now->addDays(rand(1, 30)),
+                    'offer_expired_date' => $now->addWeeks(rand(2, 8)),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);
