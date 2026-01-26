@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Website\Order;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\StoreOrderRequest;
+use App\Http\Resources\Cart\CartItemResource;
 use App\Http\Resources\Order\OrderResource;
 use App\Services\V1\Website\Order\OrderService;
 use App\Traits\Response\ApiResponse;
@@ -59,7 +60,7 @@ class OrderController extends Controller
             $orders = OrderResource::collection($orders)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['orders' =>$orders['data'],
+                ['orders' => $orders['data'],
                     'meta' => $orders['meta'],
                     'links' => $orders['links']],
                 __('orders.fetched'),
@@ -85,6 +86,18 @@ class OrderController extends Controller
             \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function reorder($id)
+    {
+        try {
+            $items = $this->service->reorder($id);
+            return ApiResponse::successResponse(['items' => CartItemResource::collection($items)], __('orders.reordered'), Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse(__('orders.error_reorder'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

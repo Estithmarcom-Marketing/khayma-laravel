@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Website\City;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\City\CityResource;
-use App\Services\Website\City\CityService;
+use App\Services\V1\Website\City\CityService;
 use App\Traits\Response\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 

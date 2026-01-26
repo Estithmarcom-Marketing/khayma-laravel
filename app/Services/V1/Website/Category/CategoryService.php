@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\V1\Website;
+namespace App\Services\V1\Website\Category;
 
 use App\Models\Category;
 

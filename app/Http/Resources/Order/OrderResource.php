@@ -28,6 +28,8 @@ class OrderResource extends JsonResource
             'address' => new AddressResource($this->whenLoaded('address')),
             'delivery_method' => new DeliveryMethodResource($this->whenLoaded('deliveryMethod')),
             'created_at' => $this->created_at,
+            'delivered_at' => $this->delivered_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Website\Category;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Category\CategoryResource;
-use App\Services\V1\Website\CategoryService;
+use App\Services\V1\Website\Category\CategoryService;
 use App\Traits\Response\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 

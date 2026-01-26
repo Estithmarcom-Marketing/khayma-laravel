@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Website\City;
+namespace App\Services\V1\Website\City;
 
 use App\Models\City;
 

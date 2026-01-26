@@ -22,6 +22,7 @@ class CartService
             'productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
             'productVariation.color:id,name_en,name_ar,code',
             'productVariation.size:id,name_en,name_ar',
+            'productVariation:id,product_id,color_id,size_id,sku,price,stock_quantity,is_active,offer,offer_expired_date,offer_started_date',
             'productVariation.properties:id,name_en,name_ar',
         ]);
 

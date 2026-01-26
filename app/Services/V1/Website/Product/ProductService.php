@@ -15,6 +15,7 @@ class ProductService
         $query = Product::published()
             ->withAvg('reviews', 'rating')
             ->withMin('productVariations', 'price')
+            ->withMax('productVariations', 'offer')
             ->withCount('reviews');
         $this->filterByCategory($query, $filters);
         $this->filterByPrice($query, $filters);
@@ -149,7 +150,7 @@ class ProductService
             'category:id,name_ar,name_en',
             'brand:id,name_ar,name_en',
             'productVariations' => function ($q) {
-                $q->select('id', 'product_id', 'sku', 'price', 'stock_quantity', 'is_active', 'offer', 'offer_started_date', 'offer_expired_date', 'color_id', 'size_id');
+                $q->select('id', 'product_id', 'sku', 'price','stock_quantity','is_active', 'offer', 'offer_started_date', 'offer_expired_date', 'color_id', 'size_id');
             },
             'productVariations.color:id,name_ar,name_en,code',
             'productVariations.size:id,name_ar,name_en',
@@ -164,6 +165,7 @@ class ProductService
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
             ->withMin('productVariations', 'price')
+            ->withMax('productVariations', 'offer')
             ->firstOrFail();
 
         return $product;

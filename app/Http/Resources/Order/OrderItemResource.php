@@ -18,6 +18,7 @@ class OrderItemResource extends JsonResource
 
             'quantity' => $this->quantity,
             'price' => $this->productVariation->price,
+            'product_variation_id' => $this->productVariation->id,
             'product' => [
                 'name_en' => $this->productVariation->product->name_en,
                 'name_ar' => $this->productVariation->product->name_ar,

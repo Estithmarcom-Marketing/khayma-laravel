@@ -8,10 +8,13 @@ use App\Models\CityShipment;
 use App\Models\Order;
 use App\Models\ProductVariation;
 use App\Models\PromoCode;
+use App\Services\V1\Website\Cart\CartService;
 use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
+    public function __construct(public CartService $cartService) {}
+
     public function store(array $data)
     {
         return DB::transaction(function () use ($data) {
@@ -150,6 +153,22 @@ class OrderService
         } else {
             throw new \Exception('Order cannot be canceled');
         }
+
+    }
+
+    public function reorder($id)
+    {
+        $order = Order::with('items:id,order_id,product_variation_id,quantity')->findOrFail($id);
+        $items = $order->items->map(function ($item) {
+            return [
+                'product_variation_id' => $item->product_variation_id,
+                'quantity' => $item->quantity,
+            ];
+        });
+
+        return $this->cartService->addItems([
+            'items' => $items->toArray(),
+        ]);
 
     }
 }
