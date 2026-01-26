@@ -3,6 +3,7 @@
 namespace App\Services\V1\Website\Order;
 
 use App\Enums\Orders\OrderStatusEnum;
+use App\Events\Order\OrderPlacement;
 use App\Models\Address;
 use App\Models\CityShipment;
 use App\Models\Order;
@@ -17,7 +18,7 @@ class OrderService
 
     public function store(array $data)
     {
-        return DB::transaction(function () use ($data) {
+        $result = DB::transaction(function () use ($data) {
 
             $subtotal = 0;
             $user = auth()->user();
@@ -74,6 +75,9 @@ class OrderService
                 'deliveryMethod:id,name_ar,name_en',
             ]);
         });
+        event(new OrderPlacement($result));
+
+        return $result;
     }
 
     private function getShippingCost($address_id)

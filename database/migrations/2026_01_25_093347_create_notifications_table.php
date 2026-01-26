@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('body');
             $table->string('type');
             $table->boolean('is_read')->default(false);
-            $table->nullableMorphs('notifiable');
+            $table->nullableUlidMorphs('notifiable');
             $table->timestamps();
             $table->index(['user_id', 'is_read']);
         });

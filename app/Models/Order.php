@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Enums\Orders\OrderStatusEnum;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    use HasUuids;
+    use HasUlids;
 
     protected $keyType = 'string';
 
