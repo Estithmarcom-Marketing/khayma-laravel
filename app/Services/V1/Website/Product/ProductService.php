@@ -10,21 +10,34 @@ class ProductService
 {
     public function filter(array $filters)
     {
+        $limit = $filters['limit'] ?? 12;
+        $sortBy = $filters['sort_by'] ?? 'created_at';
+        $orderBy = $filters['order_by'] ?? 'desc';
+
+        $sortMap = [
+            'created_at' => 'products.created_at',
+            'min_price' => 'product_variations_min_price',
+        ];
+
         $user = auth()->user();
         $userId = $user?->id;
         $cartId = $user?->cart?->id;
+
         $query = Product::published()
             ->withAvg('reviews', 'rating')
             ->withMin('productVariations', 'price')
             ->withMax('productVariations', 'offer')
             ->withCount('reviews');
+
         $this->filterByCategory($query, $filters);
-        $this->filterByPrice($query, $filters);
         $this->filterByBrand($query, $filters);
-        $this->filterByColor($query, $filters);
         $this->filterByRating($query, $filters);
-        $this->filterByOffer($query, $filters);
         $this->filterBySearch($query, $filters);
+        $this->filterByBestSellers($query, $filters);
+
+        $this->filterByPrice($query, $filters);
+        $this->filterByColor($query, $filters);
+        $this->filterByOffer($query, $filters);
 
         return $query
             ->withExists([
@@ -40,7 +53,9 @@ class ProductService
                 'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk',
             ])
-            ->paginate(12);
+            ->orderBy($sortMap[$sortBy] ?? 'created_at',
+                $orderBy)
+            ->paginate($limit);
     }
 
     private function filterByCategory($query, array $filters): void
@@ -140,6 +155,15 @@ class ProductService
                 ->orWhere('slug_en', 'LIKE', "%{$term}%")
                 ->orWhere('slug_ar', 'LIKE', "%{$term}%");
         });
+    }
+
+    private function filterByBestSellers($query, array $filters): void
+    {
+        if (empty($filters['best_sellers'])) {
+            return;
+        }
+        $query->withCount('orders')
+            ->orderByDesc('orders_count');
     }
 
     public function showVariations($identifier)
