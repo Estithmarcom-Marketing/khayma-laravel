@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Website\Address\AddressController;
 use App\Http\Controllers\Api\V1\Website\Auth\UserAuthController;
+use App\Http\Controllers\Api\V1\Website\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Website\Cart\CartController;
 use App\Http\Controllers\Api\V1\Website\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Website\City\CityController;
@@ -93,7 +94,8 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->prefix('products')
             ->group(function () {
                 Route::get('', [ProductController::class, 'filter']);
-                Route::get('{id}', [ProductController::class, 'show']);
+                Route::get('{identifier}', [ProductController::class, 'show']);
+                Route::get('variations/{identifier}', [ProductController::class, 'showVariations']);
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('orders')
@@ -131,5 +133,11 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::get('', [CityController::class, 'index']);
                 Route::get('{id}', [CityController::class, 'show']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('brands')
+            ->group(function () {
+                Route::get('', [BrandController::class, 'index']);
+                Route::get('{id}', [BrandController::class, 'show']);
             });
     });

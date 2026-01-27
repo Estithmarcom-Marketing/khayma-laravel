@@ -4,6 +4,7 @@ namespace App\Services\V1\Website\Product;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariation;
 
 class ProductService
 {
@@ -39,7 +40,7 @@ class ProductService
                 'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk',
             ])
-            ->paginate(10);
+            ->paginate(12);
     }
 
     private function filterByCategory($query, array $filters): void
@@ -141,27 +142,39 @@ class ProductService
         });
     }
 
-    public function show($id)
+    public function showVariations($identifier)
     {
         $user = auth()->user();
         $userId = $user?->id;
         $cartId = $user?->cart?->id;
-        $product = Product::where('id', $id)->with([
-            'category:id,name_ar,name_en',
-            'brand:id,name_ar,name_en',
-            'productVariations' => function ($q) {
-                $q->select('id', 'product_id', 'sku', 'price','stock_quantity','is_active', 'offer', 'offer_started_date', 'offer_expired_date', 'color_id', 'size_id');
-            },
-            'productVariations.color:id,name_ar,name_en,code',
-            'productVariations.size:id,name_ar,name_en',
-            'productVariations.properties:id,name_ar,name_en',
-            'media:id,model_id,name,file_name,collection_name,disk',
-        ])->withExists([
-            'favourites as is_favourite' => fn ($q) => $q->where('user_id', $userId),
-            'cartItems as is_in_cart' => fn ($q) => $cartId
-            ? $q->where('cart_id', $cartId)
-            : $q->whereRaw('0 = 1'),
-        ])
+        $product = ProductVariation::where('product_id', $identifier)
+            ->with([
+                'color:id,name_ar,name_en,code',
+                'size:id,name_ar,name_en',
+                'properties:id,name_ar,name_en',
+            ])->get();
+
+        return $product;
+    }
+
+    public function showProduct($identifier)
+    {
+        $user = auth()->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+        $product = Product::where('id', $identifier)
+            ->orwhere('slug_en', $identifier)
+            ->orwhere('slug_ar', $identifier)
+            ->with([
+                'category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ])->withExists([
+                'favourites as is_favourite' => fn ($q) => $q->where('user_id', $userId),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+                ? $q->where('cart_id', $cartId)
+                : $q->whereRaw('0 = 1'),
+            ])
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
             ->withMin('productVariations', 'price')

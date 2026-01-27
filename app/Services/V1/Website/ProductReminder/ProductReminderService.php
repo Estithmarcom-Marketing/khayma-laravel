@@ -10,13 +10,15 @@ class ProductReminderService
     public function list()
     {
         $user = auth()->user();
-        $productReminders = $user->productReminders()->with(
-            ['productVariation',
-                'productVariation.color:id,name_en,name_ar,code',
-                'productVariation.size:id,name_en,name_ar',
-                'productVariation.properties:id,name_en,name_ar',
-                'productVariation.product:id,name_en,name_ar,slug_en,slug_ar,brand_id,category_id,description_en,description_ar',
-                'productVariation.product.media:id,model_id,name,file_name,collection_name,disk'])
+        $productReminders = $user->productReminders()
+            ->where('is_notified', false)
+            ->with(
+                ['productVariation',
+                    'productVariation.color:id,name_en,name_ar,code',
+                    'productVariation.size:id,name_en,name_ar',
+                    'productVariation.properties:id,name_en,name_ar',
+                    'productVariation.product:id,name_en,name_ar,slug_en,slug_ar,brand_id,category_id,description_en,description_ar',
+                    'productVariation.product.media:id,model_id,name,file_name,collection_name,disk'])
             ->paginate(10);
 
         return $productReminders;
@@ -26,9 +28,13 @@ class ProductReminderService
     {
         $user = auth()->user();
 
-        return $user->productReminders()->create([
-            'product_variation_id' => $productvariation->id,
-        ]);
+        if ($productvariation->stock_quantity == 0) {
+            return $user->productReminders()->create([
+                'product_variation_id' => $productvariation->id,
+            ]);
+        }
+
+        return false;
     }
 
     public function delete(ProductReminder $productReminder)

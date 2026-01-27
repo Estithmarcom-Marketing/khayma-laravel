@@ -26,7 +26,8 @@ class ProductResource extends JsonResource
             'is_published' => $this->when(isset($this->is_published), fn () => (bool) $this->is_published),
             'is_favorite' => $this->when(isset($this->is_favorite), fn () => (bool) $this->is_favorite),
             'is_in_cart' => $this->when(isset($this->is_in_cart), fn () => (bool) $this->is_in_cart),
-            'price' => $this->when(isset($this->product_variations_min_price), fn () => (float) $this->product_variations_min_price),
+            'min_price' => $this->when(isset($this->product_variations_min_price), fn () => (float) $this->product_variations_min_price),
+            'max_offer' => $this->when(isset($this->product_variations_max_offer), fn () => (float) $this->product_variations_max_offer),
 
             'category' => $this->whenLoaded('category', function () {
                 return [

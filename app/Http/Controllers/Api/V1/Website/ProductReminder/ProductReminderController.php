@@ -52,6 +52,9 @@ class ProductReminderController extends Controller
     {
         try {
             $productReminder = $this->service->store($productVariation);
+            if (! $productReminder) {
+                return ApiResponse::errorResponse('Product is in stock', Response::HTTP_BAD_REQUEST);
+            }
 
             return ApiResponse::successResponse([
                 'product_reminder' => ProductRemindersResource::make($productReminder),

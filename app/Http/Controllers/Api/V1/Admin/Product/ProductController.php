@@ -129,7 +129,7 @@ class ProductController extends Controller
     public function updateProductVariation(Product $product, ProductVariation $productVariation, UpdateProductVaritionsRequest $request)
     {
         try {
-            $variation = $this->productVariantService->updateVariation($product, $productVariation, $request->validated());
+            $variation = $this->productVariantService->updateVariation($productVariation, $request->validated());
 
             return ApiResponse::successResponse(['product_variation' => ProductVariationResource::make($variation)],
                 'Product variation updated successfully',

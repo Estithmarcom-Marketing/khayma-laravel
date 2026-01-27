@@ -2,12 +2,12 @@
 
 namespace App\Services\V1\Admin\Product;
 
+use App\Events\Product\ProductStockUpdated;
 use App\Models\Product;
 use App\Models\ProductVariation;
 
 class ProductVariantService
 {
-    
     public function storeVariations(Product $product, array $data)
     {
         return $product->productVariations()->create([
@@ -17,27 +17,37 @@ class ProductVariantService
             'price' => $data['price'],
             'stock_quantity' => $data['stock_quantity'],
             'is_active' => $data['is_active'],
-            'offer' => $data['offer'],
-            'offer_expired_date' => $data['offer_expired_date'],
-            'offer_started_date' => $data['offer_started_date'],
+            'offer' => $data['offer'] ?? null,
+            'offer_expired_date' => $data['offer_expired_date'] ?? null,
+            'offer_started_date' => $data['offer_started_date'] ?? null,
         ]);
     }
 
-    public function updateVariation(Product $product, ProductVariation $productVariation, array $data)
+    public function updateVariation(ProductVariation $productVariation, array $data)
     {
+        $oldStock = $productVariation->stock_quantity;
+
+        $newStock = isset($data['stock_quantity'])
+        ? $oldStock + $data['stock_quantity']
+        : $oldStock;
+
         $productVariation->update([
             'color_id' => $data['color_id'] ?? $productVariation->color_id,
             'size_id' => $data['size_id'] ?? $productVariation->size_id,
             'sku' => $data['sku'] ?? $productVariation->sku,
             'price' => $data['price'] ?? $productVariation->price,
-            'stock_quantity' => $data['stock_quantity'] ?? $productVariation->stock_quantity,
+            'stock_quantity' => $newStock,
             'is_active' => $data['is_active'] ?? $productVariation->is_active,
             'offer' => $data['offer'] ?? $productVariation->offer,
             'offer_expired_date' => $data['offer_expired_date'] ?? $productVariation->offer_expired_date,
             'offer_started_date' => $data['offer_started_date'] ?? $productVariation->offer_started_date,
         ]);
 
-        return $productVariation->load('color', 'size')->refresh();
+        if ($oldStock == 0 && $newStock > 0) {
+            event(new ProductStockUpdated($productVariation->refresh()));
+        }
+
+        return $productVariation->load('color', 'size');
     }
 
     public function deleteVariation(Product $product, ProductVariation $productVariation)

@@ -31,7 +31,9 @@ class CartService
     public function addItems(array $data)
     {
         $user = auth()->user();
-
+        if (!$user->cart) {
+            $user->cart()->create([]);
+        }
         return $user->cart->items()->createMany($data['items']);
     }
 
