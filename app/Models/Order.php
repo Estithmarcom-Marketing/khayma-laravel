@@ -5,10 +5,12 @@ namespace App\Models;
 use App\Enums\Orders\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Order extends Model
+class Order extends Model implements HasMedia
 {
-    use HasUlids;
+    use HasUlids ,InteractsWithMedia;
 
     protected $keyType = 'string';
 

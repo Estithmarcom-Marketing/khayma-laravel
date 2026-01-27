@@ -6,13 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Cart\CartItemResource;
 use App\Http\Resources\Order\OrderResource;
+use App\Models\Order;
+use App\Services\V1\Website\Order\OrderReceiptPdfService;
 use App\Services\V1\Website\Order\OrderService;
 use App\Traits\Response\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
-    public function __construct(protected OrderService $service) {}
+    public function __construct(protected OrderService $service, protected OrderReceiptPdfService $orderReceiptPdfService) {}
 
     public function store(StoreOrderRequest $request)
     {
@@ -93,11 +95,32 @@ class OrderController extends Controller
     {
         try {
             $items = $this->service->reorder($id);
+
             return ApiResponse::successResponse(['items' => CartItemResource::collection($items)], __('orders.reordered'), Response::HTTP_CREATED);
         } catch (\Exception $e) {
             \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_reorder'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function receipt(Order $order)
+    {
+        try {
+            
+            $url = $this->orderReceiptPdfService->generate($order);
+
+            return ApiResponse::successResponse([
+                'receipt' => $url,
+            ], __('orders.fetched'), Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to fetch receipt', [
+                'error' => $e->getMessage(),
+                'method' => __METHOD__,
+            ]);
+
+            return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
