@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
+use App\Http\Controllers\Api\V1\Website\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['tokenfromcookie', 'locale'])
@@ -139,5 +140,11 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::get('', [BrandController::class, 'index']);
                 Route::get('{id}', [BrandController::class, 'show']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('sizes')
+            ->group(function () {
+                Route::get('', [SizeController::class, 'index']);
+                Route::get('{id}', [SizeController::class, 'show']);
             });
     });
