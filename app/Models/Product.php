@@ -46,17 +46,18 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(OrderProduct::class);
     }
+
     public function cartItems(): HasManyThrough
-{
-    return $this->hasManyThrough(
-        CartProduct::class,
-        ProductVariation::class,
-        'product_id',            
-        'product_variation_id', 
-        'id',               
-        'id'                     
-    );
-}
+    {
+        return $this->hasManyThrough(
+            CartProduct::class,
+            ProductVariation::class,
+            'product_id',
+            'product_variation_id',
+            'id',
+            'id'
+        );
+    }
 
     public function orders()
     {
@@ -121,5 +122,23 @@ class Product extends Model implements HasMedia
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
+    }
+
+    public function getPriceAttribute()
+    {
+        if (! $this->relationLoaded('productVariations')) {
+            return null;
+        }
+
+        return $this->productVariations->first()?->price;
+    }
+
+    public function getOfferAttribute()
+    {
+        if (! $this->relationLoaded('productVariations')) {
+            return null;
+        }
+
+        return $this->productVariations->first()?->offer;
     }
 }

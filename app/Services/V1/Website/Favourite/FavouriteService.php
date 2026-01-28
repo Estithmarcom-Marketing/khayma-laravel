@@ -11,7 +11,7 @@ class FavouriteService
     public function list()
     {
         $user = auth()->user();
-        $favourites = $user->faviourites()->with(['product:id,name_ar,name_en,slug_ar,slug_en,description_ar,description_en,category_id,brand_id',
+        $favourites = $user->favourites()->with(['product:id,name_ar,name_en,slug_ar,slug_en,description_ar,description_en,category_id,brand_id',
             'product.productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
             'product.media:id,model_id,name,file_name,collection_name,disk'])
             ->paginate(10);
@@ -31,7 +31,7 @@ class FavouriteService
     {
         $user = auth()->user();
 
-        $favourite = $user->faviourites()->create([
+        $favourite = $user->favourites()->create([
             'product_id' => $product->id, ]);
 
         return $favourite;
@@ -41,7 +41,7 @@ class FavouriteService
     {
         return DB::transaction(function () use ($favourite) {
             $user = auth()->user();
-            $favourite = $user->faviourites()->where('product_id', $favourite->product_id)->first();
+            $favourite = $user->favourites()->where('product_id', $favourite->product_id)->first();
             if (! $favourite) {
                 return false;
             }

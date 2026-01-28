@@ -96,6 +96,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::get('', [ProductController::class, 'filter']);
                 Route::get('{identifier}', [ProductController::class, 'show']);
+                Route::get('related/{identifier}', [ProductController::class, 'getRelatedProducts'])->middleware(['auth:sanctum']);
                 Route::get('variations/{identifier}', [ProductController::class, 'showVariations']);
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])

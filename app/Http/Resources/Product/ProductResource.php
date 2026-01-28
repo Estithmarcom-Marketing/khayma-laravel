@@ -24,12 +24,11 @@ class ProductResource extends JsonResource
             'slug_ar' => $this->slug_ar,
             'slug_en' => $this->slug_en,
             'is_published' => $this->when(isset($this->is_published), fn () => (bool) $this->is_published),
-            'is_favorite' => $this->when(isset($this->is_favorite), fn () => (bool) $this->is_favorite),
+            'is_favourite' => $this->when(isset($this->is_favourite), fn () => (bool) $this->is_favourite),
             'is_in_cart' => $this->when(isset($this->is_in_cart), fn () => (bool) $this->is_in_cart),
-            'min_price' => $this->when(isset($this->product_variations_min_price), fn () => (float) $this->product_variations_min_price),
-            'max_offer' => $this->when(isset($this->product_variations_max_offer), fn () => (float) $this->product_variations_max_offer),
             'order_count' => $this->when(isset($this->orders_count), fn () => (int) $this->orders_count),
-
+            'price' => $this->when(isset($this->price), fn () => (float) $this->price),
+            'offer' => $this->when(isset($this->offer), fn () => (float) $this->offer),
             'category' => $this->whenLoaded('category', function () {
                 return [
                     'id' => $this->category->id,

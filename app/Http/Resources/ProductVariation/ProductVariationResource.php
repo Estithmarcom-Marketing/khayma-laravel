@@ -19,10 +19,10 @@ class ProductVariationResource extends JsonResource
             'id' => $this->id,
             'product_id' => $this->product_id,
             'sku' => $this->sku,
-            'price' => $this->price,
             'stock_quantity' => $this->stock_quantity,
             'is_active' => $this->is_active,
-            'offer' => $this->offer,
+            'price' => (float) $this->price,
+            'offer' => (float) $this->offer,
             'offer_started_date' => $this->offer_started_date,
             'offer_expired_date' => $this->offer_expired_date,
             'color' => $this->whenLoaded('color', function () {

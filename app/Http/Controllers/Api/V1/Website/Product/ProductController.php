@@ -39,15 +39,16 @@ class ProductController extends Controller
     public function showVariations($identifier)
     {
         try {
-            $productVariation = $this->service->showVariations($identifier);
+            $variations = $this->service->showVariations($identifier);
 
-            return ApiResponse::successResponse(['variations' => ProductVariationResource::collection($productVariation)], 'Product Variation Fetched Successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['variations' => ProductVariationResource::collection($variations)], 'Product Variation Fetched Successfully', Response::HTTP_OK);
         } catch (Exception $e) {
             Log::error('Failed To Fetch Product Variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed To Fetch Product Variation', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
     public function show($identifier)
     {
         try {
@@ -61,4 +62,16 @@ class ProductController extends Controller
         }
     }
 
+    public function getRelatedProducts($identifier)
+    {
+        try {
+            $products = $this->service->getRelatedProducts($identifier);
+
+            return ApiResponse::successResponse(['products' => ProductResource::collection($products)], 'Related Products Fetched Successfully', Response::HTTP_OK);
+        } catch (Exception $e) {
+            Log::error('Failed To Fetch Related Products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed To Fetch Related Products', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

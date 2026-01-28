@@ -25,8 +25,7 @@ class ProductService
 
         $query = Product::published()
             ->withAvg('reviews', 'rating')
-            ->withMin('productVariations', 'price')
-            ->withMax('productVariations', 'offer')
+            ->withCount('orders')
             ->withCount('reviews');
 
         $this->filterByCategory($query, $filters);
@@ -41,7 +40,7 @@ class ProductService
 
         return $query
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $q->where('user_id', $userId),
+                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
             ? $q->where('cart_id', $cartId)
             : $q->whereRaw('0 = 1'),
@@ -49,7 +48,7 @@ class ProductService
             ->with([
                 'brand:id,name_ar,name_en',
                 'category:id,name_ar,name_en',
-                'productVariations.color',
+                'productVariations.color:id,code',
                 'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk',
             ])
@@ -168,17 +167,16 @@ class ProductService
 
     public function showVariations($identifier)
     {
-        $user = auth()->user();
-        $userId = $user?->id;
-        $cartId = $user?->cart?->id;
-        $product = ProductVariation::where('product_id', $identifier)
+
+        $variations = ProductVariation::where('product_id', $identifier)
+            ->active()
             ->with([
                 'color:id,name_ar,name_en,code',
                 'size:id,name_ar,name_en',
                 'properties:id,name_ar,name_en',
             ])->get();
 
-        return $product;
+        return $variations;
     }
 
     public function showProduct($identifier)
@@ -189,6 +187,7 @@ class ProductService
         $product = Product::where('id', $identifier)
             ->orwhere('slug_en', $identifier)
             ->orwhere('slug_ar', $identifier)
+            ->published()
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
@@ -201,10 +200,50 @@ class ProductService
             ])
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
-            ->withMin('productVariations', 'price')
-            ->withMax('productVariations', 'offer')
+
             ->firstOrFail();
 
         return $product;
+    }
+
+    public function getRelatedProducts($identifier)
+    {
+        $product = Product::where('id', $identifier)
+            ->orWhere('slug_en', $identifier)
+            ->orWhere('slug_ar', $identifier)
+            ->first();
+
+        if (! $product) {
+            return collect();
+        }
+        $categoryIds = Category::where('id', $product->category_id)
+            ->orWhere('parent_id', $product->category_id)
+            ->pluck('id')
+            ->toArray();
+
+        $relatedProducts = Product::where(function ($query) use ($categoryIds) {
+            $query->whereIn('category_id', $categoryIds);
+        })
+            ->where('id', '!=', $product->id)
+            ->published()
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->withExists([
+                'favourites as is_favourite' => function ($q) {
+                    $q->where('user_id', auth()->user()->id);
+                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+            ])
+            ->with([
+                'media:id,model_id,name,file_name,collection_name,disk',
+                'productVariations' => function ($query) {
+                    $query->select('id', 'product_id', 'price', 'offer')
+                        ->orderBy('price', 'asc')
+                        ->limit(1);
+                },
+            ])
+            ->limit(5)
+            ->get();
+
+        return $relatedProducts;
     }
 }
