@@ -36,6 +36,11 @@ class HomeService
     {
         return Product::query()
             ->published()
+             ->withExists([
+                'favourites as is_favourite' => function ($q) {
+                    $q->where('user_id', auth()->user()->id);
+                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+            ])
             ->with(['category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
                 'productVariations' => function ($query) {
@@ -61,6 +66,11 @@ class HomeService
                 $q->whereHas('reviews')
                     ->orWhereHas('favourites');
             })
+             ->withExists([
+                'favourites as is_favourite' => function ($q) {
+                    $q->where('user_id', auth()->user()->id);
+                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+            ])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
@@ -81,6 +91,11 @@ class HomeService
             ->published()
             ->withCount(['orders', 'reviews'])
             ->withAvg('reviews', 'rating')
+             ->withExists([
+                'favourites as is_favourite' => function ($q) {
+                    $q->where('user_id', auth()->user()->id);
+                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+            ])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
