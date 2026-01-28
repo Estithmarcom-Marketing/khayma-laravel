@@ -38,15 +38,14 @@ class HomeService
             ->published()
             ->with(['category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
-                'productVariations.color:id,name_ar,name_en,code',
-                'productVariations.size:id,name_ar,name_en',
-                'productVariations.properties:id,name_ar,name_en',
+                'productVariations' => function ($query) {
+                    $query->select('id', 'product_id', 'price', 'offer')
+                        ->orderBy('price', 'asc')
+                        ->limit(1);
+                },
                 'media:id,model_id,name,file_name,collection_name,disk'])
-            ->withCount('reviews')
+            ->withCount(['reviews', 'favourites', 'orders'])
             ->withAvg('reviews', 'rating')
-            ->withMax('productVariations', 'offer')
-            ->withMin('productVariations', 'price')
             ->latest()
             ->paginate(10);
     }
@@ -55,10 +54,9 @@ class HomeService
     {
         return Product::query()
             ->published()
-            ->withCount(['reviews', 'favourites'])
+            ->withCount(['reviews', 'favourites', 'orders'])
             ->withAvg('reviews', 'rating')
-            ->withMax('productVariations', 'offer')
-            ->withMin('productVariations', 'price')
+
             ->where(function ($q) {
                 $q->whereHas('reviews')
                     ->orWhereHas('favourites');
@@ -66,8 +64,11 @@ class HomeService
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
-                'media:id,model_id,name,file_name,collection_name,disk',
+                'productVariations' => function ($query) {
+                    $query->select('id', 'product_id', 'price', 'offer')
+                        ->orderBy('price', 'asc')
+                        ->limit(1);
+                }, 'media:id,model_id,name,file_name,collection_name,disk',
             ])->limit(1)
             ->orderByDesc('reviews_count')
             ->orderByDesc('favourites_count')
@@ -80,12 +81,14 @@ class HomeService
             ->published()
             ->withCount(['orders', 'reviews'])
             ->withAvg('reviews', 'rating')
-            ->withMax('productVariations', 'offer')
-            ->withMin('productVariations', 'price')
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
+                'productVariations' => function ($query) {
+                    $query->select('id', 'product_id', 'price', 'offer')
+                        ->orderBy('price', 'asc')
+                        ->limit(1);
+                },
                 'media:id,model_id,name,file_name,collection_name,disk',
             ])
             ->orderByDesc('orders_count')
