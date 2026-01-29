@@ -208,6 +208,9 @@ class ProductService
 
     public function getRelatedProducts($identifier)
     {
+        $user = auth()->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
         $product = Product::where('id', $identifier)
             ->orWhere('slug_en', $identifier)
             ->orWhere('slug_ar', $identifier)
@@ -229,9 +232,10 @@ class ProductService
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
             ->withExists([
-                'favourites as is_favourite' => function ($q) {
-                    $q->where('user_id', auth()->user()->id);
-                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+            ? $q->where('cart_id', $cartId)
+            : $q->whereRaw('0 = 1'),
             ])
             ->with([
                 'media:id,model_id,name,file_name,collection_name,disk',

@@ -58,7 +58,7 @@ class ReviewController extends Controller
     public function getStatistics($id)
     {
         try {
-        $statistics = $this->service->getStatistics($id);
+            $statistics = $this->service->getStatistics($id);
 
             return ApiResponse::successResponse(['statistics' => $statistics], 'Statistics fetched successfully', Response::HTTP_OK);
         } catch (\Exception $e) {

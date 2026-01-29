@@ -34,12 +34,17 @@ class HomeService
 
     public function getLatestProducts()
     {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
         return Product::query()
             ->published()
-             ->withExists([
-                'favourites as is_favourite' => function ($q) {
-                    $q->where('user_id', auth()->user()->id);
-                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+              ? $q->where('cart_id', $cartId)
+              : $q->whereRaw('0 = 1'),
             ])
             ->with(['category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
@@ -57,6 +62,10 @@ class HomeService
 
     public function getCommonProducts()
     {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
         return Product::query()
             ->published()
             ->withCount(['reviews', 'favourites', 'orders'])
@@ -66,10 +75,11 @@ class HomeService
                 $q->whereHas('reviews')
                     ->orWhereHas('favourites');
             })
-             ->withExists([
-                'favourites as is_favourite' => function ($q) {
-                    $q->where('user_id', auth()->user()->id);
-                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+              ? $q->where('cart_id', $cartId)
+              : $q->whereRaw('0 = 1'),
             ])
             ->with([
                 'category:id,name_ar,name_en',
@@ -87,14 +97,19 @@ class HomeService
 
     public function getMostOrderdProducts()
     {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
         return Product::query()
             ->published()
             ->withCount(['orders', 'reviews'])
             ->withAvg('reviews', 'rating')
-             ->withExists([
-                'favourites as is_favourite' => function ($q) {
-                    $q->where('user_id', auth()->user()->id);
-                }, 'cartItems as is_in_cart' => fn ($q) => $q->where('cart_id', auth()->user()->cart?->id),
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+              ? $q->where('cart_id', $cartId)
+              : $q->whereRaw('0 = 1'),
             ])
             ->with([
                 'category:id,name_ar,name_en',

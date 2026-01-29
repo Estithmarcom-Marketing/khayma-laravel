@@ -59,7 +59,10 @@ class UserAuthService
         return DB::transaction(function () use ($phone, $otp) {
             $user = User::firstOrCreate(
                 ['phone' => $phone],
-                ['name' => 'User '.substr($phone, -4)],
+                [
+                    'name' => 'User '.substr($phone, -4),
+                    'is_guest' => false,
+                ]
             );
 
             $otp->is_used = true;
