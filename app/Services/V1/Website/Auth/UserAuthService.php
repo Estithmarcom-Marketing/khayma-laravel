@@ -6,7 +6,6 @@ use App\Models\OtpCode;
 use App\Models\User;
 use DB;
 use Hash;
-use Hypersender\Hypersender;
 use Log;
 
 class UserAuthService
@@ -21,18 +20,16 @@ class UserAuthService
         return DB::transaction(function () use ($data) {
             // $otp = $this->generateOtp();
             $otp = 1234;
-
+            $phoneNumber = str_replace(['+', ' ', '-'], '', $data['phone']);
             OtpCode::create([
-                'phone' => $data['phone'],
+                'phone' => $phoneNumber,
                 'otp_code' => Hash::make($otp),
                 'expires_at' => now()->addMinutes(5),
                 'is_used' => false,
             ]);
-            $phoneNumber = ltrim($data['phone'], '+');
+
             try {
-                Hypersender::whatsapp()
-                    ->safeSendTextMessage($phoneNumber.'@c.us',
-                        "Your OTP is: $otp. It will expire in 5 minutes.");
+                // send sms
                 Log::info('OTP sent via WhatsApp', ['phone' => $data['phone'], 'otp' => $otp, 'method' => __METHOD__]);  // temporarily for testing
             } catch (\Exception $e) {
                 Log::error('Failed to send OTP via WhatsApp', ['phone' => $data['phone'], 'error' => $e->getMessage(), 'method' => __METHOD__]);
@@ -44,7 +41,8 @@ class UserAuthService
 
     public function login(array $data)
     {
-        $phone = $data['phone'];
+        $phone = str_replace(['+', ' ', '-'], '', $data['phone']);
+
         $otpCode = $data['otp_code'];
 
         $otp = OtpCode::where('phone', $phone)

@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Mahmoud Elsayed',
                 'password' => Hash::make('12345678'),
-                'phone' => '+201027832160',
+                'is_guest' => false,
             ]
         );
         $role = Role::where('name', 'super-admin')->first();
