@@ -55,6 +55,19 @@ class ReviewController extends Controller
         }
     }
 
+    public function getStatistics($id)
+    {
+        try {
+        $statistics = $this->service->getStatistics($id);
+
+            return ApiResponse::successResponse(['statistics' => $statistics], 'Statistics fetched successfully', Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch statistics', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to fetch statistics', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function store(StoreReviewRequest $request)
     {
         try {

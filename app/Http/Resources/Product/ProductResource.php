@@ -56,9 +56,12 @@ class ProductResource extends JsonResource
                 return [
                     'average' => round((float) ($this->reviews_avg_rating ?? 0), 1),
                     'count' => (int) ($this->reviews_count ?? 0),
-                    'has_reviews' => ($this->reviews_count ?? 0) > 0,
+
                 ];
-            }),
+            }, [
+                'average' => 0,
+                'count' => 0,
+            ]),
             'meta_title_ar' => $this->meta_title_ar,
             'meta_title_en' => $this->meta_title_en,
             'meta_description_ar' => $this->meta_description_ar,

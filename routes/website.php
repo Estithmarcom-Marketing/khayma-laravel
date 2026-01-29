@@ -76,6 +76,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::get('', [ReviewController::class, 'getMyReviews'])->middleware(['auth:sanctum']);
                 Route::get('products/{product}', [ReviewController::class, 'getProductReviews']);
+                Route::get('statistics/{id}', [ReviewController::class, 'getStatistics']);
                 Route::post('', [ReviewController::class, 'store'])->middleware(['auth:sanctum']);
                 Route::patch('{review}', [ReviewController::class, 'update'])->middleware(['auth:sanctum']);
                 Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware(['auth:sanctum']);
@@ -85,11 +86,11 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::get('banners', [HomeController::class, 'getHomeBanners']);
                 Route::get('categories', [HomeController::class, 'getHomeCategories']);
-                Route::get('latest-products', [HomeController::class, 'getLatestProducts']);
-                Route::get('common-products', [HomeController::class, 'getCommonProducts']);
-                Route::get('most-ordered-products', [HomeController::class, 'getMostOrderdProducts']);
+                Route::get('products/latest', [HomeController::class, 'getLatestProducts']);
+                Route::get('products/common', [HomeController::class, 'getCommonProducts']);
+                Route::get('products/most-orderd', [HomeController::class, 'getMostOrderdProducts']);
                 Route::get('reviews', [HomeController::class, 'getHomeReviews']);
-                Route::get('common-questions', [HomeController::class, 'getCommonQuestions']);
+                Route::get('questions/common', [HomeController::class, 'getCommonQuestions']);
             });
         Route::middleware('throttle:60,1')
             ->prefix('products')
