@@ -31,8 +31,12 @@ class FavouriteService
     {
         $user = auth()->user();
 
-        $favourite = $user->favourites()->create([
-            'product_id' => $product->id, ]);
+        $favourite = $user->favourites()->where('product_id', $product->id)->first();
+        if (! $favourite) {
+            return $user->favourites()->create([
+                'product_id' => $product->id,
+            ]);
+        }
 
         return $favourite;
     }

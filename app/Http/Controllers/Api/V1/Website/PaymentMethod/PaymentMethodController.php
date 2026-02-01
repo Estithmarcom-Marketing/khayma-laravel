@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Website\PaymentMethod;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Payment\PaymentMethodResource;
-use App\Service\V1\Website\PaymentMethod\PaymentMethodService;
+use App\Services\V1\Website\PaymentMethod\PaymentMethodService;
 use App\Traits\Response\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 

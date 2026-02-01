@@ -36,10 +36,10 @@ class CartController extends Controller
     {
         try {
             $cartItems = $this->service->addItems($request->validated());
-            $cartItems = CartItemResource::collection($cartItems);
+           
 
             return ApiResponse::successResponse(
-                ['cart_item' => $cartItems],
+                [],
                 __('cart.item_added'),
                 Response::HTTP_CREATED);
         } catch (\Exception $e) {

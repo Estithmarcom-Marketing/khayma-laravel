@@ -6,8 +6,6 @@ use App\Models\CartProduct;
 
 class CartService
 {
-  
-
     public function getCartItems()
     {
         $user = auth()->user();
@@ -26,17 +24,33 @@ class CartService
     public function addItems(array $data)
     {
         $user = auth()->user();
-        if (!$user->cart) {
+
+        if (! $user->cart) {
             $user->cart()->create([]);
         }
-        return $user->cart->items()->createMany($data['items']);
+
+        $cart = $user->cart;
+
+        foreach ($data['items'] as $item) {
+            $cartItem = $cart->items()->where('product_variation_id', $item['product_variation_id'])->first();
+
+            if ($cartItem) {
+
+                $cartItem->increment('quantity', $item['quantity']);
+            } else {
+
+                $cart->items()->create($item);
+            }
+        }
+
+        return true;
     }
 
     public function updateItem(CartProduct $cartProduct, array $data)
     {
         $user = auth()->user();
 
-        $item = $user->cart->items()->where('id', $cartProduct->id)->firstOrFail();
+        $item = $user->cart->items()->where('id', $cartProduct->id)->first();
         $item->update([
             'quantity' => $data['quantity'],
         ]);
