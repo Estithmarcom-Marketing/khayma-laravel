@@ -18,9 +18,9 @@ class PaymentMethodResource extends JsonResource
             'id' => $this->id,
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
-            'is_active' => $this->is_active,
-            'created_at' => $this->whenNotNull($this->created_at->toDateTimeString()),
-            'updated_at' => $this->whenNotNull($this->updated_at->toDateTimeString()),
+            'is_active' => when($this->is_active, true),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
         ];
     }
 }

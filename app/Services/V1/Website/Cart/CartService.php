@@ -6,12 +6,7 @@ use App\Models\CartProduct;
 
 class CartService
 {
-    public function getCart()
-    {
-        $user = auth()->user();
-
-        return $user->cart;
-    }
+  
 
     public function getCartItems()
     {

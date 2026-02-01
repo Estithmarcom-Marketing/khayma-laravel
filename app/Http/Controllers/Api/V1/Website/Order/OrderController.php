@@ -22,6 +22,10 @@ class OrderController extends Controller
             $order = $this->service->store($request->validated());
 
             return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.created'), Response::HTTP_CREATED);
+        } catch (\LogicException $e) {
+            \Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+
         } catch (\Exception $e) {
             \Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -107,7 +111,7 @@ class OrderController extends Controller
     public function receipt(Order $order)
     {
         try {
-            
+
             $url = $this->orderReceiptPdfService->generate($order);
 
             return ApiResponse::successResponse([

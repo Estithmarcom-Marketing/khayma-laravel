@@ -23,13 +23,16 @@ class OrderService
             $subtotal = 0;
             $user = auth()->user();
             $data['items'] = $user->cart->items()->get();
+            if ($data['items']->isEmpty()) {
+                throw new \LogicException(message: 'Cart is empty');
+            }
             foreach ($data['items'] as $item) {
                 $variation = ProductVariation::lockForUpdate()->findOrFail(
                     $item['product_variation_id']
                 );
 
                 if ($variation->stock_quantity < $item['quantity']) {
-                    throw new \Exception(message: 'Insufficient stock');
+                    throw new \LogicException(message: 'Insufficient stock');
                 }
                 $price = $variation->price;
 

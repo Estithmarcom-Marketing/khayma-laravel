@@ -7,10 +7,12 @@ use App\Http\Controllers\Api\V1\Website\Cart\CartController;
 use App\Http\Controllers\Api\V1\Website\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Website\City\CityController;
 use App\Http\Controllers\Api\V1\Website\Color\ColorController;
+use App\Http\Controllers\Api\V1\Website\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
 use App\Http\Controllers\Api\V1\Website\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Website\Order\OrderController;
+use App\Http\Controllers\Api\V1\Website\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
@@ -48,8 +50,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('cart')
             ->group(function () {
-                Route::get('', [CartController::class, 'getCart']);
-                Route::get('{cart}', [CartController::class, 'getCartItems']);
+                Route::get('', [CartController::class, 'getCartItems']);
                 Route::post('items', [CartController::class, 'addToCart']);
                 Route::patch('items/{cartProduct}', [CartController::class, 'updateCartItem']);
                 Route::delete('items/{cartProduct}', [CartController::class, 'removeCartItem']);
@@ -150,4 +151,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::get('', [SizeController::class, 'index']);
                 Route::get('{id}', [SizeController::class, 'show']);
             });
+        Route::get('delivery-methods', [DeliveryMethodController::class, 'index'])->middleware('throttle:60,1');
+        Route::get('payment-methods', [PaymentMethodController::class, 'index'])->middleware('throttle:60,1');
+
     });

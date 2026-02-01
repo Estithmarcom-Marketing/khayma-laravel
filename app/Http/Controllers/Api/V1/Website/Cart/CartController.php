@@ -15,21 +15,7 @@ class CartController extends Controller
 {
     public function __construct(protected CartService $service) {}
 
-    public function getCart()
-    {
-        try {
-            $cart = $this->service->getCart();
-
-            return ApiResponse::successResponse(
-                ['cart' => CartResource::make($cart)],
-                __('cart.cart_retrieved'),
-                Response::HTTP_OK);
-        } catch (\Exception $e) {
-            \Log::error('Failed to fetch cart', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-
-            return ApiResponse::errorResponse(__('cart.cart_fetch_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+ 
 
     public function getCartItems()
     {
