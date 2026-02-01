@@ -27,12 +27,12 @@ class ProductController extends Controller
                     'meta' => $products['meta'],
                     'links' => $products['links'],
                 ],
-                'Products Fetched Successfully',
+                __('product.filter_success'),
                 Response::HTTP_OK);
         } catch (Exception $e) {
             Log::error('Failed To Fetch Products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed To Fetch Products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.filter_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -41,11 +41,13 @@ class ProductController extends Controller
         try {
             $variations = $this->service->showVariations($identifier);
 
-            return ApiResponse::successResponse(['variations' => ProductVariationResource::collection($variations)], 'Product Variation Fetched Successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['variations' => ProductVariationResource::collection($variations)],
+                __('product.variations_success'),
+                Response::HTTP_OK);
         } catch (Exception $e) {
             Log::error('Failed To Fetch Product Variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed To Fetch Product Variation', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.variations_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -54,11 +56,12 @@ class ProductController extends Controller
         try {
             $product = $this->service->showProduct($identifier);
 
-            return ApiResponse::successResponse(['product' => ProductResource::make($product)], 'Product Fetched Successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['product' => ProductResource::make($product)],
+                __('product.show_success'), Response::HTTP_OK);
         } catch (Exception $e) {
             Log::error('Failed To Fetch Product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed To Fetch Product', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -67,11 +70,13 @@ class ProductController extends Controller
         try {
             $products = $this->service->getRelatedProducts($identifier);
 
-            return ApiResponse::successResponse(['products' => ProductResource::collection($products)], 'Related Products Fetched Successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['products' => ProductResource::collection($products)],
+                __('product.related_success'),
+                Response::HTTP_OK);
         } catch (Exception $e) {
             Log::error('Failed To Fetch Related Products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed To Fetch Related Products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.related_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

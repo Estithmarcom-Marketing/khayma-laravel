@@ -27,12 +27,12 @@ class HomeController extends Controller
 
             return ApiResponse::successResponse(
                 ['sliders' => $sliders],
-                'sliders listed successfully',
+                __('home.sliders_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to list sliders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to list sliders', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('home.sliders_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -43,12 +43,12 @@ class HomeController extends Controller
 
             return ApiResponse::successResponse(
                 ['categories' => CategoryResource::collection($categories)],
-                'categories listed successfully',
+                __('home.categories_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to list categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to list categories', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('home.categories_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -63,12 +63,12 @@ class HomeController extends Controller
                 ['products' => $products['data'],
                     'meta' => $products['meta'],
                     'links' => $products['links']],
-                'products listed successfully',
+                __('home.products_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to list products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,12 +83,12 @@ class HomeController extends Controller
                 ['products' => $products['data'],
                     'meta' => $products['meta'],
                     'links' => $products['links']],
-                'products listed successfully',
+                __('home.products_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to list products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -103,12 +103,12 @@ class HomeController extends Controller
                 ['products' => $products['data'],
                     'meta' => $products['meta'],
                     'links' => $products['links']],
-                'products listed successfully',
+                __('home.products_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to list products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -123,12 +123,12 @@ class HomeController extends Controller
                 ['reviews' => $reviews['data'],
                     'meta' => $reviews['meta'],
                     'links' => $reviews['links']],
-                'reviews listed successfully',
+                __('home.reviews_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to list reviews', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to list reviews', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('home.reviews_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -143,7 +143,7 @@ class HomeController extends Controller
                 ['questions' => $questions['data'],
                     'meta' => $questions['meta'],
                     'links' => $questions['links']],
-                'questions listed successfully',
+                __('home.questions_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to list questions', ['error' => $e->getMessage(), 'method' => __METHOD__]);

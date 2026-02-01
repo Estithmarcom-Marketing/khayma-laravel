@@ -23,11 +23,12 @@ class ProfileManagmentController extends Controller
 
             return ApiResponse::successResponse([
                 'user' => new UserResource($user),
-            ], 'User profile fetched successfully', Response::HTTP_OK);
+            ], __('profile.fetch_success'),
+                Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch user profile', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch user profile', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('profile.fetch_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -39,11 +40,11 @@ class ProfileManagmentController extends Controller
 
             return ApiResponse::successResponse([
                 'user' => UserResource::make($user),
-            ], 'Profile updated successfully', Response::HTTP_OK);
+            ], __('profile.update_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to update user profile', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to update user profile', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('profile.update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

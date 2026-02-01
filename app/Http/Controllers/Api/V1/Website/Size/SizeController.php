@@ -18,11 +18,14 @@ class SizeController extends Controller
         try {
             $sizes = $this->service->list();
 
-            return ApiResponse::successResponse(['sizes' => SizeResource::collection($sizes)], 'Sizes retrieved successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['sizes' => SizeResource::collection($sizes)],
+                __('size.list_success'),
+                Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch sizes', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch sizes', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('size.list_failed'),
+                Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -31,11 +34,11 @@ class SizeController extends Controller
         try {
             $size = $this->service->show($id);
 
-            return ApiResponse::successResponse(['size' => $size], 'Size retrieved successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['size' => $size], __('size.show_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch size', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch size', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('size.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

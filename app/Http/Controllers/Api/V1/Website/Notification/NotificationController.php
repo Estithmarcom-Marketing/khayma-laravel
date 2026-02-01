@@ -22,12 +22,12 @@ class NotificationController extends Controller
                 'notifications' => $notification['data'],
                 'meta' => $notification['meta'],
                 'links' => $notification['links'],
-            ], 'Notifications retrieved successfully', Response::HTTP_OK);
+            ], __('notification.list_success'), Response::HTTP_OK);
 
         } catch (\Exception $e) {
             \Log::error('Failed to fetch notifications', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch notifications', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('notification.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -41,12 +41,12 @@ class NotificationController extends Controller
                 'notifications' => $notification['data'],
                 'meta' => $notification['meta'],
                 'links' => $notification['links'],
-            ], 'Notifications retrieved successfully', Response::HTTP_OK);
+            ], __('notification.list_success'), Response::HTTP_OK);
 
         } catch (\Exception $e) {
             \Log::error('Failed to fetch notifications', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch notifications', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('notification.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -55,12 +55,12 @@ class NotificationController extends Controller
         try {
             $this->service->markAllAsRead();
 
-            return ApiResponse::successResponse([], 'Notifications marked as read successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse([], __('notification.mark_read_success'), Response::HTTP_OK);
 
         } catch (\Exception $e) {
             \Log::error('Failed to mark notifications as read', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to mark notifications as read', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('notification.mark_read_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

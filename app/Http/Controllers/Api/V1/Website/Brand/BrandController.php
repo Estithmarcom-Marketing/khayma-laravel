@@ -18,11 +18,13 @@ class BrandController extends Controller
         try {
             $brands = $this->service->list();
 
-            return ApiResponse::successResponse(['brands' => BrandResource::collection($brands)], 'Brands retrieved successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['brands' => BrandResource::collection($brands)],
+                __('brand.list_success'),
+                Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch brands', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch brands', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('brand.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -31,11 +33,13 @@ class BrandController extends Controller
         try {
             $brand = $this->service->show($id);
 
-            return ApiResponse::successResponse(['brand' => BrandResource::make($brand)], 'Brand retrieved successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['brand' => BrandResource::make($brand)],
+                __('brand.show_success'),
+                Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch brand', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch brand', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('brand.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

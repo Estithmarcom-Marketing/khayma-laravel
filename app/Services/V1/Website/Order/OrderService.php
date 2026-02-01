@@ -29,7 +29,7 @@ class OrderService
                 );
 
                 if ($variation->stock_quantity < $item['quantity']) {
-                    throw new \Exception('Insufficient stock');
+                    throw new \Exception(message: 'Insufficient stock');
                 }
                 $price = $variation->price;
 

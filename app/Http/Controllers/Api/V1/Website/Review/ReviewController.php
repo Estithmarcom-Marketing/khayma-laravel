@@ -27,12 +27,12 @@ class ReviewController extends Controller
                 ['reviews' => $reviews['data'],
                     'meta' => $reviews['meta'],
                     'links' => $reviews['links']],
-                'Reviews fetched successfully',
+                __('review.list_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch reviews', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch reviews', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('review.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -46,12 +46,12 @@ class ReviewController extends Controller
                 ['reviews' => $reviews['data'],
                     'meta' => $reviews['meta'],
                     'links' => $reviews['links']],
-                'Reviews fetched successfully',
+                __('review.list_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch reviews', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch reviews', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('review.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -60,11 +60,11 @@ class ReviewController extends Controller
         try {
             $statistics = $this->service->getStatistics($id);
 
-            return ApiResponse::successResponse(['statistics' => $statistics], 'Statistics fetched successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['statistics' => $statistics], __('review.statistics_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch statistics', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch statistics', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('review.statistics_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -73,11 +73,12 @@ class ReviewController extends Controller
         try {
             $review = $this->service->store($request->validated());
 
-            return ApiResponse::successResponse(['review' => ReviewResource::make($review)], 'Review created successfully', Response::HTTP_CREATED);
+            return ApiResponse::successResponse(['review' => ReviewResource::make($review)],
+                __('review.create_success'), Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error('Failed to create review', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('review.create_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -86,11 +87,12 @@ class ReviewController extends Controller
         try {
             $review = $this->service->update($request->validated(), $review);
 
-            return ApiResponse::successResponse(['review' => ReviewResource::make($review)], 'Review updated successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(['review' => ReviewResource::make($review)],
+                __('review.update_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to update review', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('review.update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -99,11 +101,11 @@ class ReviewController extends Controller
         try {
             $this->service->destroy($review);
 
-            return ApiResponse::successResponse([], 'Review deleted successfully', Response::HTTP_NO_CONTENT);
+            return ApiResponse::successResponse([], __('review.delete_success'), Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Failed to delete review', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('review.delete_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
