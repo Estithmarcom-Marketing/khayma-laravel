@@ -51,9 +51,9 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->prefix('cart')
             ->group(function () {
                 Route::get('', [CartController::class, 'getCartItems']);
-                Route::post('items', [CartController::class, 'addToCart']);
-                Route::patch('items/{cartProduct}', [CartController::class, 'updateCartItem']);
-                Route::delete('items/{cartProduct}', [CartController::class, 'removeCartItem']);
+                Route::post('', [CartController::class, 'addToCart']);
+                Route::patch('{variationId}', [CartController::class, 'updateCartItem']);
+                Route::delete('{variationId}', [CartController::class, 'removeCartItem']);
                 Route::delete('', [CartController::class, 'clearCart']);
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
