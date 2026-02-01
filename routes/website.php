@@ -62,7 +62,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::get('', [FavouriteController::class, 'index']);
                 Route::get('{favourite}', [FavouriteController::class, 'show']);
                 Route::post('products/{product}', [FavouriteController::class, 'store']);
-                Route::delete('{favourite}', [FavouriteController::class, 'destroy']);
+                Route::delete('products/{product}', [FavouriteController::class, 'destroy']);
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('product-reminders')

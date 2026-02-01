@@ -51,10 +51,10 @@ class FavouriteController extends Controller
         }
     }
 
-    public function destroy(Favourite $favourite)
+    public function destroy(Product $product)
     {
         try {
-            $this->service->deleteProductFromFavourite($favourite);
+            $this->service->deleteProductFromFavourite($product);
 
             return ApiResponse::successResponse([],
                 __('favourite.delete_success'), Response::HTTP_NO_CONTENT);

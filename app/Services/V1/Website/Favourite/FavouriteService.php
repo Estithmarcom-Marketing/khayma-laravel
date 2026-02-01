@@ -12,7 +12,7 @@ class FavouriteService
     {
         $user = auth()->user();
         $favourites = $user->favourites()->with(['product:id,name_ar,name_en,slug_ar,slug_en,description_ar,description_en,category_id,brand_id',
-            'product.productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
+
             'product.media:id,model_id,name,file_name,collection_name,disk'])
             ->paginate(10);
 
@@ -22,8 +22,6 @@ class FavouriteService
     public function show(Favourite $favourite)
     {
         return $favourite->load(['product:id,name_ar,name_en,slug_ar,slug_en,description_ar,description_en,category_id,brand_id',
-            'product.productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id',
-            'product.productVariations.properties:id,name_ar,name_en',
             'product.media:id,model_id,name,file_name,collection_name,disk']);
     }
 
@@ -41,11 +39,11 @@ class FavouriteService
         return $favourite;
     }
 
-    public function deleteProductFromFavourite(Favourite $favourite)
+    public function deleteProductFromFavourite(Product $product): mixed
     {
-        return DB::transaction(function () use ($favourite) {
+        return DB::transaction(function () use ($product) {
             $user = auth()->user();
-            $favourite = $user->favourites()->where('product_id', $favourite->product_id)->first();
+            $favourite = $user->favourites()->where('product_id', $product->id)->first();
             if (! $favourite) {
                 return false;
             }
