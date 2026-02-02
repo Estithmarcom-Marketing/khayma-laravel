@@ -22,6 +22,7 @@ class DeliveryMethodService
             'name_ar' => $data['name_ar'],
             'name_en' => $data['name_en'],
             'is_active' => $data['is_active'] ?? true,
+            'has_shipping_cost' => $data['has_shipping_cost'] ?? true,
         ]);
     }
 
@@ -31,6 +32,7 @@ class DeliveryMethodService
             'name_ar' => $data['name_ar'] ?? $deliveryMethod->name_ar,
             'name_en' => $data['name_en'] ?? $deliveryMethod->name_en,
             'is_active' => $data['is_active'] ?? $deliveryMethod->is_active,
+            'has_shipping_cost' => $data['has_shipping_cost'] ?? $deliveryMethod->has_shipping_cost,
         ]);
 
         return $deliveryMethod->refresh();

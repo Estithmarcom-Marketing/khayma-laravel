@@ -27,6 +27,7 @@ class UpdateDeliveryMethodRequest extends FormRequest
             'name_ar' => ['sometimes', 'string', 'max:255'],
             'name_en' => ['sometimes', 'string', 'max:255'],
             'is_active' => ['sometimes', 'boolean'],
+            'has_shipping_cost' => ['sometimes', 'boolean'],
         ];
     }
 }

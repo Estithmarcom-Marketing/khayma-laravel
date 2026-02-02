@@ -6,6 +6,7 @@ use App\Enums\Orders\OrderStatusEnum;
 use App\Events\Order\OrderPlacement;
 use App\Models\Address;
 use App\Models\CityShipment;
+use App\Models\DeliveryMethod;
 use App\Models\Order;
 use App\Models\ProductVariation;
 use App\Models\PromoCode;
@@ -44,7 +45,9 @@ class OrderService
 
                 $variation->decrement('stock_quantity', $item['quantity']);
             }
-            $shipping_cost = $this->getShippingCost($data['address_id']);
+
+            $shipping_cost = $this->getShippingCost($data);
+
             if (isset($data['promo_code']) && $data['promo_code'] != null) {
                 $promo_code = $this->getPromoCode($data['promo_code']);
             }
@@ -52,7 +55,8 @@ class OrderService
 
             $order = Order::create([
                 'user_id' => auth()->id(),
-                'address_id' => $data['address_id'],
+                'address_id' => $data['address_id'] ?? null,
+                'payment_gateway_id' => $data['payment_gateway_id'] ?? null,
                 'delivery_method_id' => $data['delivery_method_id'],
                 'subtotal_price' => $subtotal,
                 'shipping_cost' => $shipping_cost ?? 0,
@@ -79,12 +83,18 @@ class OrderService
             ]);
         });
         event(new OrderPlacement($result));
+
         return $result;
     }
 
-    private function getShippingCost($address_id)
+    private function getShippingCost(array $data)
     {
-        $address = Address::findOrFail($address_id);
+        $deliveryMethod = DeliveryMethod::where('id', $data['delivery_method_id'])->first();
+
+        if ($deliveryMethod->has_shipping_cost == false) {
+            return 0;
+        }
+        $address = Address::findOrFail($data['address_id']);
         $cost = CityShipment::select('cost')->where('city_id', $address->city_id)->first();
 
         return $cost?->cost ?? 0;

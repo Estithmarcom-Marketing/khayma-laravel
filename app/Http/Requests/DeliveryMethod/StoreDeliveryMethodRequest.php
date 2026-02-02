@@ -25,6 +25,7 @@ class StoreDeliveryMethodRequest extends FormRequest
             'name_ar' => ['required', 'string', 'max:255'],
             'name_en' => ['required', 'string', 'max:255'],
             'is_active' => ['required', 'boolean'],
+            'has_shipping_cost' => ['required', 'boolean'],
         ];
     }
 }

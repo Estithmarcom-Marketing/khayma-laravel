@@ -22,7 +22,7 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_id' => ['required', 'exists:addresses,id'],
+            'address_id' => ['sometimes', 'exists:addresses,id'],
             'payment_gateway_id' => ['nullable',  'exists:payment_gateways,id'],
             'delivery_method_id' => ['required', 'exists:delivery_methods,id'],
             'promo_code' => ['nullable', 'string', 'max:50'],
