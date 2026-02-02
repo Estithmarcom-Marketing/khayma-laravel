@@ -15,7 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('address_id')->nullable()->constrained('addresses');
-            $table->foreignId('payment_gateway_id')->nullable()->constrained('payment_gateways');
+            $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods');
             $table->foreignId('delivery_method_id')->constrained('delivery_methods');
             $table->decimal('total_price', 10, 2);
             $table->decimal('subtotal_price', 10, 2);

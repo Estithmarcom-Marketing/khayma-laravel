@@ -3,11 +3,13 @@
 namespace App\Services\V1\Website\Order;
 
 use App\Enums\Orders\OrderStatusEnum;
+use App\Enums\Payments\PaymentStatusEnum;
 use App\Events\Order\OrderPlacement;
 use App\Models\Address;
 use App\Models\CityShipment;
 use App\Models\DeliveryMethod;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\ProductVariation;
 use App\Models\PromoCode;
 use App\Services\V1\Website\Cart\CartService;
@@ -56,7 +58,7 @@ class OrderService
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'address_id' => $data['address_id'] ?? null,
-                'payment_gateway_id' => $data['payment_gateway_id'] ?? null,
+                'payment_method_id' => $data['payment_method_id'] ?? null,
                 'delivery_method_id' => $data['delivery_method_id'],
                 'subtotal_price' => $subtotal,
                 'shipping_cost' => $shipping_cost ?? 0,
@@ -72,14 +74,23 @@ class OrderService
                 ]);
             }
 
-            // call payment
-
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'amount' => $total['total'],
+                'payment_method_id' => $data['payment_method_id'],
+                'payment_gateway_id' => null,
+                'status' => PaymentStatusEnum::PENDING,
+                'transaction_id' => null,
+                'payment_response' => null,
+                'meta_data' => null,
+            ]);
             $user->cart->items()->delete();
 
             return $order->load([
                 'items.productVariation.product',
                 'address',
                 'deliveryMethod:id,name_ar,name_en',
+                'paymentMethod:id,name_ar,name_en',
             ]);
         });
         event(new OrderPlacement($result));
@@ -133,7 +144,9 @@ class OrderService
     {
         return Order::with(['items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
             'address:id,name,value,city_id,additional_info',
-            'deliveryMethod:id,name_ar,name_en'])
+            'deliveryMethod:id,name_ar,name_en',
+            'paymentMethod:id,name_ar,name_en',
+        ])
             ->where('user_id', auth()->id())
             ->findOrFail($id);
 
@@ -145,6 +158,7 @@ class OrderService
             'items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
+            'paymentMethod:id,name_ar,name_en',
         ])->paginate(10);
     }
 
@@ -154,6 +168,7 @@ class OrderService
             'items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
+            'paymentMethod:id,name_ar,name_en',
         ])->paginate(10);
     }
 

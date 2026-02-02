@@ -23,7 +23,7 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'address_id' => ['sometimes', 'exists:addresses,id'],
-            'payment_gateway_id' => ['nullable',  'exists:payment_gateways,id'],
+            'payment_method_id' => ['required',  'exists:payment_methods,id'],
             'delivery_method_id' => ['required', 'exists:delivery_methods,id'],
             'promo_code' => ['nullable', 'string', 'max:50'],
             'cart_items' => ['exists:cart_items,id'],

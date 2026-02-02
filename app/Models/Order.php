@@ -20,6 +20,7 @@ class Order extends Model implements HasMedia
         'user_id',
         'address_id',
         'delivery_method_id',
+        'payment_method_id',
         'total_price',
         'subtotal_price',
         'shipping_cost',
@@ -53,6 +54,11 @@ class Order extends Model implements HasMedia
     public function deliveryMethod()
     {
         return $this->belongsTo(DeliveryMethod::class);
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     public function payments()
