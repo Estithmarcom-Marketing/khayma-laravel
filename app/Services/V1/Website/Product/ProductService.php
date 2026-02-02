@@ -16,9 +16,8 @@ class ProductService
 
         $sortMap = [
             'created_at' => 'products.created_at',
-            'min_price' => 'product_variations_min_price',
+            'price' => 'min_price',
         ];
-
         $user = auth()->user();
         $userId = $user?->id;
         $cartId = $user?->cart?->id;
@@ -26,8 +25,13 @@ class ProductService
         $query = Product::published()
             ->withAvg('reviews', 'rating')
             ->withCount('orders')
-            ->withCount('reviews');
-
+            ->withCount('reviews')
+            ->addSelect([
+                'min_price' => ProductVariation::select('price')
+                    ->whereColumn('product_variations.product_id', 'products.id')
+                    ->orderBy('price')
+                    ->limit(1),
+            ]);
         $this->filterByCategory($query, $filters);
         $this->filterByBrand($query, $filters);
         $this->filterByRating($query, $filters);

@@ -79,7 +79,6 @@ class OrderService
             ]);
         });
         event(new OrderPlacement($result));
-
         return $result;
     }
 

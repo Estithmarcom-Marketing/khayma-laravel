@@ -43,7 +43,7 @@ class FilterProductRequest extends FormRequest
             'has_offer' => ['nullable', 'boolean'],
             'search' => ['nullable', 'string', 'max:255'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'sort_by' => ['sometimes', 'string', 'in:min_price,created_at'],
+            'sort_by' => ['sometimes', 'string', 'in:price,created_at'],
 
             'order_by' => ['sometimes', 'string', 'in:asc,desc'],
         ];
