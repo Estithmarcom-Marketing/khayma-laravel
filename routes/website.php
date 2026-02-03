@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Website\Cart\CartController;
 use App\Http\Controllers\Api\V1\Website\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Website\City\CityController;
 use App\Http\Controllers\Api\V1\Website\Color\ColorController;
+use App\Http\Controllers\Api\V1\Website\CustomTent\CustomTentController;
 use App\Http\Controllers\Api\V1\Website\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
@@ -153,5 +154,5 @@ Route::middleware(['tokenfromcookie', 'locale'])
             });
         Route::get('delivery-methods', [DeliveryMethodController::class, 'index'])->middleware('throttle:60,1');
         Route::get('payment-methods', [PaymentMethodController::class, 'index'])->middleware('throttle:60,1');
-
+        Route::post('tent',[CustomTentController::class,'store']);
     });

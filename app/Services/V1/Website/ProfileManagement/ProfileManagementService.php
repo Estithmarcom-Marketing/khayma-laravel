@@ -18,7 +18,6 @@ class ProfileManagementService
             if (isset($data['image'])) {
                 $user->addMediaFromRequest('image')->toMediaCollection('profile');
             }
-
             return $user->refresh();
         });
     }
