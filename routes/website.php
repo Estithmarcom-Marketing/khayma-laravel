@@ -25,7 +25,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
     ->prefix('website/v1')
     ->group(function () {
 
-        Route::middleware('throttle:10,1')
+        Route::middleware('throttle:30,1')
             ->prefix('auth')
             ->group(function () {
                 Route::post('otp', [UserAuthController::class, 'sendOtp']);
@@ -33,7 +33,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('logout', [UserAuthController::class, 'logout'])->middleware(['auth:sanctum']);
 
             });
-        Route::middleware(['throttle:10,1', 'auth:sanctum'])
+        Route::middleware(['throttle:30,1', 'auth:sanctum'])
             ->prefix('profile')
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
