@@ -48,11 +48,8 @@ class HomeService
             ])
             ->with(['category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'productVariations' => function ($query) {
-                    $query->select('id', 'product_id', 'price', 'offer')
-                        ->orderBy('price', 'asc')
-                        ->limit(1);
-                },
+                'productVariations.color:id,code',
+                'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk'])
             ->withCount(['reviews', 'favourites', 'orders'])
             ->withAvg('reviews', 'rating')
@@ -84,12 +81,10 @@ class HomeService
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'productVariations' => function ($query) {
-                    $query->select('id', 'product_id', 'price', 'offer')
-                        ->orderBy('price', 'asc')
-                        ->limit(1);
-                }, 'media:id,model_id,name,file_name,collection_name,disk',
-            ])->limit(1)
+                'productVariations.color:id,code',
+                'productVariations.size',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ])
             ->orderByDesc('reviews_count')
             ->orderByDesc('favourites_count')
             ->paginate(10);
@@ -112,13 +107,10 @@ class HomeService
               : $q->whereRaw('0 = 1'),
             ])
             ->with([
-                'category:id,name_ar,name_en',
+                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'productVariations' => function ($query) {
-                    $query->select('id', 'product_id', 'price', 'offer')
-                        ->orderBy('price', 'asc')
-                        ->limit(1);
-                },
+                'productVariations.color:id,code',
+                'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk',
             ])
             ->orderByDesc('orders_count')
