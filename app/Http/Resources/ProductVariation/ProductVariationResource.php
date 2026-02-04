@@ -41,8 +41,8 @@ class ProductVariationResource extends JsonResource
                 ];
             }),
             'properties' => PropertyResource::collection($this->whenLoaded('properties')),
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

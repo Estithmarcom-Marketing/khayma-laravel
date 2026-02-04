@@ -90,7 +90,7 @@ class Product extends Model implements HasMedia
 
     public function getAllPropertiesAttribute()
     {
-        // Eager load variations + properties to avoid N+1
+    
         return $this->productVariations
             ->load('properties')
             ->flatMap(fn ($variation) => $variation->properties)
@@ -130,7 +130,7 @@ class Product extends Model implements HasMedia
             return null;
         }
 
-        return $this->productVariations->first()?->price;
+        return $this->getLowestPriceVariation()?->price;
     }
 
     public function getOfferAttribute()
@@ -139,6 +139,11 @@ class Product extends Model implements HasMedia
             return null;
         }
 
-        return $this->productVariations->first()?->offer;
+        return $this->getLowestPriceVariation()?->offer;
+    }
+
+    private function getLowestPriceVariation()
+    {
+        return $this->productVariations->sortBy('price')->first();
     }
 }

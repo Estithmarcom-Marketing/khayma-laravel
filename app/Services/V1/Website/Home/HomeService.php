@@ -48,6 +48,10 @@ class HomeService
             ])
             ->with(['category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
+                'productVariations'=> function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->active();
+                },
                 'productVariations.color:id,code',
                 'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk'])
@@ -81,6 +85,10 @@ class HomeService
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
+                   'productVariations'=> function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->active();
+                },
                 'productVariations.color:id,code',
                 'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk',
@@ -109,6 +117,10 @@ class HomeService
             ->with([
                  'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
+                   'productVariations'=> function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->active();
+                },
                 'productVariations.color:id,code',
                 'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk',

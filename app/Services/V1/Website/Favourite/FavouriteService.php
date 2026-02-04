@@ -35,7 +35,6 @@ class FavouriteService
                 'product_id' => $product->id,
             ]);
         }
-
         return $favourite;
     }
 

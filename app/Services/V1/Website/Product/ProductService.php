@@ -21,6 +21,7 @@ class ProductService
         ];
 
         [$userId, $cartId] = $this->getAuthContext();
+        $variationFilter = $this->variationFilterClosure($filters);
 
         $query = Product::published()
             ->withAvg('reviews', 'rating')
@@ -28,6 +29,7 @@ class ProductService
             ->withCount('reviews')
             ->addSelect([
                 'min_price' => $this->minPriceSubquery(),
+                'min_price_offer' => $this->minPriceOfferSubquery(),
             ]);
 
         $this->filterByCategory($query, $filters);
@@ -35,14 +37,42 @@ class ProductService
         $this->filterByRating($query, $filters);
         $this->filterBySearch($query, $filters);
         $this->filterByBestSellers($query, $filters);
-        $this->filterByPrice($query, $filters);
-        $this->filterByColor($query, $filters);
-        $this->filterByOffer($query, $filters);
+
+    
+        $query->whereHas('productVariations', $variationFilter);
 
         return $query
             ->withExists($this->existsConditions($userId, $cartId))
-            ->with($this->buildVariationEagerLoad($filters))
+            
+            ->withCount([
+                'productVariations as filtered_variations_count' => function ($q) use ($filters) {
+                 
+                    $q->active();
+
+                    if (!empty($filters['colors'])) {
+                        $q->whereIn('color_id', $filters['colors']);
+                    }
+
+                    if (!empty($filters['has_offer'])) {
+                        $now = now();
+                        $q->whereNotNull('offer')
+                          ->where('offer_started_date', '<=', $now)
+                          ->where('offer_expired_date', '>=', $now);
+                    }
+
+                    if (isset($filters['min_price'])) {
+                        $q->where('price', '>=', $filters['min_price']);
+                    }
+
+                    if (isset($filters['max_price'])) {
+                        $q->where('price', '<=', $filters['max_price']);
+                    }
+                }
+            ])
             ->with([
+                'productVariations' => $variationFilter,
+                'productVariations.color:id,code',
+                'productVariations.size',
                 'brand:id,name_ar,name_en',
                 'category:id,name_ar,name_en',
                 'media:id,model_id,name,file_name,collection_name,disk',
@@ -50,6 +80,7 @@ class ProductService
             ->orderBy($sortMap[$sortBy] ?? 'products.created_at', $orderBy)
             ->paginate($limit);
     }
+
     public function showProduct($identifier)
     {
         [$userId, $cartId] = $this->getAuthContext();
@@ -73,10 +104,11 @@ class ProductService
 
     public function showVariations($identifier)
     {
-        return ProductVariation::where('product_id', $identifier)
+        return ProductVariation::selectWithActiveOffer()
+            ->where('product_id', $identifier)
             ->active()
             ->with([
-                'color:id,name_ar,name_en,code',
+                'color:id,code',
                 'size:id,name_ar,name_en',
                 'properties:id,name_ar,name_en',
             ])->get();
@@ -110,10 +142,17 @@ class ProductService
                 'min_price'       => $this->minPriceSubquery(),
                 'min_price_offer' => $this->minPriceOfferSubquery(),
             ])
-            ->with('media:id,model_id,name,file_name,collection_name,disk')
+            ->with([
+                'media:id,model_id,name,file_name,collection_name,disk',
+                'productVariations' => function ($q) {
+                    $q->selectWithActiveOffer()
+                      ->active();
+                }
+            ])
             ->limit(5)
             ->get();
     }
+
     private function filterByCategory($query, array $filters): void
     {
         if (empty($filters['categories']) && empty($filters['subcategories'])) {
@@ -129,27 +168,6 @@ class ProductService
 
         $query->whereIn('category_id', $ids->unique());
     }
-private function filterByPrice($query, array $filters): void
-{
-    $minPrice = $filters['min_price'] ?? null;
-    $maxPrice = $filters['max_price'] ?? null;
-
-    if ($minPrice === null && $maxPrice === null) {
-        return;
-    }
-
-    $query->whereHas('productVariations', function ($subQuery) use ($minPrice, $maxPrice) {
-        $subQuery->active();
-        
-        if ($minPrice !== null) {
-            $subQuery->where('price', '>=', $minPrice);
-        }
-        
-        if ($maxPrice !== null) {
-            $subQuery->where('price', '<=', $maxPrice);
-        }
-    });
-}
 
     private function filterByBrand($query, array $filters): void
     {
@@ -159,16 +177,6 @@ private function filterByPrice($query, array $filters): void
 
         $query->whereIn('brand_id', $filters['brands']);
     }
-
-    private function filterByColor($query, array $filters): void
-    {
-        if (empty($filters['colors'])) {
-            return;
-        }
-
-        $query->whereHas('productVariations', fn ($q) => $q->whereIn('color_id', $filters['colors']));
-    }
-
 
     private function filterByRating($query, array $filters): void
     {
@@ -181,15 +189,6 @@ private function filterByPrice($query, array $filters): void
             '>=',
             $filters['rating']
         );
-    }
-
-    private function filterByOffer($query, array $filters): void
-    {
-        if (empty($filters['has_offer'])) {
-            return;
-        }
-
-        $query->whereHas('productVariations', fn ($q) => $this->applyOfferConditions($q));
     }
 
     private function filterBySearch($query, array $filters): void
@@ -217,13 +216,11 @@ private function filterByPrice($query, array $filters): void
         $query->orderByDesc('orders_count');
     }
 
-   
     private function getAuthContext(): array
     {
-        $user   = auth('sanctum')->user();
+        $user = auth('sanctum')->user();
         return [$user?->id, $user?->cart?->id];
     }
-
 
     private function existsConditions(?int $userId, ?int $cartId): array
     {
@@ -237,7 +234,6 @@ private function filterByPrice($query, array $filters): void
         ];
     }
 
-  
     private function minPriceSubquery()
     {
         return ProductVariation::select('price')
@@ -247,57 +243,52 @@ private function filterByPrice($query, array $filters): void
             ->limit(1);
     }
 
-    private function minPriceOfferSubquery(): ProductVariation
+    private function minPriceOfferSubquery()
     {
-        return ProductVariation::select('offer')
+        $now = now()->format('Y-m-d H:i:s');
+
+        return ProductVariation::select(
+            DB::raw("CASE 
+                WHEN offer_started_date <= '{$now}' 
+                AND offer_expired_date >= '{$now}' 
+                THEN offer 
+                ELSE NULL 
+            END as offer")
+        )
             ->whereColumn('product_variations.product_id', 'products.id')
             ->active()
-            ->where('offer_started_date', '<=', now())
-            ->where(function ($q) {
-                $q->whereNull('offer_expired_date')
-                    ->orWhere('offer_expired_date', '>=', now());
-            })
             ->orderBy('price')
             ->limit(1);
     }
 
-    
-    private function applyOfferConditions($q): void
+   
+    private function variationFilterClosure(array $filters)
     {
-        $q->whereNotNull('offer')
-            ->where('offer_started_date', '<=', now())
-            ->where(function ($q) {
-                $q->whereNull('offer_expired_date')
-                    ->orWhere('offer_expired_date', '>=', now());
-            });
-    }
+        return function ($q) use ($filters) {
+            $onlyActiveOffers = !empty($filters['has_offer']);
 
-    private function buildVariationEagerLoad(array $filters): array
-    {
-        return [
-            'productVariations' => function ($q) use ($filters) {
-                $q->active();
+      
+            $q->selectWithActiveOffer([], $onlyActiveOffers)
+              ->active();
 
-                if (! empty($filters['colors'])) {
-                    $q->whereIn('color_id', $filters['colors']);
-                }
+            if (!empty($filters['colors'])) {
+                $q->whereIn('color_id', $filters['colors']);
+            }
 
-                $minPrice = $filters['min_price'] ?? null;
-                $maxPrice = $filters['max_price'] ?? null;
+            if (!empty($filters['has_offer'])) {
+                $now = now();
+                $q->whereNotNull('offer')
+                  ->where('offer_started_date', '<=', $now)
+                  ->where('offer_expired_date', '>=', $now);
+            }
 
-                if ($minPrice !== null) {
-                    $q->where('price', '>=', $minPrice);
-                }
-                if ($maxPrice !== null) {
-                    $q->where('price', '<=', $maxPrice);
-                }
+            if (isset($filters['min_price'])) {
+                $q->where('price', '>=', $filters['min_price']);
+            }
 
-                if (! empty($filters['has_offer'])) {
-                    $this->applyOfferConditions($q);
-                }
-            },
-            'productVariations.color:id,code',
-            'productVariations.size',
-        ];
+            if (isset($filters['max_price'])) {
+                $q->where('price', '<=', $filters['max_price']);
+            }
+        };
     }
 }
