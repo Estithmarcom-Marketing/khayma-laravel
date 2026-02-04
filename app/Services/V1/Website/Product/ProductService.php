@@ -129,8 +129,7 @@ class ProductService
 
         $query->whereIn('category_id', $ids->unique());
     }
-
-  private function filterByPrice($query, array $filters): void
+private function filterByPrice($query, array $filters): void
 {
     $minPrice = $filters['min_price'] ?? null;
     $maxPrice = $filters['max_price'] ?? null;
@@ -139,15 +138,16 @@ class ProductService
         return;
     }
 
-    $query->when($minPrice !== null, function ($q) use ($minPrice) {
-        $q->whereHas('productVariations', function ($subQuery) use ($minPrice) {
-            $subQuery->active()->where('price', '>=', $minPrice);
-        });
-    })
-    ->when($maxPrice !== null, function ($q) use ($maxPrice) {
-        $q->whereHas('productVariations', function ($subQuery) use ($maxPrice) {
-            $subQuery->active()->where('price', '<=', $maxPrice);
-        });
+    $query->whereHas('productVariations', function ($subQuery) use ($minPrice, $maxPrice) {
+        $subQuery->active();
+        
+        if ($minPrice !== null) {
+            $subQuery->where('price', '>=', $minPrice);
+        }
+        
+        if ($maxPrice !== null) {
+            $subQuery->where('price', '<=', $maxPrice);
+        }
     });
 }
 
