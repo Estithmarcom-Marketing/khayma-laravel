@@ -71,7 +71,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::get('', [ProductReminderController::class, 'index']);
                 Route::get('{productReminder}', [ProductReminderController::class, 'show']);
                 Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
-                Route::delete('{productReminder}', [ProductReminderController::class, 'destroy']);
+                Route::delete('variations/{productVariation}', [ProductReminderController::class, 'destroy']);
             });
         Route::middleware(['throttle:60,1'])
             ->prefix('reviews')

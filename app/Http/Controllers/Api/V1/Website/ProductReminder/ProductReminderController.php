@@ -58,7 +58,8 @@ class ProductReminderController extends Controller
 
             return ApiResponse::successResponse([
                 'product_reminder' => ProductRemindersResource::make($productReminder),
-            ], 'Product Reminder created successfully', Response::HTTP_CREATED);
+            ], 'Product Reminder created successfully',
+             Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error('Failed to create product reminder', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -66,10 +67,10 @@ class ProductReminderController extends Controller
         }
     }
 
-    public function destroy(ProductReminder $productReminder)
+    public function destroy(ProductVariation $productVariation)
     {
         try {
-            $this->service->delete($productReminder);
+            $this->service->delete($productVariation);
 
             return ApiResponse::successResponse([], 'Product Reminder deleted successfully', Response::HTTP_OK);
         } catch (\Exception $e) {

@@ -37,9 +37,13 @@ class ProductReminderService
         return false;
     }
 
-    public function delete(ProductReminder $productReminder)
+    public function delete(ProductVariation $productvariation)
     {
-        $productReminder->delete();
+        $productReminder = auth()->user()->productReminders()->where('product_variation_id',$productvariation->id)->first();
+        if ($productReminder) {
+            $productReminder->delete();
+        }
+        return true;
     }
 
     public function show(ProductReminder $productReminder)
