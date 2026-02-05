@@ -13,6 +13,7 @@ return [
     'error_update' => 'فشل تحديث الطلب',
     'error_reorder' => 'فشل إعادة الطلب',
     'error_delete' => 'فشل حذف الطلب',
+    'error_address' => 'العنوان مطلوب لطريقة التوصيل هذه',
     'error_show' => 'فشل جلب الطلب',
     'error_fetch' => 'فشل جلب الطلبات',
     'notification_title' => 'طلب جديد',

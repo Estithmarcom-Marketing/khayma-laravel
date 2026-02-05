@@ -112,6 +112,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('{id}/reorder', [OrderController::class, 'reorder']);
                 Route::get('{id}', [OrderController::class, 'show']);
                 Route::post('{id}/cancel', [OrderController::class, 'cancel']);
+                Route::post('calculate', [OrderController::class, 'calculateTotalAmountOfOrder']);
             });
         Route::middleware(['throttle:60,1'])
             ->prefix('colors')

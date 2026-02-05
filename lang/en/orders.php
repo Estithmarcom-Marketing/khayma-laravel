@@ -13,6 +13,7 @@ return [
     'error_update' => 'Failed to update order',
     'error_reorder' => 'Failed to reorder order',
     'error_delete' => 'Failed to delete order',
+    'error_address' => 'Address is required for this delivery method',
     'error_show' => 'Failed to fetch order',
     'error_fetch' => 'Failed to fetch orders',
     'notification_title' => 'New Order',

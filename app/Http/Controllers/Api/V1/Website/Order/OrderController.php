@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Services\V1\Website\Order\OrderReceiptPdfService;
 use App\Services\V1\Website\Order\OrderService;
 use App\Traits\Response\ApiResponse;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
@@ -23,12 +24,11 @@ class OrderController extends Controller
 
             return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.created'), Response::HTTP_CREATED);
         } catch (\LogicException $e) {
-            \Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
             return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
 
         } catch (\Exception $e) {
-            \Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-
+            Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
             return ApiResponse::errorResponse(__('orders.error_create'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -40,7 +40,7 @@ class OrderController extends Controller
 
             return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.canceled'), Response::HTTP_OK);
         } catch (\Exception $e) {
-            \Log::error('Failed to cancel order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to cancel order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_cancel'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -53,7 +53,7 @@ class OrderController extends Controller
 
             return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.shown'), Response::HTTP_OK);
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_show'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -72,7 +72,7 @@ class OrderController extends Controller
                 __('orders.fetched'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -89,7 +89,7 @@ class OrderController extends Controller
                     'meta' => $orders['meta'],
                     'links' => $orders['links']], __('orders.fetched'), Response::HTTP_OK);
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -102,7 +102,7 @@ class OrderController extends Controller
 
             return ApiResponse::successResponse(['items' => CartItemResource::collection($items)], __('orders.reordered'), Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_reorder'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -119,12 +119,29 @@ class OrderController extends Controller
             ], __('orders.fetched'), Response::HTTP_OK);
 
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch receipt', [
+            Log::error('Failed to fetch receipt', [
                 'error' => $e->getMessage(),
                 'method' => __METHOD__,
             ]);
 
             return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function calculateTotalAmountOfOrder(StoreOrderRequest $request)
+    {
+        try {
+            $totalAmount = $this->service->calculateTotalAmountOfOrder($request->validated());
+
+            return ApiResponse::successResponse($totalAmount, 'order price calculated successfully', Response::HTTP_OK);
+        } catch (\LogicException $e) {
+            Log::error('Failed to calculate total amount of order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to calculate total amount of order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to calculate total amount of order', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

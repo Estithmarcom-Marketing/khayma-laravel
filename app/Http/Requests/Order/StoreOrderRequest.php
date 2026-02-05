@@ -22,11 +22,10 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_id' => ['sometimes', 'exists:addresses,id'],
+            'address_id' => ['required_if:delivery_method_id,!=,null', 'exists:addresses,id'],
+            'delivery_method_id' => ['sometimes', 'exists:delivery_methods,id'],
             'payment_method_id' => ['required',  'exists:payment_methods,id'],
-            'delivery_method_id' => ['required', 'exists:delivery_methods,id'],
             'promo_code' => ['nullable', 'string', 'max:50'],
-            'cart_items' => ['exists:cart_items,id'],
         ];
     }
 }

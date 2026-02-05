@@ -25,6 +25,7 @@ class OrderService
 
             $subtotal = 0;
             $user = auth()->user();
+            $discountOfOffer = 0;
             $data['items'] = $user->cart->items()->get();
             if ($data['items']->isEmpty()) {
                 throw new \LogicException(message: 'Cart is empty');
@@ -39,8 +40,9 @@ class OrderService
                 }
                 $price = $variation->price;
 
-                if ($variation->offer > 0) {
+                if ($variation->offer > 0 && $variation->offer != null && $variation->offer < $variation->price && $variation->offer_started_date <= now() && $variation->offer_expired_date >= now()) {
                     $price -= $variation->offer;
+                    $discountOfOffer += $variation->offer * $item['quantity'];
                 }
 
                 $subtotal += $price * $item['quantity'];
@@ -62,7 +64,7 @@ class OrderService
                 'delivery_method_id' => $data['delivery_method_id'],
                 'subtotal_price' => $subtotal,
                 'shipping_cost' => $shipping_cost ?? 0,
-                'discount_amount' => $total['discount'] ?? 0,
+                'discount_amount' => ($total['discount_of_promo_code'] + $discountOfOffer) ?? 0,
                 'total_price' => $total['total'],
                 'promo_code' => $data['promo_code'] ?? null,
                 'status' => OrderStatusEnum::PENDING,
@@ -100,15 +102,22 @@ class OrderService
 
     private function getShippingCost(array $data)
     {
-        $deliveryMethod = DeliveryMethod::where('id', $data['delivery_method_id'])->first();
+        if (isset($data['delivery_method_id']) && $data['delivery_method_id'] != null) {
+            $deliveryMethod = DeliveryMethod::where('id', $data['delivery_method_id'])->first();
 
-        if ($deliveryMethod->has_shipping_cost == false) {
-            return 0;
+            if ($deliveryMethod->has_shipping_cost == false) {
+                return 0;
+            }
+            if (isset($data['address_id']) && $data['address_id'] != null) {
+                $address = Address::findOrFail($data['address_id']);
+                $cost = CityShipment::select('cost')->where('city_id', $address->city_id)->first();
+
+                return $cost?->cost ?? 0;
+            }else {
+                throw new \LogicException(message: __('orders.error_address'));
+            }
         }
-        $address = Address::findOrFail($data['address_id']);
-        $cost = CityShipment::select('cost')->where('city_id', $address->city_id)->first();
 
-        return $cost?->cost ?? 0;
     }
 
     private function getPromoCode($promo_code)
@@ -126,18 +135,18 @@ class OrderService
 
     private function calculateTotal($subtotal, $shipping_cost, $promo_code)
     {
-        $discount = 0;
+        $discount_of_promo_code = 0;
         if ($promo_code) {
             $promo_code->increment('times_used');
             if ($promo_code->is_percentage) {
-                $discount = ($subtotal) * ($promo_code->value / 100);
+                $discount_of_promo_code = ($subtotal) * ($promo_code->value / 100);
             } else {
-                $discount = $promo_code->value;
+                $discount_of_promo_code = $promo_code->value;
             }
         }
-        $total = ($subtotal + $shipping_cost) - $discount;
+        $total = ($subtotal + $shipping_cost) - $discount_of_promo_code;
 
-        return ['total' => $total, 'discount' => $discount];
+        return ['total' => $total, 'discount_of_promo_code' => $discount_of_promo_code];
     }
 
     public function show($id)
@@ -159,7 +168,7 @@ class OrderService
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
-        ])->paginate(10);
+        ])->latest()->paginate(10);
     }
 
     public function listCanceled()
@@ -169,7 +178,7 @@ class OrderService
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
-        ])->paginate(10);
+        ])->latest()->paginate(10);
     }
 
     public function cancel($id)
@@ -182,7 +191,7 @@ class OrderService
             // call refund
             return $order;
         } else {
-            throw new \Exception('Order cannot be canceled');
+            throw new \Exception(__('orders.error_cancel'));
         }
 
     }
@@ -202,35 +211,53 @@ class OrderService
         ]);
 
     }
-    // public function calculateTotalAmountOfOrder(array $data)
-    // {
-    //     $subtotal = 0;
-    //     $data['items'] = auth()->user()->cart->items()->get();
-    //     if ($data['items']->isEmpty()) {
-    //         throw new \LogicException(message: 'Cart is empty');
-    //     }
-    //     foreach ($data['items'] as $item) {
-    //         $variation = ProductVariation::findOrFail(
-    //             $item['product_variation_id']
-    //         );
 
-    //         $price = $variation->price;
+    public function calculateTotalAmountOfOrder(array $data)
+    {
+        $subtotal = 0;
+        $discountOfOffer = 0;
+        $user = auth()->user();
+        $data['items'] = $user->cart->items()->get();
+        if ($data['items']->isEmpty()) {
+            throw new \LogicException(message: 'Cart is empty');
+        }
+        foreach ($data['items'] as $item) {
+            $variation = ProductVariation::findOrFail(
+                $item['product_variation_id']
+            );
 
-    //         if ($variation->offer > 0) {
-    //             $price -= $variation->offer;
-    //         }
+            if ($variation->stock_quantity < $item['quantity']) {
+                throw new \LogicException(message: 'Insufficient stock');
+            }
+            $price = $variation->price;
 
-    //         $subtotal += $price * $item['quantity'];
-    //     }
+            if ($variation->offer > 0 && $variation->offer < $variation->price && $variation->offer_started_date <= now() && $variation->offer_expired_date >= now()) {
+                $price -= $variation->offer;
+                $discountOfOffer += $variation->offer * $item['quantity'];
+            }
 
-    //     $shipping_cost = $this->getShippingCost($data);
+            $subtotal += $price * $item['quantity'];
+        }
 
-    //     if (isset($data['promo_code']) && $data['promo_code'] != null) {
-    //         $promo_code = $this->getPromoCode($data['promo_code']);
-    //     }
-    //     $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code ?? null);
+        $shipping_cost = $this->getShippingCost($data);
 
-    //     return $total['total'];
-        
-    // }
+        $promo_code = null;
+
+        if (isset($data['promo_code']) && $data['promo_code'] != null) {
+            $promo_code = $this->getPromoCode($data['promo_code']);
+        }
+        $discountOfPromo = 0;
+        if ($promo_code) {
+
+            if ($promo_code->is_percentage) {
+                $discountOfPromo = ($subtotal) * ($promo_code->value / 100);
+            } else {
+                $discountOfPromo = $promo_code->value;
+            }
+        }
+        $total = ($subtotal + $shipping_cost) - $discountOfPromo;
+
+        return ['total' => $total, 'discount' => $discountOfOffer + $discountOfPromo, 'shipping' => $shipping_cost, 'subtotal' => $subtotal];
+
+    }
 }
