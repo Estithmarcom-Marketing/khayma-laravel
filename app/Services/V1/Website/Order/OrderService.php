@@ -202,4 +202,35 @@ class OrderService
         ]);
 
     }
+    // public function calculateTotalAmountOfOrder(array $data)
+    // {
+    //     $subtotal = 0;
+    //     $data['items'] = auth()->user()->cart->items()->get();
+    //     if ($data['items']->isEmpty()) {
+    //         throw new \LogicException(message: 'Cart is empty');
+    //     }
+    //     foreach ($data['items'] as $item) {
+    //         $variation = ProductVariation::findOrFail(
+    //             $item['product_variation_id']
+    //         );
+
+    //         $price = $variation->price;
+
+    //         if ($variation->offer > 0) {
+    //             $price -= $variation->offer;
+    //         }
+
+    //         $subtotal += $price * $item['quantity'];
+    //     }
+
+    //     $shipping_cost = $this->getShippingCost($data);
+
+    //     if (isset($data['promo_code']) && $data['promo_code'] != null) {
+    //         $promo_code = $this->getPromoCode($data['promo_code']);
+    //     }
+    //     $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code ?? null);
+
+    //     return $total['total'];
+        
+    // }
 }
