@@ -13,6 +13,10 @@ class CartService
             'productVariation.color:id,name_en,name_ar,code',
             'productVariation.size:id,name_en,name_ar',
             'productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
+            'productVariation'=> function($q){
+                $q->selectWithActiveOffer()
+                ->active();
+            },
         ]);
     }
 
@@ -50,7 +54,10 @@ class CartService
             'quantity' => $data['quantity'],
         ]);
 
-        return $item->load('productVariation')->refresh();
+        return $item->load(['productVariation' => function ($q) {
+            $q->selectWithActiveOffer()
+                ->active();
+        }]);
     }
 
     public function removeItem($variationId)

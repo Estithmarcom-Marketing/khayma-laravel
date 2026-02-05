@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ProductVariation extends Model
@@ -27,7 +26,6 @@ class ProductVariation extends Model
         'offer_started_date' => 'datetime',
         'offer_expired_date' => 'datetime',
     ];
-    
 
     public function product()
     {
@@ -53,20 +51,21 @@ class ProductVariation extends Model
     {
         return $query->where('is_active', true);
     }
+
     public function scopeSelectWithActiveOffer($query, array $additionalColumns = [], bool $onlyActiveOffers = false)
-        {
-            $now = now()->format('Y-m-d H:i:s');
-            
-            $baseColumns = [
-                'id',
-                'product_id',
-                'color_id',
-                'size_id',
-                'stock_quantity',
-                'price',
-                'sku',
-                'is_active',
-                DB::raw("CASE 
+    {
+        $now = now()->format('Y-m-d H:i:s');
+
+        $baseColumns = [
+            'id',
+            'product_id',
+            'color_id',
+            'size_id',
+            'stock_quantity',
+            'price',
+            'sku',
+            'is_active',
+            DB::raw("CASE 
                     WHEN offer IS NOT NULL 
                         AND (
                                 (offer_started_date IS NULL AND offer_expired_date IS NULL)
@@ -74,21 +73,21 @@ class ProductVariation extends Model
                             )      
                         THEN offer 
                         ELSE NULL 
-                    END as offer")
+                    END as offer"),
 
-            ];
-            
-            $query->select(array_merge($baseColumns, $additionalColumns));
-            
-           
-            if ($onlyActiveOffers) {
-                $query->whereNotNull('offer')
-                    ->where('offer_started_date', '<=', $now)
-                    ->where('offer_expired_date', '>=', $now);
-            }
-    
-    return $query;
+        ];
+
+        $query->select(array_merge($baseColumns, $additionalColumns));
+
+        if ($onlyActiveOffers) {
+            $query->whereNotNull('offer')
+                ->where('offer_started_date', '<=', $now)
+                ->where('offer_expired_date', '>=', $now);
         }
+
+        return $query;
+    }
+
     public function properties()
     {
         return $this->belongsToMany(

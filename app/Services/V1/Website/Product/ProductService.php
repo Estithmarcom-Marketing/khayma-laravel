@@ -11,13 +11,13 @@ class ProductService
 {
     public function filter(array $filters)
     {
-        $limit   = $filters['limit'] ?? 12;
-        $sortBy  = $filters['sort_by'] ?? 'created_at';
+        $limit = $filters['limit'] ?? 12;
+        $sortBy = $filters['sort_by'] ?? 'created_at';
         $orderBy = $filters['order_by'] ?? 'desc';
 
         $sortMap = [
             'created_at' => 'products.created_at',
-            'price'      => 'min_price',
+            'price' => 'min_price',
         ];
 
         [$userId, $cartId] = $this->getAuthContext();
@@ -38,26 +38,25 @@ class ProductService
         $this->filterBySearch($query, $filters);
         $this->filterByBestSellers($query, $filters);
 
-    
         $query->whereHas('productVariations', $variationFilter);
 
         return $query
             ->withExists($this->existsConditions($userId, $cartId))
-            
+
             ->withCount([
                 'productVariations as filtered_variations_count' => function ($q) use ($filters) {
-                 
+
                     $q->active();
 
-                    if (!empty($filters['colors'])) {
+                    if (! empty($filters['colors'])) {
                         $q->whereIn('color_id', $filters['colors']);
                     }
 
-                    if (!empty($filters['has_offer'])) {
+                    if (! empty($filters['has_offer'])) {
                         $now = now();
                         $q->whereNotNull('offer')
-                          ->where('offer_started_date', '<=', $now)
-                          ->where('offer_expired_date', '>=', $now);
+                            ->where('offer_started_date', '<=', $now)
+                            ->where('offer_expired_date', '>=', $now);
                     }
 
                     if (isset($filters['min_price'])) {
@@ -67,11 +66,11 @@ class ProductService
                     if (isset($filters['max_price'])) {
                         $q->where('price', '<=', $filters['max_price']);
                     }
-                }
+                },
             ])
             ->with([
                 'productVariations' => $variationFilter,
-                'productVariations.color:id,code',
+                'productVariations.color:id,name_ar,name_en,code',
                 'productVariations.size',
                 'brand:id,name_ar,name_en',
                 'category:id,name_ar,name_en',
@@ -86,16 +85,16 @@ class ProductService
         [$userId, $cartId] = $this->getAuthContext();
 
         return Product::where(function ($q) use ($identifier) {
-                $q->where('id', $identifier)
-                  ->orWhere('slug_en', $identifier)
-                  ->orWhere('slug_ar', $identifier);
-            })
+            $q->where('id', $identifier)
+                ->orWhere('slug_en', $identifier)
+                ->orWhere('slug_ar', $identifier);
+        })
             ->published()
             ->with([
-                'category:id,name_ar,name_en',
-                'brand:id,name_ar,name_en',
-                'media:id,model_id,name,file_name,collection_name,disk',
-            ])
+            'category:id,name_ar,name_en',
+            'brand:id,name_ar,name_en',
+            'media:id,model_id,name,file_name,collection_name,disk',
+        ])
             ->withExists($this->existsConditions($userId, $cartId))
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
@@ -108,7 +107,7 @@ class ProductService
             ->where('product_id', $identifier)
             ->active()
             ->with([
-                'color:id,code',
+                'color:id,name_ar,name_en,code',
                 'size:id,name_ar,name_en',
                 'properties:id,name_ar,name_en',
             ])->get();
@@ -119,10 +118,10 @@ class ProductService
         [$userId, $cartId] = $this->getAuthContext();
 
         $product = Product::where(function ($q) use ($identifier) {
-                $q->where('id', $identifier)
-                  ->orWhere('slug_en', $identifier)
-                  ->orWhere('slug_ar', $identifier);
-            })->first();
+            $q->where('id', $identifier)
+                ->orWhere('slug_en', $identifier)
+                ->orWhere('slug_ar', $identifier);
+        })->first();
 
         if (! $product) {
             return collect();
@@ -139,15 +138,15 @@ class ProductService
             ->withCount('reviews')
             ->withExists($this->existsConditions($userId, $cartId))
             ->addSelect([
-                'min_price'       => $this->minPriceSubquery(),
+                'min_price' => $this->minPriceSubquery(),
                 'min_price_offer' => $this->minPriceOfferSubquery(),
             ])
             ->with([
                 'media:id,model_id,name,file_name,collection_name,disk',
                 'productVariations' => function ($q) {
                     $q->selectWithActiveOffer()
-                      ->active();
-                }
+                        ->active();
+                },
             ])
             ->limit(5)
             ->get();
@@ -219,6 +218,7 @@ class ProductService
     private function getAuthContext(): array
     {
         $user = auth('sanctum')->user();
+
         return [$user?->id, $user?->cart?->id];
     }
 
@@ -261,25 +261,23 @@ class ProductService
             ->limit(1);
     }
 
-   
     private function variationFilterClosure(array $filters)
     {
         return function ($q) use ($filters) {
-            $onlyActiveOffers = !empty($filters['has_offer']);
+            $onlyActiveOffers = ! empty($filters['has_offer']);
 
-      
             $q->selectWithActiveOffer([], $onlyActiveOffers)
-              ->active();
+                ->active();
 
-            if (!empty($filters['colors'])) {
+            if (! empty($filters['colors'])) {
                 $q->whereIn('color_id', $filters['colors']);
             }
 
-            if (!empty($filters['has_offer'])) {
+            if (! empty($filters['has_offer'])) {
                 $now = now();
                 $q->whereNotNull('offer')
-                  ->where('offer_started_date', '<=', $now)
-                  ->where('offer_expired_date', '>=', $now);
+                    ->where('offer_started_date', '<=', $now)
+                    ->where('offer_expired_date', '>=', $now);
             }
 
             if (isset($filters['min_price'])) {
