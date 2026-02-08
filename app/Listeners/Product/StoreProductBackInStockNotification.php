@@ -30,8 +30,10 @@ class StoreProductBackInStockNotification
                     'notifiable_id' => $product->id,
                     'notifiable_type' => Product::class,
                     'is_read' => false,
-                    'title' => __('product.notification_title'),
-                    'body' => __('product.notification_body'),
+                    'title_en' => 'Product back in stock',
+                    'title_ar' => 'المنتج متوفر مرة أخرى',
+                    'body_ar' => 'المنتج الذي كنت تنتظره عاد للمخزن',
+                    'body_en' => 'The product you were waiting for is back in stock',
                 ]);
                 $reminder->update(['is_notified' => true]);
 

@@ -19,10 +19,12 @@ class StoreOrderPlacedNotification
                 'notifiable_type' => Order::class,
                 'type' => NotificationTypeEnum::ORDER_PLACED,
                 'is_read' => false,
-                'title' => __('orders.notification_title'),
-                'body' => __('orders.notification_body'),
+                'title_ar' => 'طلب جديد',
+                'title_en' => 'New Order',
+                'body_ar' => 'لديك طلب جديد',
+                'body_en' => 'You have a new order'
             ]);
-            Log::info(__('orders.notification_body'), ['order_id' => $event->order->id, 'notification_id' => $notification->id]);
+            Log::info('Order Placed', ['order_id' => $event->order->id, 'notification_id' => $notification->id]);
         } catch (\Exception $e) {
             Log::error('Order Placed Error', ['error' => $e->getMessage()]);
         }
