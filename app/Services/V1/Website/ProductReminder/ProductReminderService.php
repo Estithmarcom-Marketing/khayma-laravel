@@ -13,7 +13,10 @@ class ProductReminderService
         $productReminders = $user->productReminders()
             ->where('is_notified', false)
             ->with(
-                ['productVariation',
+                ['productVariation'=>function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->active();
+                },
                     'productVariation.color:id,name_en,name_ar,code',
                     'productVariation.size:id,name_en,name_ar',
                     'productVariation.properties:id,name_en,name_ar',
@@ -48,7 +51,10 @@ class ProductReminderService
 
     public function show(ProductReminder $productReminder)
     {
-        return $productReminder->load(['productVariation',
+        return $productReminder->load(['productVariation'=>function ($q) {
+            $q->selectWithActiveOffer()
+                ->active();
+        },
             'productVariation.color:id,name_en,name_ar,code',
             'productVariation.size:id,name_en,name_ar',
             'productVariation.properties:id,name_en,name_ar',

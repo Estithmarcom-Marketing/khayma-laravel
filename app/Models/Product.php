@@ -58,6 +58,17 @@ class Product extends Model implements HasMedia
             'id'
         );
     }
+    public function reminders(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            ProductReminder::class,
+            ProductVariation::class,
+            'product_id',
+            'product_variation_id',
+            'id',
+            'id'
+        );
+    }
 
     public function orders()
     {

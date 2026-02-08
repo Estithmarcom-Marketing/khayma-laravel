@@ -231,6 +231,9 @@ class ProductService
             'cartItems as is_in_cart' => fn ($q) => $cartId
                 ? $q->where('cart_id', $cartId)
                 : $q->whereRaw('0 = 1'),
+            'reminders as is_in_reminder' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
         ];
     }
 

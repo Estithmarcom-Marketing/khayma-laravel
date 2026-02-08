@@ -55,9 +55,9 @@ class OrderService
             if (isset($data['promo_code']) && $data['promo_code'] != null) {
                 $promo_code = $this->getPromoCode($data['promo_code']);
             }
-            if(isset($data['address_id']) && $data['address_id'] != null){
+            if (isset($data['address_id']) && $data['address_id'] != null) {
                 $address = Address::findOrFail($data['address_id']);
-                if($address->user_id != $user->id){
+                if ($address->user_id != $user->id) {
                     throw new \LogicException(message: 'Invalid address');
                 }
             }
@@ -98,7 +98,7 @@ class OrderService
 
             return $order->load([
                 'items.productVariation.product',
-                'items.productVariation'=> function ($q) {
+                'items.productVariation' => function ($q) {
                     $q->selectWithActiveOffer()
                         ->active();
                 },

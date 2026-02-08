@@ -41,10 +41,15 @@ class HomeService
         return Product::query()
             ->published()
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
-              ? $q->where('cart_id', $cartId)
-              : $q->whereRaw('0 = 1'),
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1'),
+                'reminders as is_in_reminder' => fn ($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
             ])
             ->with(['category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
@@ -77,10 +82,15 @@ class HomeService
                     ->orWhereHas('favourites');
             })
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
-              ? $q->where('cart_id', $cartId)
-              : $q->whereRaw('0 = 1'),
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1'),
+                'reminders as is_in_reminder' => fn ($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
             ])
             ->with([
                 'category:id,name_ar,name_en',
@@ -109,10 +119,15 @@ class HomeService
             ->withCount(['orders', 'reviews'])
             ->withAvg('reviews', 'rating')
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId ? $q->where('user_id', $userId) : $q->whereRaw('0 = 1'),
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
-              ? $q->where('cart_id', $cartId)
-              : $q->whereRaw('0 = 1'),
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1'),
+                'reminders as is_in_reminder' => fn ($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
             ])
             ->with([
                 'category:id,name_ar,name_en',
@@ -141,12 +156,15 @@ class HomeService
             ->withAvg('reviews', 'rating')
             ->whereHas('category')
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId ?
-                 $q->where('user_id', $userId)
-                 : $q->whereRaw('0 = 1'),
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
-              ? $q->where('cart_id', $cartId)
-              : $q->whereRaw('0 = 1'),
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1'),
+                'reminders as is_in_reminder' => fn ($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
             ])
             ->with([
                 'category:id,name_ar,name_en',
