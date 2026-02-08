@@ -26,6 +26,7 @@ class StoreOrderRequest extends FormRequest
             'delivery_method_id' => ['sometimes', 'exists:delivery_methods,id'],
             'payment_method_id' => ['required',  'exists:payment_methods,id'],
             'promo_code' => ['nullable', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:20']
         ];
     }
 }

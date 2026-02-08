@@ -27,6 +27,8 @@ class OrderResource extends JsonResource
             'total' => $this->total_price,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
             'address' => new AddressResource($this->whenLoaded('address')),
+            'address_details' => $this->address_details,
+            'phone' => $this->phone,
             'delivery_method' => new DeliveryMethodResource($this->whenLoaded('deliveryMethod')),
             'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
             'created_at' => $this->created_at,

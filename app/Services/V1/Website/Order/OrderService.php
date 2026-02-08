@@ -55,10 +55,18 @@ class OrderService
             if (isset($data['promo_code']) && $data['promo_code'] != null) {
                 $promo_code = $this->getPromoCode($data['promo_code']);
             }
+            if(isset($data['address_id']) && $data['address_id'] != null){
+                $address = Address::findOrFail($data['address_id']);
+                if($address->user_id != $user->id){
+                    throw new \LogicException(message: 'Invalid address');
+                }
+            }
             $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code ?? null);
 
             $order = Order::create([
                 'user_id' => auth()->id(),
+                'phone' => $data['phone'] ?? $user->phone,
+                'address_details' => $address->value ?? null,
                 'address_id' => $data['address_id'] ?? null,
                 'payment_method_id' => $data['payment_method_id'] ?? null,
                 'delivery_method_id' => $data['delivery_method_id'],
@@ -90,6 +98,10 @@ class OrderService
 
             return $order->load([
                 'items.productVariation.product',
+                'items.productVariation'=> function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->active();
+                },
                 'address',
                 'deliveryMethod:id,name_ar,name_en',
                 'paymentMethod:id,name_ar,name_en',
@@ -113,7 +125,7 @@ class OrderService
                 $cost = CityShipment::select('cost')->where('city_id', $address->city_id)->first();
 
                 return $cost?->cost ?? 0;
-            }else {
+            } else {
                 throw new \LogicException(message: __('orders.error_address'));
             }
         }
@@ -152,6 +164,10 @@ class OrderService
     public function show($id)
     {
         return Order::with(['items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
+            'items.productVariation' => function ($q) {
+                $q->selectWithActiveOffer()
+                    ->active();
+            },
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
@@ -165,6 +181,10 @@ class OrderService
     {
         return auth()->user()->orders()->with([
             'items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
+            'items.productVariation' => function ($q) {
+                $q->selectWithActiveOffer()
+                    ->active();
+            },
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
@@ -175,6 +195,10 @@ class OrderService
     {
         return auth()->user()->orders()->where('status', OrderStatusEnum::CANCELED)->with([
             'items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
+            'items.productVariation' => function ($q) {
+                $q->selectWithActiveOffer()
+                    ->active();
+            },
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
