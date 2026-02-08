@@ -111,6 +111,25 @@ class HomeController extends Controller
             return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    public function getSuggestedProducts()
+    {
+        try {
+            $products = $this->service->getSuggestedProducts();
+
+            $products = ProductResource::collection($products)->response()->getData(true);
+
+            return ApiResponse::successResponse(
+                ['products' => $products['data'],
+                    'meta' => $products['meta'],
+                    'links' => $products['links']],
+                __('home.products_success'),
+                Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function getHomeReviews()
     {

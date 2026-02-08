@@ -91,6 +91,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::get('products/latest', [HomeController::class, 'getLatestProducts']);
                 Route::get('products/common', [HomeController::class, 'getCommonProducts']);
                 Route::get('products/most-orderd', [HomeController::class, 'getMostOrderdProducts']);
+                Route::get('products/suggested', [HomeController::class, 'getSuggestedProducts']);
                 Route::get('reviews', [HomeController::class, 'getHomeReviews']);
                 Route::get('questions/common', [HomeController::class, 'getCommonQuestions']);
             });

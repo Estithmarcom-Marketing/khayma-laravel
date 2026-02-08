@@ -129,6 +129,40 @@ class HomeService
             ->paginate(10);
     }
 
+    public function getSuggestedProducts()
+    {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
+        return Product::query()
+            ->published()
+            ->withCount(['reviews', 'favourites', 'orders'])
+            ->withAvg('reviews', 'rating')
+            ->whereHas('category')
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId ?
+                 $q->where('user_id', $userId)
+                 : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+              ? $q->where('cart_id', $cartId)
+              : $q->whereRaw('0 = 1'),
+            ])
+            ->with([
+                'category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'productVariations' => function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->active();
+                },
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ])
+            ->inRandomOrder()
+            ->paginate(10);
+    }
+
     public function getHomeReviews()
     {
         return Review::query()
