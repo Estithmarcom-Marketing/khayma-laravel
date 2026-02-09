@@ -108,12 +108,14 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::post('', [OrderController::class, 'store']);
                 Route::get('', [OrderController::class, 'index']);
+
                 Route::get('filter', [OrderController::class, 'filter']);
+                Route::post('calculate', [OrderController::class, 'calculateTotalAmountOfOrder']);
+                
                 Route::get('{order}/receipt', [OrderController::class, 'receipt']);
                 Route::post('{id}/reorder', [OrderController::class, 'reorder']);
                 Route::get('{id}', [OrderController::class, 'show']);
                 Route::post('{id}/cancel', [OrderController::class, 'cancel']);
-                Route::post('calculate', [OrderController::class, 'calculateTotalAmountOfOrder']);
             });
         Route::middleware(['throttle:60,1'])
             ->prefix('colors')
