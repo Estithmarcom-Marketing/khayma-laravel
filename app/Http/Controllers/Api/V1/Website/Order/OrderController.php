@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Website\Order;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Cart\CartItemResource;
 use App\Http\Resources\Order\OrderResource;
@@ -77,23 +78,25 @@ class OrderController extends Controller
             return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    public function listCanceled()
+    public function filter(FilterOrderRequest $request)
     {
         try {
-            $orders = $this->service->listCanceled();
+            $orders = $this->service->filter($request->validated());
             $orders = OrderResource::collection($orders)->response()->getData(true);
 
             return ApiResponse::successResponse(
                 ['orders' => $orders['data'],
                     'meta' => $orders['meta'],
-                    'links' => $orders['links']], __('orders.fetched'), Response::HTTP_OK);
+                    'links' => $orders['links']],
+                __('orders.fetched'),
+                Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function reorder($id)
     {

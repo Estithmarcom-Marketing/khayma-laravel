@@ -108,7 +108,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::post('', [OrderController::class, 'store']);
                 Route::get('', [OrderController::class, 'index']);
-                Route::get('canceled', [OrderController::class, 'listCanceled']);
+                Route::get('filter', [OrderController::class, 'filter']);
                 Route::get('{order}/receipt', [OrderController::class, 'receipt']);
                 Route::post('{id}/reorder', [OrderController::class, 'reorder']);
                 Route::get('{id}', [OrderController::class, 'show']);

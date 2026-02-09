@@ -98,6 +98,7 @@ class OrderService
 
             return $order->load([
                 'items.productVariation.product',
+                'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
                 'items.productVariation' => function ($q) {
                     $q->selectWithActiveOffer()
                         ->active();
@@ -164,6 +165,7 @@ class OrderService
     public function show($id)
     {
         return Order::with(['items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
+            'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
             'items.productVariation' => function ($q) {
                 $q->selectWithActiveOffer()
                     ->active();
@@ -181,6 +183,7 @@ class OrderService
     {
         return auth()->user()->orders()->with([
             'items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
+            'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
             'items.productVariation' => function ($q) {
                 $q->selectWithActiveOffer()
                     ->active();
@@ -191,10 +194,13 @@ class OrderService
         ])->latest()->paginate(10);
     }
 
-    public function listCanceled()
+ 
+
+    public function filter(array $filters)
     {
-        return auth()->user()->orders()->where('status', OrderStatusEnum::CANCELED)->with([
+        $query = auth()->user()->orders()->with([
             'items.productVariation.product:id,name_ar,name_en,slug_ar,slug_en',
+            'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
             'items.productVariation' => function ($q) {
                 $q->selectWithActiveOffer()
                     ->active();
@@ -202,7 +208,23 @@ class OrderService
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
-        ])->latest()->paginate(10);
+        ]);
+
+        $limit = $filters['limit'] ?? 4;
+        $sortBy = $filters['sort_by'] ?? 'created_at';
+        $orderBy = $filters['order_by'] ?? 'desc';
+
+        $sortMap = [
+            'created_at' => 'created_at',
+            'total' => 'total_price'
+        ];
+        $query->orderBy($sortMap[$sortBy], $orderBy);
+
+        $query->when(isset($filters['status']), function ($q) use ($filters) {
+            $q->where('status',OrderStatusEnum::from($filters['status']));
+        });
+
+        return $query->paginate($limit);
     }
 
     public function cancel($id)

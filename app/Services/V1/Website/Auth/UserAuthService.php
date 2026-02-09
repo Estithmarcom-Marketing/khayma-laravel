@@ -4,15 +4,17 @@ namespace App\Services\V1\Website\Auth;
 
 use App\Models\OtpCode;
 use App\Models\User;
-use DB;
-use Hash;
-use Log;
+
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserAuthService
 {
     public function generateOtp()
     {
-        return random_int(100000, 999999);
+        return random_int(1000, 9999);
     }
 
     public function sendOtp(array $data)

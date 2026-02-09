@@ -26,6 +26,12 @@ class OrderItemResource extends JsonResource
                 'name_ar' => $this->productVariation->product->name_ar,
                 'slug_en' => $this->productVariation->product->slug_en,
                 'slug_ar' => $this->productVariation->product->slug_ar,
+                'images' => $this->productVariation->product->media->map(function ($media) {
+                    return [
+                        'name' => $media->name,
+                        'url' => $media->original_url,
+                    ];
+                })->whenNotEmpty(fn ($collection) => $collection->values()),
             ],
         ];
     }
