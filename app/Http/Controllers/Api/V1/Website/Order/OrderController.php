@@ -54,7 +54,7 @@ class OrderController extends Controller
 
             return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.shown'), Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('Failed to fetch order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+                Log::error('Failed to fetch order', ['error' => $e->getMessage(),'url' => request()->url() ,'query' => request()->query(),'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_show'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -91,7 +91,7 @@ class OrderController extends Controller
                 __('orders.fetched'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'url' => request()->url() ,'query' => request()->query(),'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('orders.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
