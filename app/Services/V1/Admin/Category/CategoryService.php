@@ -119,4 +119,21 @@ class CategoryService
         }
         $subCategory->clearMediaCollection('category')->delete();
     }
+
+    public function subCategoriesNoPagination(Category $category)
+    {
+        return $category
+            ->subCategories()
+            ->select(['id', 'name_ar', 'name_en'])
+            ->with(['parent', 'media:id,model_id,name,file_name,collection_name,disk'])
+            ->get();
+    }
+
+    public function categoriesNoPagination()
+    {
+        return Category::select(['id', 'name_ar', 'name_en'])
+            ->with(['media:id,model_id,name,file_name,collection_name,disk'])
+            ->whereNull('parent_id')
+            ->get();
+    }
 }
