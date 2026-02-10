@@ -93,6 +93,7 @@ Route::prefix('admin/v1')
             ->group(function () {
                 Route::get('', [BrandController::class, 'index'])->middleware('permission:read-brands');
                 Route::post('', [BrandController::class, 'store'])->middleware('permission:store-brand');
+                Route::get('no-pagination', [BrandController::class, 'brandsNoPagination'])->middleware('permission:read-brands');
                 Route::patch('{brand}', [BrandController::class, 'update'])->middleware('permission:store-brand');
                 Route::get('{brand}', [BrandController::class, 'show'])->middleware('permission:read-brands');
                 Route::delete('{brand}', [BrandController::class, 'destroy'])->middleware('permission:delete-brand');
@@ -145,10 +146,11 @@ Route::prefix('admin/v1')
                 Route::post('', [CategoryController::class, 'store'])->middleware('permission:store-category');
                 Route::get('export-csv', [CategoryController::class, 'exportCsv'])->middleware('permission:read-categories');
                 Route::get('export-excel', [CategoryController::class, 'exportExcel'])->middleware('permission:read-categories');
+                Route::get('categories-no-pagination', [CategoryController::class, 'categoriesNoPagination'])->middleware('permission:read-categories');
+                Route::post('import', [CategoryController::class, 'importSpreadsheet'])->middleware('permission:store-category');
                 Route::get('{category}', [CategoryController::class, 'show']);
                 Route::get('{category}/sub-categories', [CategoryController::class, 'listSubCategories'])->middleware('permission:read-categories');
-
-                Route::post('import', [CategoryController::class, 'importSpreadsheet'])->middleware('permission:store-category');
+                Route::get('{category}/subcategories-no-pagination', [CategoryController::class, 'subCategoriesNoPagination'])->middleware('permission:read-categories');
                 Route::patch('{category}', [CategoryController::class, 'update'])->middleware('permission:store-category');
                 Route::delete('{category}', [CategoryController::class, 'destroy'])->middleware('permission:delete-category');
                 Route::post('{category}/sub-categories', [CategoryController::class, 'storeSubCategory'])->middleware('permission:store-category');

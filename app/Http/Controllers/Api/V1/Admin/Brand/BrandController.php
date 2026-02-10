@@ -88,4 +88,18 @@ class BrandController extends Controller
             return ApiResponse::errorResponse('Failed to delete brand', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function brandsNoPagination()
+    {
+        try {
+            $brands = $this->service->brandsNoPagination();
+            $brands = BrandResource::collection($brands);
+
+            return ApiResponse::successResponse(['brands' => $brands], 'Brands retrieved successfully', status: Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch brands', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to fetch brands', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
