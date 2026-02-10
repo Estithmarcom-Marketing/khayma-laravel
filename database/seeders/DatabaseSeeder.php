@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RolesAndPermissionsSeeder::class);
         $user = User::firstOrCreate(
-            ['email' => 'mahmoudelsayed@gmail.com'],
+            ['email' => 'admin@alkhimah.com'],
             [
-                'name' => 'Mahmoud Elsayed',
-                'password' => Hash::make('12345678'),
+                'name' => 'Super Admin',
+                'password' => Hash::make('4s65dASFa6#$@dda4'),
                 'is_guest' => false,
             ]
         );

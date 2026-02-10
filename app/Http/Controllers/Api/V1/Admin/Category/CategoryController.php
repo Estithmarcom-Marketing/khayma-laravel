@@ -232,26 +232,26 @@ class CategoryController extends Controller
             $categories = CategoryResource::collection($categories);
 
             return ApiResponse::successResponse(['categories' => $categories],
-                'SubCategories retrieved successfully',
+                __('category.listed_all'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('Failed to fetch sub-categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-            return ApiResponse::errorResponse('Failed to fetch sub-categories', Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Failed to fetch categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('category.list_all_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function subCategoriesNoPagination(Category $category)
     {
         try {
-            $categories = $this->service->subCategoriesNoPagination($category);
-            $categories = CategoryResource::collection($categories);
+            $sub_categories = $this->service->subCategoriesNoPagination($category);
+            $sub_categories = CategoryResource::collection($sub_categories);
 
-            return ApiResponse::successResponse(['categories' => $categories],
-                'SubCategories retrieved successfully',
+            return ApiResponse::successResponse(['sub_categories' => $sub_categories],
+                __('category.listed_all'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch sub-categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-            return ApiResponse::errorResponse('Failed to fetch sub-categories', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('category.failed_to_fetch_subcategories'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 

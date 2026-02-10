@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -21,15 +22,25 @@ class UpdateProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        $productId = $this->route('product');
+        $product = $this->route('product');
 
         return [
             'name_ar' => 'sometimes|string|max:255',
             'name_en' => 'sometimes|string|max:255',
             'description_ar' => 'nullable|string|max:500',
             'description_en' => 'nullable|string|max:500',
-            'slug_ar' => 'sometimes|string|max:255|unique:products,slug_ar,'.$productId,
-            'slug_en' => 'sometimes|string|max:255|unique:products,slug_en,'.$productId,
+            'slug_ar' => [
+                'sometimes',
+                'string',
+                'max:255',
+                Rule::unique('products', 'slug_ar')->ignore($product)->whereNull('deleted_at'),
+            ],
+            'slug_en' => [
+                'sometimes',
+                'string',
+                'max:255',
+                Rule::unique('products', 'slug_en')->ignore($product)->whereNull('deleted_at'),
+            ],
             'category_id' => 'sometimes|exists:categories,id',
             'brand_id' => 'sometimes|exists:brands,id',
             'is_published' => 'sometimes|boolean',
