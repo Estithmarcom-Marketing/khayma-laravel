@@ -19,6 +19,53 @@ class SpreadsheetImportExportService
         return Excel::download($exportable, $filename.'.csv');
     }
 
+     public function import(object $importable, UploadedFile|string $file): array
+    {
+        $path = Storage::disk('local')->putFile('imports', $file);
+
+        Storage::disk('local')->makeDirectory('imports/errors');
+
+        try {
+            Excel::import(
+                $importable,
+                Storage::disk('local')->path($path)
+            );
+
+
+            $stats = method_exists($importable, 'getStats') 
+                ? $importable->getStats() 
+                : [];
+
+            Log::info('Import completed successfully', [
+                'importable' => get_class($importable),
+                'file_path' => $path,
+                'stats' => $stats,
+            ]);
+
+   
+
+            return [
+                'success' => true,
+                'path' => $path,
+                'stats' => $stats,
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('Failed to import spreadsheet', [
+                'importable' => get_class($importable),
+                'file_path' => $path,
+                'error' => $e->getMessage(),
+                'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
+            ]);
+
+        
+            $errorPath = 'imports/errors/' . basename($path);
+            Storage::disk('local')->move($path, $errorPath);
+
+            throw $e;
+        }
+    }
+
     // public function import(object $importable, UploadedFile|string $file): string
     // {
     //     $path = Storage::disk('local')->putFile('import', $file);
@@ -48,53 +95,5 @@ class SpreadsheetImportExportService
     //         throw $e;
     //     }
     // }
-     public function import(object $importable, UploadedFile|string $file): array
-    {
-        $path = Storage::disk('local')->putFile('imports', $file);
-
-        // Ensure error directory exists
-        Storage::disk('local')->makeDirectory('imports/errors');
-
-        try {
-            Excel::import(
-                $importable,
-                Storage::disk('local')->path($path)
-            );
-
-            // Get statistics if available
-            $stats = method_exists($importable, 'getStats') 
-                ? $importable->getStats() 
-                : [];
-
-            Log::info('Import completed successfully', [
-                'importable' => get_class($importable),
-                'file_path' => $path,
-                'stats' => $stats,
-            ]);
-
-            // Note: File deletion is handled by the importable class
-            // to allow for error file preservation
-
-            return [
-                'success' => true,
-                'path' => $path,
-                'stats' => $stats,
-            ];
-
-        } catch (\Throwable $e) {
-            Log::error('Failed to import spreadsheet', [
-                'importable' => get_class($importable),
-                'file_path' => $path,
-                'error' => $e->getMessage(),
-                'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
-            ]);
-
-            // Move file to error directory instead of deleting
-            $errorPath = 'imports/errors/' . basename($path);
-            Storage::disk('local')->move($path, $errorPath);
-
-            throw $e;
-        }
-    }
 
 }

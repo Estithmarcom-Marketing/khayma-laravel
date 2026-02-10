@@ -164,6 +164,8 @@ Route::prefix('admin/v1')
                 Route::get('{property}', [PropertyController::class, 'show'])->middleware('permission:read-properties');
                 Route::delete('{property}', [PropertyController::class, 'destroy'])->middleware('permission:delete-property');
             });
+            Route::get('products/export-csv', [ProductController::class, 'exportCsv']);
+            Route::get('products/export-excel', [ProductController::class, 'exportExcel']);
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('products')
             ->group(function () {

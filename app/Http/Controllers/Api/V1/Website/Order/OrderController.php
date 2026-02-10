@@ -103,7 +103,7 @@ class OrderController extends Controller
         try {
             $items = $this->service->reorder($id);
 
-            return ApiResponse::successResponse(['items' => CartItemResource::collection($items)], __('orders.reordered'), Response::HTTP_CREATED);
+            return ApiResponse::successResponse([], __('orders.reordered'), Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

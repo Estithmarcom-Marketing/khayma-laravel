@@ -194,8 +194,6 @@ class OrderService
         ])->latest()->paginate(10);
     }
 
- 
-
     public function filter(array $filters)
     {
         $query = auth()->user()->orders()->with([
@@ -216,12 +214,12 @@ class OrderService
 
         $sortMap = [
             'created_at' => 'created_at',
-            'total' => 'total_price'
+            'total' => 'total_price',
         ];
         $query->orderBy($sortMap[$sortBy], $orderBy);
 
         $query->when(isset($filters['status']), function ($q) use ($filters) {
-            $q->where('status',OrderStatusEnum::from($filters['status']));
+            $q->where('status', OrderStatusEnum::from($filters['status']));
         });
 
         return $query->paginate($limit);

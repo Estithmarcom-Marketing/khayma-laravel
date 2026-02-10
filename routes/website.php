@@ -33,7 +33,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('logout', [UserAuthController::class, 'logout'])->middleware(['auth:sanctum']);
 
             });
-        Route::middleware(['throttle:30,1', 'auth:sanctum'])
+        Route::middleware(['throttle:60,1', 'auth:sanctum'])
             ->prefix('profile')
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
