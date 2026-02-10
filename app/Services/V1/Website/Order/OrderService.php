@@ -170,6 +170,8 @@ class OrderService
                 $q->selectWithActiveOffer()
                     ->active();
             },
+            'items.productVariation.color:id,name_en,name_ar,code',
+            'items.productVariation.size:id,name_en,name_ar',
             'address:id,name,value,city_id,additional_info',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',

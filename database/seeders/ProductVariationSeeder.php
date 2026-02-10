@@ -35,7 +35,7 @@ class ProductVariationSeeder extends Seeder
                     'is_active' => true,
                     'offer' => rand(0, 60),
                     'offer_started_date' => $now,
-                    'offer_expired_date' => $now->addWeeks(rand(2, 8)),
+                    'offer_expired_date' => Carbon::now()->addDays(rand(7, 30)),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);

@@ -166,12 +166,13 @@ Route::prefix('admin/v1')
                 Route::get('{property}', [PropertyController::class, 'show'])->middleware('permission:read-properties');
                 Route::delete('{property}', [PropertyController::class, 'destroy'])->middleware('permission:delete-property');
             });
-            Route::get('products/export-csv', [ProductController::class, 'exportCsv']);
-            Route::get('products/export-excel', [ProductController::class, 'exportExcel']);
+
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('products')
             ->group(function () {
                 Route::get('', [ProductController::class, 'index'])->middleware('permission:read-products');
+                Route::get('export-csv', [ProductController::class, 'exportCsv'])->middleware('permission:read-products');
+                Route::get('export-excel', [ProductController::class, 'exportExcel'])->middleware('permission:read-products');
                 Route::get('{product}', [ProductController::class, 'show'])->middleware('permission:read-products');
                 Route::post('', [ProductController::class, 'store'])->middleware('permission:store-product');
                 Route::patch('{product}', [ProductController::class, 'update'])->middleware('permission:store-product');
