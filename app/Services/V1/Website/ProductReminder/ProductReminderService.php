@@ -31,7 +31,7 @@ class ProductReminderService
     {
         $user = auth()->user();
 
-        if ($productvariation->stock_quantity == 0) {
+        if ($productvariation->stock_quantity !== 0) {
             return $user->productReminders()->create([
                 'product_variation_id' => $productvariation->id,
             ]);
@@ -42,11 +42,12 @@ class ProductReminderService
 
     public function delete(ProductVariation $productvariation)
     {
-        $productReminder = auth()->user()->productReminders()->where('product_variation_id',$productvariation->id)->first();
+        $productReminder = auth('sanctum')->user()->productReminders()->where('product_variation_id',$productvariation->id)->first();
         if ($productReminder) {
             $productReminder->delete();
+            return true;
         }
-        return true;
+        return false;
     }
 
     public function show(ProductReminder $productReminder)
@@ -59,6 +60,7 @@ class ProductReminderService
             'productVariation.size:id,name_en,name_ar',
             'productVariation.properties:id,name_en,name_ar',
             'productVariation.product:id,name_en,name_ar,slug_en,slug_ar,brand_id,category_id,description_en,description_ar',
-            'productVariation.product.media:id,model_id,name,file_name,collection_name,disk']);
+            'productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
+            ]);
     }
 }
