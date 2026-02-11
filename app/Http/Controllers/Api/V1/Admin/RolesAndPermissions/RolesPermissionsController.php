@@ -21,69 +21,69 @@ class RolesPermissionsController extends Controller
 {
     public function __construct(protected RolePermissionService $service) {}
 
-    public function storeRole(Request $request)
-    {
+    // public function storeRole(Request $request)
+    // {
 
-        try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:roles,name',
-            ]);
+    //     try {
+    //         $validated = $request->validate([
+    //             'name' => 'required|string|max:255|unique:roles,name',
+    //         ]);
 
-            $role = $this->service->storeRole($validated);
+    //         $role = $this->service->storeRole($validated);
 
-            return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Role created successfully', Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            Log::error('Failed to create role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+    //         return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Role created successfully', Response::HTTP_CREATED);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to create role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to create role', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //         return ApiResponse::errorResponse('Failed to create role', Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
-    public function storePermission(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:permissions,name',
-            ]);
+    // public function storePermission(Request $request)
+    // {
+    //     try {
+    //         $validated = $request->validate([
+    //             'name' => 'required|string|max:255|unique:permissions,name',
+    //         ]);
 
-            $permission = $this->service->storePermission($validated);
+    //         $permission = $this->service->storePermission($validated);
 
-            return ApiResponse::successResponse(['permission' => PermissionResource::make($permission)], 'Permission created successfully', Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            Log::error('Failed to create permission', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+    //         return ApiResponse::successResponse(['permission' => PermissionResource::make($permission)], 'Permission created successfully', Response::HTTP_CREATED);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to create permission', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to create permission', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //         return ApiResponse::errorResponse('Failed to create permission', Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
-    public function assignPermissionToRole(Role $role, Permission $permission)
-    {
-        try {
+    // public function assignPermissionToRole(Role $role, Permission $permission)
+    // {
+    //     try {
 
-            $role = $this->service->assignPermissionToRole($role, $permission);
+    //         $role = $this->service->assignPermissionToRole($role, $permission);
 
-            return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Permission assigned to role successfully', Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to assign permission to role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+    //         return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Permission assigned to role successfully', Response::HTTP_OK);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to assign permission to role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to assign permission to role', Response::HTTP_INTERNAL_SERVER_ERROR);
+    //         return ApiResponse::errorResponse('Failed to assign permission to role', Response::HTTP_INTERNAL_SERVER_ERROR);
 
-        }
-    }
+    //     }
+    // }
 
-    public function revokePermissionFromRole(Role $role, Permission $permission)
-    {
-        try {
+    // public function revokePermissionFromRole(Role $role, Permission $permission)
+    // {
+    //     try {
 
-            $role = $this->service->removePermissionFromRole($permission, $role);
+    //         $role = $this->service->removePermissionFromRole($permission, $role);
 
-            return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Permission revoked from role successfully', Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to revoke permission from role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+    //         return ApiResponse::successResponse(['role' => RoleResource::make($role)], 'Permission revoked from role successfully', Response::HTTP_OK);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to revoke permission from role', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to revoke permission from role', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //         return ApiResponse::errorResponse('Failed to revoke permission from role', Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     public function assignRoleToUser(User $user, Role $role)
     {
@@ -104,19 +104,19 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    public function revokeRoleFromUser(User $user, Role $role)
-    {
-        try {
+    // public function revokeRoleFromUser(User $user, Role $role)
+    // {
+    //     try {
 
-            $user = $this->service->removeRoleFromUser($user, $role);
+    //         $user = $this->service->removeRoleFromUser($user, $role);
 
-            return ApiResponse::successResponse(['user' => UserResource::make($user)], 'Role revoked from user successfully', Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to revoke role from user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+    //         return ApiResponse::successResponse(['user' => UserResource::make($user)], 'Role revoked from user successfully', Response::HTTP_OK);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to revoke role from user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to revoke role from user', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //         return ApiResponse::errorResponse('Failed to revoke role from user', Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     public function getAllRoles()
     {
@@ -191,19 +191,19 @@ class RolesPermissionsController extends Controller
         }
     }
 
-    public function getRolesByPermission(Permission $permission)
-    {
-        try {
+    // public function getRolesByPermission(Permission $permission)
+    // {
+    //     try {
 
-            $roles = $this->service->getPermissionRoles($permission);
+    //         $roles = $this->service->getPermissionRoles($permission);
 
-            return ApiResponse::successResponse(['roles' => RoleResource::collection($roles)], 'Roles fetched successfully', Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to fetch roles by permission', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+    //         return ApiResponse::successResponse(['roles' => RoleResource::collection($roles)], 'Roles fetched successfully', Response::HTTP_OK);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to fetch roles by permission', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch roles by permission', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //         return ApiResponse::errorResponse('Failed to fetch roles by permission', Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     public function storeRoleWithPermissions(StoreRoleRequest $request)
     {

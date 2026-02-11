@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin/v1')
     ->group(function () {
-        Route::post('store', [AdminManagmentController::class, 'store'])->middleware(['permission:store-admin', 'throttle:10,1']);
+        Route::post('admins', [AdminManagmentController::class, 'store'])->middleware(['permission:store-admin', 'throttle:10,1']);
         Route::prefix('auth')
             ->group(function () {
                 Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:10,1');
@@ -31,21 +31,21 @@ Route::prefix('admin/v1')
             ->group(function () {
                 Route::get('roles', [RolesPermissionsController::class, 'getAllRoles']);
                 Route::get('permissions', [RolesPermissionsController::class, 'getAllPermissions']);
-                Route::post('roles', [RolesPermissionsController::class, 'storeRole']);
-                Route::post('permissions', [RolesPermissionsController::class, 'storePermission']);
+                // Route::post('roles', [RolesPermissionsController::class, 'storeRole']);
+                // Route::post('permissions', [RolesPermissionsController::class, 'storePermission']);
 
                 Route::post('users/{user}/roles/{role}', [RolesPermissionsController::class, 'assignRoleToUser']);
-                Route::delete('users/{user}/roles/{role}', [RolesPermissionsController::class, 'revokeRoleFromUser']);
+                // Route::delete('users/{user}/roles/{role}', [RolesPermissionsController::class, 'revokeRoleFromUser']);
 
-                Route::post('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'assignPermissionToRole']);
-                Route::delete('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'revokePermissionFromRole']);
+                // Route::post('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'assignPermissionToRole']);
+                // Route::delete('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'revokePermissionFromRole']);
 
                 Route::get('users/{user}/roles', [RolesPermissionsController::class, 'getRolesByUser']);
 
                 Route::get('roles/{role}/permissions', [RolesPermissionsController::class, 'getPermissionsByRole']);
                 Route::get('roles/{role}/users', [RolesPermissionsController::class, 'getUsersByRole']);
 
-                Route::get('permissions/{permission}/roles', [RolesPermissionsController::class, 'getRolesByPermission']);
+                // Route::get('permissions/{permission}/roles', [RolesPermissionsController::class, 'getRolesByPermission']);
 
                 Route::post('roles-with-permissions', [RolesPermissionsController::class, 'storeRoleWithPermissions']); // the url is temporary for testing and will be updated when be accepted
                 Route::patch('roles/{role}', [RolesPermissionsController::class, 'updateRoleWithPermissions']);
