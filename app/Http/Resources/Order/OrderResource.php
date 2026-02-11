@@ -24,6 +24,7 @@ class OrderResource extends JsonResource
             'tax' => $this->tax_amount,
             'shipping' => $this->shipping_cost,
             'discount' => $this->discount_amount,
+            'promo_code' => $this->promo_code,
             'total' => $this->total_price,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
             'address' => new AddressResource($this->whenLoaded('address')),

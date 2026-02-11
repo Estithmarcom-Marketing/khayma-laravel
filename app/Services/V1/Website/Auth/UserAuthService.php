@@ -82,9 +82,10 @@ class UserAuthService
     {
         $user = auth()->user();
         if ($user) {
-            $user->tokens()->delete();
+            $user->currentAccessToken()->delete();
+            return true;
         }
-
-        return true;
+        throw new \Exception('User not authenticated.');
     }
+    
 }

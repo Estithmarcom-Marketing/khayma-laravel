@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Application\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Propaganistas\LaravelPhone\PhoneNumber;
 
 class UserLoginRequest extends FormRequest
 {
@@ -16,10 +15,6 @@ class UserLoginRequest extends FormRequest
     }
 
     /**
-     * Prepare the data for validation.
-     */
-  
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -27,8 +22,8 @@ class UserLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-           
-            'phone' => 'required|phone:SA', 
+
+            'phone' => 'required|phone:SA',
             'otp_code' => 'required|string|max:50',
             'remember_me' => 'sometimes|boolean',
         ];
@@ -37,7 +32,7 @@ class UserLoginRequest extends FormRequest
     /**
      * Get custom messages for validator errors.
      */
-  public function messages(): array
+    public function messages(): array
     {
         $locale = app()->getLocale();
         if ($locale == 'ar') {

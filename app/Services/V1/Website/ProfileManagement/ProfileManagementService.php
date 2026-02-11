@@ -2,7 +2,7 @@
 
 namespace App\Services\V1\Website\ProfileManagement;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ProfileManagementService
 {
