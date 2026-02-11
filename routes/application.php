@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Application\Address\AddressController;
 use App\Http\Controllers\Api\V1\Application\Auth\UserAuthController;
 use App\Http\Controllers\Api\V1\Application\ProfileManagment\ProfileManagmentController;
 use Illuminate\Support\Facades\Route;
@@ -21,5 +22,14 @@ Route::middleware(['locale'])
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
                 Route::patch('', [ProfileManagmentController::class, 'update']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('addresses')
+            ->group(function () {
+                Route::get('', [AddressController::class, 'index']);
+                Route::post('', [AddressController::class, 'store']);
+                Route::patch('{address}', [AddressController::class, 'update']);
+                Route::get('{address}', [AddressController::class, 'show']);
+                Route::delete('{address}', [AddressController::class, 'destroy']);
             });
     });

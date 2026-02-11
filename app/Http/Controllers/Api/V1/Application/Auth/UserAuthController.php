@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Application\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Application\Auth\OtpRequest;
 use App\Http\Requests\Application\Auth\UserLoginRequest;
-use App\Http\Resources\Application\UserResource;
+use App\Http\Resources\Application\User\UserResource;
 use App\Services\V1\Website\Auth\UserAuthService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

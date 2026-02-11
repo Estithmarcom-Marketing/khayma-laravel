@@ -4,7 +4,7 @@ namespace App\Services\V1\Website\Address;
 
 use App\Models\Address;
 use App\Models\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class AddressService
 {

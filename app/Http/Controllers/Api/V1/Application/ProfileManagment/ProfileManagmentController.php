@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Application\ProfileManagment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Application\ProfileManagement\UpdateProfileRequest;
-use App\Http\Resources\Application\UserResource;
+use App\Http\Resources\Application\User\UserResource;
 use App\Services\V1\Website\ProfileManagement\ProfileManagementService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
