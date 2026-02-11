@@ -31,7 +31,7 @@ class ProductReminderService
     {
         $user = auth()->user();
 
-        if ($productvariation->stock_quantity !== 0) {
+        if ($productvariation->stock_quantity == 0) {
             return $user->productReminders()->create([
                 'product_variation_id' => $productvariation->id,
             ]);
