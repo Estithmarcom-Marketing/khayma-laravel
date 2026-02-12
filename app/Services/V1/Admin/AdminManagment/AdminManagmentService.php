@@ -2,7 +2,7 @@
 
 namespace App\Services\V1\Admin\AdminManagment;
 
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -13,19 +13,22 @@ class AdminManagmentService
     {
         return DB::transaction(function () use ($data) {
             $data['password'] = Hash::make($data['password']);
-            $data['is_guest'] = false;
-            $user = User::create([
+            $admin = Admin::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => $data['password'],
-                'phone' => $data['phone'],
-                'is_guest' => $data['is_guest'],
+                'is_active' => $data['is_active'] ?? true,
             ]);
             if (isset($data['role_id'])) {
                 $role = Role::find($data['role_id']);
-                $user->assignRole($role);
+                $admin->assignRole($role);
             }
-            return ['admin' => $user];
+            return ['admin' => $admin];
         });
+    }
+
+    public function list($limit = 10)
+    {
+        return Admin::with('roles')->paginate($limit);
     }
 }

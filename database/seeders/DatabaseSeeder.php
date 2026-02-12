@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,16 +18,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RolesAndPermissionsSeeder::class);
-        $user = User::firstOrCreate(
+        $admin = Admin::firstOrCreate(
             ['email' => 'admin@alkhimah.com'],
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('4s65dASFa6#$@dda4'),
-                'is_guest' => false,
             ]
         );
         $role = Role::where('name', 'super-admin')->first();
-        $user->assignRole($role);
+        $admin->assignRole($role);
         $this->call(CitySeeder::class);
         $this->call(BrandSeeder::class);
         $this->call(CategorySeeder::class);
