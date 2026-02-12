@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\Review;
+namespace App\Http\Controllers\Api\V1\Application\Review;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Review\StoreReviewRequest;
-use App\Http\Requests\Review\UpdateReviewRequest;
-use App\Http\Resources\Review\ReviewResource;
+use App\Http\Requests\Application\Review\StoreReviewRequest;
+use App\Http\Requests\Application\Review\UpdateReviewRequest;
+use App\Http\Resources\Application\Review\ReviewResource;
 use App\Models\Product;
 use App\Models\Review;
 use App\Services\V1\Website\Review\ReviewService;

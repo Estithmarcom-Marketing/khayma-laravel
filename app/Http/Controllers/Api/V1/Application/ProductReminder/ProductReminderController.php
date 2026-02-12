@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\ProductReminder;
+namespace App\Http\Controllers\Api\V1\Application\ProductReminder;
+
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductReminders\ProductRemindersResource;
+use App\Http\Resources\Application\ProductReminders\ProductRemindersResource;
 use App\Models\ProductReminder;
 use App\Models\ProductVariation;
 use App\Services\V1\Website\ProductReminder\ProductReminderService;
@@ -71,6 +72,7 @@ class ProductReminderController extends Controller
     {
         try {
             $this->service->delete($productVariation);
+
             return ApiResponse::successResponse([], 'Product Reminder deleted successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to delete product reminder', ['error' => $e->getMessage(), 'method' => __METHOD__]);

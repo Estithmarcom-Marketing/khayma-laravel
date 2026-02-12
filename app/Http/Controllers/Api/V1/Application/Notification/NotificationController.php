@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\Notification;
+namespace App\Http\Controllers\Api\V1\Application\Notification;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Application\Notifications\NotificationResource;
+use App\Http\Resources\Notifications\NotificationResource;
 use App\Services\V1\Website\Notification\NotificationService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

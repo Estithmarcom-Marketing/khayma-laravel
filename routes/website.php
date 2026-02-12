@@ -134,6 +134,11 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware(['auth:sanctum']);
             });
 
+        Route::get('delivery-methods', [DeliveryMethodController::class, 'index'])
+            ->middleware('throttle:60,1');
+        Route::get('payment-methods', [PaymentMethodController::class, 'index'])
+            ->middleware('throttle:60,1');
+
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('orders')
             ->group(function () {
@@ -157,7 +162,5 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
 
-        Route::get('delivery-methods', [DeliveryMethodController::class, 'index'])->middleware('throttle:60,1');
-        Route::get('payment-methods', [PaymentMethodController::class, 'index'])->middleware('throttle:60,1');
         Route::post('tent', [CustomTentController::class, 'store']);
     });

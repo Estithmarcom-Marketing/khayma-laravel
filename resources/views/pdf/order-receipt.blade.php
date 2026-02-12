@@ -80,6 +80,7 @@
     <h3>{{ app()->getLocale() === 'ar' ? 'بيانات العميل' : 'Customer Information' }}</h3>
 
     <p>{{ $order->user->name }}</p>
+   
 
     @if($order->user->phone)
         <p class="number">{{ $order->user->phone }}</p>
@@ -91,8 +92,7 @@
     <h3>{{ app()->getLocale() === 'ar' ? 'عنوان التوصيل' : 'Delivery Address' }}</h3>
 
     <p>
-        {{ $order->address->name }} –
-        {{ $order->address->value }}
+        {{ $order->address_details }} 
     </p>
 </div>
 

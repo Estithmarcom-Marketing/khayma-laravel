@@ -7,9 +7,17 @@ use App\Http\Controllers\Api\V1\Application\Cart\CartController;
 use App\Http\Controllers\Api\V1\Application\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Application\City\CityController;
 use App\Http\Controllers\Api\V1\Application\Color\ColorController;
+use App\Http\Controllers\Api\V1\Application\CustomTent\CustomTentController;
+use App\Http\Controllers\Api\V1\Application\DeliveryMethod\DeliveryMethodController;
+use App\Http\Controllers\Api\V1\Application\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Application\Home\HomeController;
+use App\Http\Controllers\Api\V1\Application\Notification\NotificationController;
+use App\Http\Controllers\Api\V1\Application\Order\OrderController;
+use App\Http\Controllers\Api\V1\Application\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Application\Product\ProductController;
+use App\Http\Controllers\Api\V1\Application\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Application\ProfileManagment\ProfileManagmentController;
+use App\Http\Controllers\Api\V1\Application\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Application\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
@@ -90,7 +98,7 @@ Route::middleware(['locale'])
                 Route::get('', [SizeController::class, 'index']);
                 Route::get('{id}', [SizeController::class, 'show']);
             });
-            Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('cart')
             ->group(function () {
                 Route::get('', [CartController::class, 'getCartItems']);
@@ -99,4 +107,60 @@ Route::middleware(['locale'])
                 Route::delete('{variationId}', [CartController::class, 'removeCartItem']);
                 Route::delete('', [CartController::class, 'clearCart']);
             });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('favourites')
+            ->group(function () {
+                Route::get('', [FavouriteController::class, 'index']);
+                Route::get('{favourite}', [FavouriteController::class, 'show']);
+                Route::post('products/{product}', [FavouriteController::class, 'store']);
+                Route::delete('products/{product}', [FavouriteController::class, 'destroy']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('product-reminders')
+            ->group(function () {
+                Route::get('', [ProductReminderController::class, 'index']);
+                Route::get('{productReminder}', [ProductReminderController::class, 'show']);
+                Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
+                Route::delete('variations/{productVariation}', [ProductReminderController::class, 'destroy']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('reviews')
+            ->group(function () {
+                Route::get('', [ReviewController::class, 'getMyReviews'])->middleware(['auth:sanctum']);
+                Route::get('products/{product}', [ReviewController::class, 'getProductReviews']);
+                Route::get('statistics/{id}', [ReviewController::class, 'getStatistics']);
+                Route::post('', [ReviewController::class, 'store'])->middleware(['auth:sanctum']);
+                Route::patch('{review}', [ReviewController::class, 'update'])->middleware(['auth:sanctum']);
+                Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware(['auth:sanctum']);
+            });
+
+        Route::get('delivery-methods', [DeliveryMethodController::class, 'index'])
+            ->middleware('throttle:60,1');
+
+        Route::get('payment-methods', [PaymentMethodController::class, 'index'])
+            ->middleware('throttle:60,1');
+
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('orders')
+            ->group(function () {
+                Route::post('', [OrderController::class, 'store']);
+                Route::get('', [OrderController::class, 'index']);
+
+                Route::get('filter', [OrderController::class, 'filter']);
+                Route::post('calculate', [OrderController::class, 'calculateTotalAmountOfOrder']);
+
+                Route::get('{order}/receipt', [OrderController::class, 'receipt']);
+                Route::post('{id}/reorder', [OrderController::class, 'reorder']);
+                Route::get('{id}', [OrderController::class, 'show']);
+                Route::post('{id}/cancel', [OrderController::class, 'cancel']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('notifications')
+            ->group(function () {
+                Route::get('', [NotificationController::class, 'index']);
+                Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
+                Route::post('', [NotificationController::class, 'markAllAsRead']);
+            });
+            Route::post('tent', [CustomTentController::class, 'store']);
+
     });

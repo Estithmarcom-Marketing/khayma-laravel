@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\CustomTent;
+namespace App\Http\Controllers\Api\V1\Application\CustomTent;
+
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CustomTent\StoreCustomTentRequest;
-use App\Http\Resources\CustomTent\CustomTentResource;
+use App\Http\Requests\Application\CustomTent\StoreCustomTentRequest;
+use App\Http\Resources\Application\CustomTent\CustomTentResource;
 use App\Services\V1\Website\CustomTent\CustomTentService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\DeliveryMethod;
+namespace App\Http\Controllers\Api\V1\Application\DeliveryMethod;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\DeliveryMethod\DeliveryMethodResource;
+use App\Http\Resources\Application\DeliveryMethod\DeliveryMethodResource;
 use App\Services\V1\Website\DeliveryMethod\DeliveryMethodService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

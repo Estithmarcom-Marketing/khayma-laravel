@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\CustomeTent;
+namespace App\Http\Requests\CustomTent;
 
 use Illuminate\Foundation\Http\FormRequest;
 
