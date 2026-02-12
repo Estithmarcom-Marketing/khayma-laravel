@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\CommonQuestion;
+namespace App\Http\Resources\Application\Property;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CommonQuestionResource extends JsonResource
+class PropertyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,10 @@ class CommonQuestionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'question_ar' => $this->question_ar,
-            'question_en' => $this->question_en,
-            'answer_ar' => $this->answer_ar,
-            'answer_en' => $this->answer_en,
+            'name_ar' => $this->name_ar,
+            'name_en' => $this->name_en,
+            'value_ar' => $this->pivot?->value_ar,
+            'value_en' => $this->pivot?->value_en,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

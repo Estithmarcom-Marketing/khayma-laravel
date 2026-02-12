@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\Product;
+namespace App\Http\Controllers\Api\V1\Application\Product;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\FilterProductRequest;
+use App\Http\Requests\Application\Product\FilterProductRequest;
+use App\Http\Resources\Application\Product\ProductResource;
 use App\Http\Resources\Application\ProductVariation\ProductVariationResource;
-use App\Http\Resources\Product\ProductResource;
 use App\Services\V1\Website\Product\ProductService;
 use App\Traits\Response\ApiResponse;
+use Exception;
 use Illuminate\Support\Facades\Log;
-
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
@@ -29,7 +29,7 @@ class ProductController extends Controller
                 ],
                 __('product.filter_success'),
                 Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed To Fetch Products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('product.filter_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -44,7 +44,7 @@ class ProductController extends Controller
             return ApiResponse::successResponse(['variations' => ProductVariationResource::collection($variations)],
                 __('product.variations_success'),
                 Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed To Fetch Product Variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('product.variations_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -58,7 +58,7 @@ class ProductController extends Controller
 
             return ApiResponse::successResponse(['product' => ProductResource::make($product)],
                 __('product.show_success'), Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed To Fetch Product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('product.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -73,7 +73,7 @@ class ProductController extends Controller
             return ApiResponse::successResponse(['products' => ProductResource::collection($products)],
                 __('product.related_success'),
                 Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed To Fetch Related Products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('product.related_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);

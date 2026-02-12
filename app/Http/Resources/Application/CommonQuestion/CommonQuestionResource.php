@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\CommonQuestion;
+namespace App\Http\Resources\Application\CommonQuestion;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -12,7 +12,7 @@ class CommonQuestionResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+   public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
