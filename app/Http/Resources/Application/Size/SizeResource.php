@@ -1,26 +1,23 @@
 <?php
 
-namespace App\Http\Resources\Color;
+namespace App\Http\Resources\Application\Size;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ColorResource extends JsonResource
+class SizeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+  public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
-            'code' => $this->code,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'name_en' => $this->name_en,
         ];
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\City;
+namespace App\Http\Controllers\Api\V1\Application\City;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\City\CityResource;
+use App\Http\Resources\Application\City\CityResource;
 use App\Services\V1\Website\City\CityService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

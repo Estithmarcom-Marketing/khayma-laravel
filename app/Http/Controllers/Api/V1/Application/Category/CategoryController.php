@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\Category;
+namespace App\Http\Controllers\Api\V1\Application\Category;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Category\CategoryResource;
+use App\Http\Resources\Application\Category\CategoryResource;
 use App\Services\V1\Website\Category\CategoryService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

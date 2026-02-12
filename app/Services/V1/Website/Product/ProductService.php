@@ -147,6 +147,10 @@ class ProductService
                     $q->selectWithActiveOffer()
                         ->active();
                 },
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size',
+                'brand:id,name_ar,name_en',
+                'category:id,name_ar,name_en',
             ])
             ->limit(5)
             ->get();

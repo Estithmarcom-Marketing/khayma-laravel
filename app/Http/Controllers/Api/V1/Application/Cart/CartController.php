@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\Cart;
+namespace App\Http\Controllers\Api\V1\Application\Cart;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Cart\StoreItemRequest;
-use App\Http\Requests\Cart\UpdateItemRequest;
-use App\Http\Resources\Cart\CartItemResource;
+use App\Http\Requests\Application\Cart\StoreItemRequest;
+use App\Http\Requests\Application\Cart\UpdateItemRequest;
+use App\Http\Resources\Application\Cart\CartItemResource;
 use App\Services\V1\Website\Cart\CartService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

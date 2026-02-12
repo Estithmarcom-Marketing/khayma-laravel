@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Website\Color;
+namespace App\Http\Controllers\Api\V1\Application\Color;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Color\ColorResource;
+use App\Http\Resources\Application\Color\ColorResource;
 use App\Services\V1\Website\Color\ColorService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

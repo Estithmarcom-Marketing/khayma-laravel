@@ -2,9 +2,15 @@
 
 use App\Http\Controllers\Api\V1\Application\Address\AddressController;
 use App\Http\Controllers\Api\V1\Application\Auth\UserAuthController;
+use App\Http\Controllers\Api\V1\Application\Brand\BrandController;
+use App\Http\Controllers\Api\V1\Application\Cart\CartController;
+use App\Http\Controllers\Api\V1\Application\Category\CategoryController;
+use App\Http\Controllers\Api\V1\Application\City\CityController;
+use App\Http\Controllers\Api\V1\Application\Color\ColorController;
 use App\Http\Controllers\Api\V1\Application\Home\HomeController;
 use App\Http\Controllers\Api\V1\Application\Product\ProductController;
 use App\Http\Controllers\Api\V1\Application\ProfileManagment\ProfileManagmentController;
+use App\Http\Controllers\Api\V1\Application\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['locale'])
@@ -24,6 +30,12 @@ Route::middleware(['locale'])
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
                 Route::patch('', [ProfileManagmentController::class, 'update']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('cities')
+            ->group(function () {
+                Route::get('', [CityController::class, 'index']);
+                Route::get('{id}', [CityController::class, 'show']);
             });
         Route::middleware(['auth:sanctum', 'throttle:60,1'])
             ->prefix('addresses')
@@ -53,5 +65,38 @@ Route::middleware(['locale'])
                 Route::get('{identifier}/variations', [ProductController::class, 'showVariations']);
                 Route::get('{identifier}/related', [ProductController::class, 'getRelatedProducts']);
                 Route::get('{identifier}', [ProductController::class, 'show']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('categories')
+            ->group(function () {
+                Route::get('', [CategoryController::class, 'index']);
+                Route::get('{id}', [CategoryController::class, 'show']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('brands')
+            ->group(function () {
+                Route::get('', [BrandController::class, 'index']);
+                Route::get('{id}', [BrandController::class, 'show']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('colors')
+            ->group(function () {
+                Route::get('', [ColorController::class, 'index']);
+                Route::get('{id}', [ColorController::class, 'show']);
+            });
+        Route::middleware(['throttle:60,1'])
+            ->prefix('sizes')
+            ->group(function () {
+                Route::get('', [SizeController::class, 'index']);
+                Route::get('{id}', [SizeController::class, 'show']);
+            });
+            Route::middleware(['auth:sanctum', 'throttle:60,1'])
+            ->prefix('cart')
+            ->group(function () {
+                Route::get('', [CartController::class, 'getCartItems']);
+                Route::post('', [CartController::class, 'addToCart']);
+                Route::patch('{variationId}', [CartController::class, 'updateCartItem']);
+                Route::delete('{variationId}', [CartController::class, 'removeCartItem']);
+                Route::delete('', [CartController::class, 'clearCart']);
             });
     });
