@@ -31,4 +31,32 @@ class AdminManagmentService
     {
         return Admin::with('roles')->paginate($limit);
     }
+
+    public function show($id) 
+    { 
+        return Admin::with('roles')->findOrFail($id); 
+    }
+
+    public function update(Admin $admin, array $data) 
+    { 
+        return DB::transaction(function () use ($admin, $data) { 
+            if (isset($data['password'])) { 
+                $data['password'] = Hash::make($data['password']); 
+            } 
+            $admin->update($data); 
+            if (isset($data['role_id'])) { 
+                $role = Role::find($data['role_id']); 
+                $admin->syncRoles($role); 
+            } 
+            return $admin->refresh();
+        }); 
+    } 
+    
+    public function delete(Admin $admin) 
+    { 
+        if ($admin->id == 1) {
+            throw new \Exception(__('admin.cannot_delete_super_admin'));
+        }
+        return $admin->delete(); 
+    }
 }

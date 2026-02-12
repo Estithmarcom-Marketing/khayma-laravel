@@ -22,10 +22,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin/v1')
     ->group(function () {
         Route::prefix('admins')
-            ->middleware(['auth:admin', 'throttle:10,1'])
+            ->middleware(['auth:admin', 'throttle:120,1'])
             ->group(function () {
-                Route::get('admins', [AdminManagmentController::class, 'index'])->middleware('permission:read-admin');
-                Route::post('admins', [AdminManagmentController::class, 'store'])->middleware('permission:store-admin');
+                Route::get('', [AdminManagmentController::class, 'index'])->middleware('permission:read-admin');
+                Route::post('', [AdminManagmentController::class, 'store'])->middleware('permission:store-admin');
+                Route::get('{admin}', [AdminManagmentController::class, 'show'])->middleware('permission:read-admin'); 
+                Route::patch('{admin}', [AdminManagmentController::class, 'update'])->middleware('permission:store-admin'); 
+                Route::delete('{admin}', [AdminManagmentController::class, 'destroy'])->middleware('permission:delete-admin');
             }
         );
         Route::prefix('auth')
@@ -33,7 +36,7 @@ Route::prefix('admin/v1')
                 Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:10,1');
                 Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:admin');
             });
-        Route::middleware(['auth:admin', 'throttle:60,1', 'role:super-admin'])
+        Route::middleware(['auth:admin', 'throttle:120,1', 'role:super-admin'])
             ->group(function () {
                 Route::get('roles', [RolesPermissionsController::class, 'getAllRoles']);
                 Route::get('permissions', [RolesPermissionsController::class, 'getAllPermissions']);
