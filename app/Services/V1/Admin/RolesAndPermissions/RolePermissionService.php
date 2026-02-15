@@ -145,20 +145,4 @@ class RolePermissionService
         });
     }
 
-    // public function createRoleWithPermissions(array $data)
-    // {
-    //     return DB::transaction(function () use ($data) {
-    //         $role = Role::create([
-    //             'name' => $data['name'],
-    //             'guard_name' => 'admin',
-    //         ]);
-    //         if (isset($data['permissions'])) {
-    //             $permissionIds = collect($data['permissions'])->pluck('id');
-    //             $permissions = Permission::whereIn('id', $permissionIds)->get();
-    //             $role->syncPermissions($permissions);
-    //         }
-
-    //         return $role->refresh()->load('permissions');
-    //     });
-    // }
 }
