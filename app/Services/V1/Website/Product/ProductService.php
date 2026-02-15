@@ -23,14 +23,7 @@ class ProductService
         [$userId, $cartId] = $this->getAuthContext();
         $variationFilter = $this->variationFilterClosure($filters);
 
-        $query = Product::published()
-            ->withAvg('reviews', 'rating')
-            ->withCount('orders')
-            ->withCount('reviews')
-            ->addSelect([
-                'min_price' => $this->minPriceSubquery(),
-                'min_price_offer' => $this->minPriceOfferSubquery(),
-            ]);
+        $query = $this->getProductBaseQuery($variationFilter);
 
         $this->filterByCategory($query, $filters);
         $this->filterByBrand($query, $filters);
@@ -44,29 +37,21 @@ class ProductService
             ->withExists($this->existsConditions($userId, $cartId))
 
             ->withCount([
-                'productVariations as filtered_variations_count' => function ($q) use ($filters) {
+                'productVariations as filtered_variations_count' => $this->makeVariationCountClosure($filters),
+            ])
+            ->orderBy($sortMap[$sortBy] ?? 'products.created_at', $orderBy)
+            ->paginate($limit);
+    }
 
-                    $q->active();
-
-                    if (! empty($filters['colors'])) {
-                        $q->whereIn('color_id', $filters['colors']);
-                    }
-
-                    if (! empty($filters['has_offer'])) {
-                        $now = now();
-                        $q->whereNotNull('offer')
-                            ->where('offer_started_date', '<=', $now)
-                            ->where('offer_expired_date', '>=', $now);
-                    }
-
-                    if (isset($filters['min_price'])) {
-                        $q->where('price', '>=', $filters['min_price']);
-                    }
-
-                    if (isset($filters['max_price'])) {
-                        $q->where('price', '<=', $filters['max_price']);
-                    }
-                },
+    private function getProductBaseQuery($variationFilter)
+    {
+        $query = Product::published()
+            ->withAvg('reviews', 'rating')
+            ->withCount('orders')
+            ->withCount('reviews')
+            ->addSelect([
+                'min_price' => $this->minPriceSubquery(),
+                'min_price_offer' => $this->minPriceOfferSubquery(),
             ])
             ->with([
                 'productVariations' => $variationFilter,
@@ -75,9 +60,8 @@ class ProductService
                 'brand:id,name_ar,name_en',
                 'category:id,name_ar,name_en',
                 'media:id,model_id,name,file_name,collection_name,disk',
-            ])
-            ->orderBy($sortMap[$sortBy] ?? 'products.created_at', $orderBy)
-            ->paginate($limit);
+            ]);
+        return $query;
     }
 
     public function showProduct($identifier)
@@ -298,6 +282,32 @@ class ProductService
                 ->withIsInReminder()
 
                 ->active();
+
+            if (! empty($filters['colors'])) {
+                $q->whereIn('color_id', $filters['colors']);
+            }
+
+            if (! empty($filters['has_offer'])) {
+                $now = now();
+                $q->whereNotNull('offer')
+                    ->where('offer_started_date', '<=', $now)
+                    ->where('offer_expired_date', '>=', $now);
+            }
+
+            if (isset($filters['min_price'])) {
+                $q->where('price', '>=', $filters['min_price']);
+            }
+
+            if (isset($filters['max_price'])) {
+                $q->where('price', '<=', $filters['max_price']);
+            }
+        };
+    }
+
+    private function makeVariationCountClosure($filters)
+    {
+        return function ($q) use ($filters) {
+            $q->active();
 
             if (! empty($filters['colors'])) {
                 $q->whereIn('color_id', $filters['colors']);

@@ -70,6 +70,8 @@ class RolePermissionService
     {
         return Role::query()
             ->select('id', 'name', 'guard_name', 'created_at', 'updated_at')
+            ->with('permissions:id,name,guard_name')
+            ->withCount('permissions' , 'users')
             ->latest()
             ->paginate(10);
     }
@@ -79,7 +81,7 @@ class RolePermissionService
         return Permission::query()
             ->select('id', 'name', 'guard_name', 'created_at', 'updated_at')
             ->latest()
-            ->paginate(10);
+            ->get();
     }
 
     public function getUserRoles(User $user)
@@ -115,7 +117,7 @@ class RolePermissionService
         return DB::transaction(function () use ($data) {
             $role = Role::create([
                 'name' => $data['name'],
-                'guard_name' => 'api',
+                'guard_name' => 'admin',
             ]);
             if (isset($data['permissions'])) {
                 $permissionIds = collect($data['permissions'])->pluck('id');
@@ -142,4 +144,21 @@ class RolePermissionService
             return $role->refresh()->load('permissions');
         });
     }
+
+    // public function createRoleWithPermissions(array $data)
+    // {
+    //     return DB::transaction(function () use ($data) {
+    //         $role = Role::create([
+    //             'name' => $data['name'],
+    //             'guard_name' => 'admin',
+    //         ]);
+    //         if (isset($data['permissions'])) {
+    //             $permissionIds = collect($data['permissions'])->pluck('id');
+    //             $permissions = Permission::whereIn('id', $permissionIds)->get();
+    //             $role->syncPermissions($permissions);
+    //         }
+
+    //         return $role->refresh()->load('permissions');
+    //     });
+    // }
 }

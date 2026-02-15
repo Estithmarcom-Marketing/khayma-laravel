@@ -141,8 +141,9 @@ class RolesPermissionsController extends Controller
             $permissions = PermissionResource::collection($permissions)->response()->getData(true);
 
             return ApiResponse::successResponse(['permissions' => $permissions['data'],
-                'meta' => $permissions['meta'],
-                'links' => $permissions['links']], 'Permissions fetched successfully', Response::HTTP_OK);
+                // 'meta' => $permissions['meta'],
+                // 'links' => $permissions['links']
+                ], 'Permissions fetched successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch permissions', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
