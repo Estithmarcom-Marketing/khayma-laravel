@@ -101,6 +101,8 @@ class OrderService
                 'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
                 'items.productVariation' => function ($q) {
                     $q->selectWithActiveOffer()
+                        ->withIsInReminder()
+
                         ->active();
                 },
                 'address',
@@ -168,6 +170,7 @@ class OrderService
             'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
             'items.productVariation' => function ($q) {
                 $q->selectWithActiveOffer()
+                    ->withIsInReminder()
                     ->active();
             },
             'items.productVariation.color:id,name_en,name_ar,code',
@@ -188,6 +191,8 @@ class OrderService
             'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
             'items.productVariation' => function ($q) {
                 $q->selectWithActiveOffer()
+                    ->withIsInReminder()
+
                     ->active();
             },
             'address:id,name,value,city_id,additional_info',
@@ -203,6 +208,8 @@ class OrderService
             'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
             'items.productVariation' => function ($q) {
                 $q->selectWithActiveOffer()
+                    ->withIsInReminder()
+
                     ->active();
             },
             'address:id,name,value,city_id,additional_info',

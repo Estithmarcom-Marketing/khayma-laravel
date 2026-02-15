@@ -46,15 +46,12 @@ class HomeService
                 : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1'),
-                'reminders as is_in_reminder' => fn ($q) => $userId
-                    ? $q->where('user_id', $userId)
-                    : $q->whereRaw('0 = 1'),
-            ])
+                    : $q->whereRaw('0 = 1')])
             ->with(['category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
                 'productVariations' => function ($q) {
                     $q->selectWithActiveOffer()
+                        ->withIsInReminder()
                         ->active();
                 },
                 'productVariations.color:id,name_ar,name_en,code',
@@ -87,16 +84,13 @@ class HomeService
                 : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1'),
-                'reminders as is_in_reminder' => fn ($q) => $userId
-                    ? $q->where('user_id', $userId)
-                    : $q->whereRaw('0 = 1'),
-            ])
+                    : $q->whereRaw('0 = 1')])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
                 'productVariations' => function ($q) {
                     $q->selectWithActiveOffer()
+                        ->withIsInReminder()
                         ->active();
                 },
                 'productVariations.color:id,name_ar,name_en,code',
@@ -124,16 +118,13 @@ class HomeService
                 : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1'),
-                'reminders as is_in_reminder' => fn ($q) => $userId
-                    ? $q->where('user_id', $userId)
-                    : $q->whereRaw('0 = 1'),
-            ])
+                    : $q->whereRaw('0 = 1')])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
                 'productVariations' => function ($q) {
                     $q->selectWithActiveOffer()
+                        ->withIsInReminder()
                         ->active();
                 },
                 'productVariations.color:id,name_ar,name_en,code',
@@ -161,16 +152,13 @@ class HomeService
                 : $q->whereRaw('0 = 1'),
                 'cartItems as is_in_cart' => fn ($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1'),
-                'reminders as is_in_reminder' => fn ($q) => $userId
-                    ? $q->where('user_id', $userId)
-                    : $q->whereRaw('0 = 1'),
-            ])
+                    : $q->whereRaw('0 = 1')])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
                 'productVariations' => function ($q) {
                     $q->selectWithActiveOffer()
+                        ->withIsInReminder()
                         ->active();
                 },
                 'productVariations.color:id,name_ar,name_en,code',

@@ -52,6 +52,21 @@ class ProductVariation extends Model
         return $query->where('is_active', true);
     }
 
+    public function scopeWithIsInReminder($query, ?int $userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+
+        if (! $userId) {
+            return $query;
+        }
+
+        return $query->withExists([
+            'reminders as is_in_reminder' => function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            },
+        ]);
+    }
+
     public function scopeSelectWithActiveOffer($query, array $additionalColumns = [], bool $onlyActiveOffers = false)
     {
         $now = now()->format('Y-m-d H:i:s');

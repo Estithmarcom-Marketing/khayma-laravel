@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use InteractsWithMedia , SoftDeletes;
+    use InteractsWithMedia , Searchable ,SoftDeletes;
 
     protected $fillable = [
         'name_ar',
@@ -31,6 +32,21 @@ class Product extends Model implements HasMedia
     protected $casts = [
         'is_published' => 'boolean',
     ];
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name_en' => $this->name_en,
+            'name_ar' => $this->name_ar,
+            'description_ar'=>$this->description_ar,
+            'description_en'=>$this->description_en,
+            'slug_en' => $this->slug_en,
+            'slug_ar' => $this->slug_ar,
+            'brand_id' => $this->brand_id,
+            'category_id' => $this->category_id,
+        ];
+    }
 
     public function category()
     {
@@ -58,6 +74,7 @@ class Product extends Model implements HasMedia
             'id'
         );
     }
+
     public function reminders(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -101,7 +118,7 @@ class Product extends Model implements HasMedia
 
     public function getAllPropertiesAttribute()
     {
-    
+
         return $this->productVariations
             ->load('properties')
             ->flatMap(fn ($variation) => $variation->properties)

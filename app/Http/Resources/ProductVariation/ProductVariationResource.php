@@ -21,6 +21,7 @@ class ProductVariationResource extends JsonResource
             'sku' => $this->sku,
             'stock_quantity' => $this->stock_quantity,
             'is_active' => $this->is_active,
+            'is_in_reminder' => (bool) $this->is_in_reminder,
             'price' => (float) $this->price,
             'offer' => (float) $this->offer,
             'offer_started_date' => $this->offer_started_date,

@@ -15,6 +15,7 @@ class ProductReminderService
             ->with(
                 ['productVariation' => function ($q) {
                     $q->selectWithActiveOffer()
+                        ->withIsInReminder()
                         ->active();
                 },
                     'productVariation.color:id,name_en,name_ar,code',
@@ -51,6 +52,7 @@ class ProductReminderService
     {
         return $productReminder->load(['productVariation' => function ($q) {
             $q->selectWithActiveOffer()
+                ->withIsInReminder()
                 ->active();
         },
             'productVariation.color:id,name_en,name_ar,code',

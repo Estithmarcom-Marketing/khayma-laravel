@@ -91,10 +91,10 @@ class ProductService
         })
             ->published()
             ->with([
-            'category:id,name_ar,name_en',
-            'brand:id,name_ar,name_en',
-            'media:id,model_id,name,file_name,collection_name,disk',
-        ])
+                'category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ])
             ->withExists($this->existsConditions($userId, $cartId))
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
@@ -104,6 +104,7 @@ class ProductService
     public function showVariations($identifier)
     {
         return ProductVariation::selectWithActiveOffer()
+            ->withIsInReminder()
             ->where('product_id', $identifier)
             ->active()
             ->with([
@@ -145,6 +146,7 @@ class ProductService
                 'media:id,model_id,name,file_name,collection_name,disk',
                 'productVariations' => function ($q) {
                     $q->selectWithActiveOffer()
+                        ->withIsInReminder()
                         ->active();
                 },
                 'productVariations.color:id,name_ar,name_en,code',
@@ -194,6 +196,23 @@ class ProductService
         );
     }
 
+    // private function filterBySearch($query, array $filters): void
+    // {
+    //     if (empty($filters['search'])) {
+    //         return;
+    //     }
+
+    //     $term = trim($filters['search']);
+
+    //     $query->where(function ($q) use ($term) {
+    //         $q->where('name_en', 'LIKE', "%{$term}%")
+    //             ->orWhere('name_ar', 'LIKE', "%{$term}%")
+    //             ->orWhere('slug_en', 'LIKE', "%{$term}%")
+    //             ->orWhere('slug_ar', 'LIKE', "%{$term}%");
+    //     });
+    // }
+
+    // search using algolia
     private function filterBySearch($query, array $filters): void
     {
         if (empty($filters['search'])) {
@@ -202,12 +221,17 @@ class ProductService
 
         $term = trim($filters['search']);
 
-        $query->where(function ($q) use ($term) {
-            $q->where('name_en', 'LIKE', "%{$term}%")
-                ->orWhere('name_ar', 'LIKE', "%{$term}%")
-                ->orWhere('slug_en', 'LIKE', "%{$term}%")
-                ->orWhere('slug_ar', 'LIKE', "%{$term}%");
-        });
+        // Get matching IDs from Algolia
+        $ids = Product::search($term)
+            ->get()
+            ->pluck('id');
+
+        if ($ids->isEmpty()) {
+            $query->whereRaw('0 = 1');
+
+            return;
+        }
+        $query->whereIn('products.id', $ids);
     }
 
     private function filterByBestSellers($query, array $filters): void
@@ -234,9 +258,6 @@ class ProductService
                 : $q->whereRaw('0 = 1'),
             'cartItems as is_in_cart' => fn ($q) => $cartId
                 ? $q->where('cart_id', $cartId)
-                : $q->whereRaw('0 = 1'),
-            'reminders as is_in_reminder' => fn ($q) => $userId
-                ? $q->where('user_id', $userId)
                 : $q->whereRaw('0 = 1'),
         ];
     }
@@ -274,6 +295,8 @@ class ProductService
             $onlyActiveOffers = ! empty($filters['has_offer']);
 
             $q->selectWithActiveOffer([], $onlyActiveOffers)
+                ->withIsInReminder()
+
                 ->active();
 
             if (! empty($filters['colors'])) {
