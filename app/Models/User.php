@@ -105,4 +105,14 @@ class User extends Authenticatable implements HasMedia
             $user->cart()->create([]);
         });
     }
+    
+    public function scopeSearch($query, $search)
+    {
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('phone', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%');
+        }
+    }
 }
