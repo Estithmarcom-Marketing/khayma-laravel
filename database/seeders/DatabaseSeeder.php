@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -33,8 +36,12 @@ class DatabaseSeeder extends Seeder
         $this->call(ColorSeeder::class);
         $this->call(SizeSeeder::class);
         $this->call(ProductSeeder::class);
-        $this->call(ProductVariationSeeder::class);
         $this->call(DeliveryMethodSeeder::class);
         $this->call(PaymentMethodSeeder::class);
+
+        Category::factory()->count(5)->create();
+        Brand::factory()->count(10)->create();
+        Product::factory()->count(500)->create();
+        $this->call(ProductVariationSeeder::class);
     }
 }
