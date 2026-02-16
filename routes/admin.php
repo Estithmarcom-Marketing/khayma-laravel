@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\City\CityShipmentController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
+use App\Http\Controllers\Api\V1\Admin\Customer\CustomerController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Home\HomeManagementController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
@@ -50,10 +51,10 @@ Route::prefix('admin/v1')
                 // Route::post('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'assignPermissionToRole']);
                 // Route::delete('roles/{role}/permissions/{permission}', [RolesPermissionsController::class, 'revokePermissionFromRole']);
 
-                Route::get('users/{user}/roles', [RolesPermissionsController::class, 'getRolesByUser']);
+                // Route::get('users/{user}/roles', [RolesPermissionsController::class, 'getRolesByUser']);
 
-                Route::get('roles/{role}/permissions', [RolesPermissionsController::class, 'getPermissionsByRole']);
-                Route::get('roles/{role}/users', [RolesPermissionsController::class, 'getUsersByRole']);
+                // Route::get('roles/{role}/permissions', [RolesPermissionsController::class, 'getPermissionsByRole']);
+                // Route::get('roles/{role}/users', [RolesPermissionsController::class, 'getUsersByRole']);
 
                 // Route::get('permissions/{permission}/roles', [RolesPermissionsController::class, 'getRolesByPermission']);
 
@@ -175,6 +176,13 @@ Route::prefix('admin/v1')
                 Route::patch('{property}', [PropertyController::class, 'update'])->middleware('permission:store-property');
                 Route::get('{property}', [PropertyController::class, 'show'])->middleware('permission:read-properties');
                 Route::delete('{property}', [PropertyController::class, 'destroy'])->middleware('permission:delete-property');
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('customers')
+            ->group(function () {
+                Route::get('', [CustomerController::class, 'index'])->middleware('permission:read-customers');
+                Route::delete('{customer}', [CustomerController::class, 'destroy'])->middleware('permission:delete-customers');
             });
 
         Route::middleware(['auth:admin', 'throttle:60,1'])
