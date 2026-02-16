@@ -98,7 +98,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $roles = [
             'super-admin' => $permissions,
 
-            'data-entry' => [
+            'ادخال البيانات' => [
                 'read-city',
                 'read-brands',
                 'read-categories',
@@ -109,7 +109,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'store-city',
             ],
 
-            'inventory-manager' => [
+            'مدير مخزن' => [
                 'read-products',
                 'store-product',
                 'delete-product',
@@ -118,7 +118,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'delete-category',
             ],
 
-            'accountant' => [
+            'محاسب' => [
                 'read-payment-methods',
                 'read-payment-gateways',
                 'read-promo-codes',

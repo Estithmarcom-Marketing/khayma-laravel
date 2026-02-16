@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin/v1')
+    ->middleware(['locale'])
     ->group(function () {
         Route::prefix('admins')
             ->middleware(['auth:admin', 'throttle:120,1'])
