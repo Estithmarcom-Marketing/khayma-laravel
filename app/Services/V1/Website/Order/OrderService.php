@@ -310,7 +310,7 @@ class OrderService
         }
         $total = ($subtotal + $shipping_cost) - $discountOfPromo;
 
-        return ['total' => $total, 'discount' => $discountOfOffer + $discountOfPromo, 'shipping' => $shipping_cost, 'subtotal' => $subtotal];
+        return ['total' => (float) $total, 'discount' => (float) ($discountOfOffer + $discountOfPromo), 'shipping' => (float) $shipping_cost, 'subtotal' => (float) $subtotal];
 
     }
 }

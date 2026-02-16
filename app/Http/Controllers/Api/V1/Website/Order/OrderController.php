@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Website\Order;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FilterOrderRequest;
+use App\Http\Requests\Order\FilterOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Cart\CartItemResource;
 use App\Http\Resources\Order\OrderResource;

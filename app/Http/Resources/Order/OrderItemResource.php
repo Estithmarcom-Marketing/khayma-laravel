@@ -20,9 +20,9 @@ class OrderItemResource extends JsonResource
         return [
 
             'quantity' => $this->quantity,
-            'price' => $this->productVariation->price,
-            'offer' => $this->productVariation->offer,
-            'total' => ($this->productVariation->price - $this->productVariation->offer) * $this->quantity,     
+            'price' => (float) $this->productVariation->price,
+            'offer' => (float) $this->productVariation->offer,
+            'total' =>   (float) (($this->productVariation->price - $this->productVariation->offer) * $this->quantity),     
             'product_variation_id' => $this->productVariation->id,
             'color' =>$this->productVariation->relationLoaded('color') ? new ColorResource($this->productVariation->color) : null,
             'size' => $this->productVariation->relationLoaded('size') ? new SizeResource($this->productVariation->size) : null,
