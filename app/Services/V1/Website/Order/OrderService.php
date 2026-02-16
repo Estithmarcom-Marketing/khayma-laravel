@@ -176,8 +176,10 @@ class OrderService
             'items.productVariation.color:id,name_en,name_ar,code',
             'items.productVariation.size:id,name_en,name_ar',
             'address:id,name,value,city_id,additional_info',
+            'address.city.shipments:id,city_id,cost,estimated_delivery_days',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
+            'payments:id,order_id,amount,status',
         ])
             ->where('user_id', auth()->id())
             ->findOrFail($id);
@@ -196,8 +198,10 @@ class OrderService
                     ->active();
             },
             'address:id,name,value,city_id,additional_info',
+            'address.city.shipments:id,city_id,cost,estimated_delivery_days',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
+            'payments:id,order_id,amount,status',
         ])->latest()->paginate(10);
     }
 
@@ -213,8 +217,10 @@ class OrderService
                     ->active();
             },
             'address:id,name,value,city_id,additional_info',
+            'address.city.shipments:id,city_id,cost,estimated_delivery_days',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
+            'payments:id,order_id,amount,status'
         ]);
 
         $limit = $filters['limit'] ?? 4;

@@ -25,7 +25,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
     ->prefix('website/v1')
     ->group(function () {
 
-        Route::middleware('throttle:60,1')
+        Route::middleware('throttle:120,1')
             ->prefix('auth')
             ->group(function () {
                 Route::post('otp', [UserAuthController::class, 'sendOtp']);
@@ -33,19 +33,19 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('logout', [UserAuthController::class, 'logout'])->middleware(['auth:sanctum']);
 
             });
-        Route::middleware(['throttle:60,1', 'auth:sanctum'])
+        Route::middleware(['throttle:120,1', 'auth:sanctum'])
             ->prefix('profile')
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
                 Route::patch('', [ProfileManagmentController::class, 'update']);
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
             ->prefix('cities')
             ->group(function () {
                 Route::get('', [CityController::class, 'index']);
                 Route::get('{id}', [CityController::class, 'show']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('addresses')
             ->group(function () {
                 Route::get('', [AddressController::class, 'index']);
@@ -66,7 +66,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::get('reviews', [HomeController::class, 'getHomeReviews']);
                 Route::get('questions/common', [HomeController::class, 'getCommonQuestions']);
             });
-        Route::middleware('throttle:60,1')
+        Route::middleware('throttle:120,1')
             ->prefix('products')
             ->group(function () {
                 Route::get('', [ProductController::class, 'filter']);
@@ -74,31 +74,31 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::get('{identifier}/related', [ProductController::class, 'getRelatedProducts']);
                 Route::get('{identifier}/variations', [ProductController::class, 'showVariations']);
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
             ->prefix('categories')
             ->group(function () {
                 Route::get('', [CategoryController::class, 'index']);
                 Route::get('{id}', [CategoryController::class, 'show']);
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
             ->prefix('brands')
             ->group(function () {
                 Route::get('', [BrandController::class, 'index']);
                 Route::get('{id}', [BrandController::class, 'show']);
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
             ->prefix('colors')
             ->group(function () {
                 Route::get('', [ColorController::class, 'index']);
                 Route::get('{id}', [ColorController::class, 'show']);
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
             ->prefix('sizes')
             ->group(function () {
                 Route::get('', [SizeController::class, 'index']);
                 Route::get('{id}', [SizeController::class, 'show']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('cart')
             ->group(function () {
                 Route::get('', [CartController::class, 'getCartItems']);
@@ -107,7 +107,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::delete('{variationId}', [CartController::class, 'removeCartItem']);
                 Route::delete('', [CartController::class, 'clearCart']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('favourites')
             ->group(function () {
                 Route::get('', [FavouriteController::class, 'index']);
@@ -115,7 +115,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('products/{product}', [FavouriteController::class, 'store']);
                 Route::delete('products/{product}', [FavouriteController::class, 'destroy']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('product-reminders')
             ->group(function () {
                 Route::get('', [ProductReminderController::class, 'index']);
@@ -123,7 +123,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
                 Route::delete('variations/{productVariation}', [ProductReminderController::class, 'destroy']);
             });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
             ->prefix('reviews')
             ->group(function () {
                 Route::get('', [ReviewController::class, 'getMyReviews'])->middleware(['auth:sanctum']);
@@ -135,11 +135,11 @@ Route::middleware(['tokenfromcookie', 'locale'])
             });
 
         Route::get('delivery-methods', [DeliveryMethodController::class, 'index'])
-            ->middleware('throttle:60,1');
+            ->middleware('throttle:120,1');
         Route::get('payment-methods', [PaymentMethodController::class, 'index'])
-            ->middleware('throttle:60,1');
+            ->middleware('throttle:120,1');
 
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('orders')
             ->group(function () {
                 Route::post('', [OrderController::class, 'store']);
@@ -154,7 +154,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('{id}/cancel', [OrderController::class, 'cancel']);
             });
 
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('notifications')
             ->group(function () {
                 Route::get('', [NotificationController::class, 'index']);
@@ -162,5 +162,5 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
 
-        Route::post('tent', [CustomTentController::class, 'store']);
+        Route::post('tent', [CustomTentController::class, 'store'])->middleware(['throttle:120,1']);
     });

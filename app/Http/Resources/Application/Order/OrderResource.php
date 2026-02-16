@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Application\Order;
 
 use App\Http\Resources\Application\Address\AddressResource;
-use App\Http\Resources\Application\Order\OrderItemResource;
 use App\Http\Resources\Application\DeliveryMethod\DeliveryMethodResource;
 use App\Http\Resources\Application\PaymentMethod\PaymentMethodResource;
 use Illuminate\Http\Request;
@@ -16,7 +15,7 @@ class OrderResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-   public function toArray(Request $request): array
+    public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
@@ -33,6 +32,12 @@ class OrderResource extends JsonResource
             'phone' => $this->phone,
             'delivery_method' => new DeliveryMethodResource($this->whenLoaded('deliveryMethod')),
             'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
+            'payment' => $this->whenLoaded('payments') ? $this->payments->map(function ($payment) {
+                return [
+                    'amount' => $payment->amount,
+                    'status' => $payment->status->value,
+                ];
+            }) : null,
             'created_at' => $this->created_at,
             'delivered_at' => $this->delivered_at,
             'updated_at' => $this->updated_at,

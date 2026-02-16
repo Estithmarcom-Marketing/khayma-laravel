@@ -32,6 +32,12 @@ class OrderResource extends JsonResource
             'phone' => $this->phone,
             'delivery_method' => new DeliveryMethodResource($this->whenLoaded('deliveryMethod')),
             'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
+            'payment' => $this->whenLoaded('payments') ? $this->payments->map(function ($payment) {
+                return [
+                    'amount' => $payment->amount,
+                    'status' => $payment->status->value,
+                ];
+            }) : null,
             'created_at' => $this->created_at,
             'delivered_at' => $this->delivered_at,
             'updated_at' => $this->updated_at,
