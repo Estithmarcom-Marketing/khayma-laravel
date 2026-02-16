@@ -31,6 +31,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'read-customers',
             'delete-customers',
 
+            'read-orders',
+            'store-orders',
+            'delete-orders',
+
             'read-city-shipment',
             'store-city-shipment',
             'delete-city-shipment',

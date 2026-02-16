@@ -77,4 +77,32 @@ class Order extends Model implements HasMedia
     {
         return $this->belongsTo(Cart::class);
     }
+
+    public function scopeSearch($query, $search)
+    {
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                    $q->search($search);
+                })
+                ->orWhere('id', 'like', '%' . $search . '%');
+        }
+    }
+
+    public function scopeIsDelivered($query, bool $isDelivered)
+    {
+        if ($isDelivered) {
+            $query->whereNotNull('delivered_at');
+        } else {
+            $query->whereNull('delivered_at');
+        }
+    }
+
+    public function scopePaymentStatusFilter($query, $status)
+    {
+        if ($status) {
+            $query->whereHas('payments', function ($q) use ($status) {
+                $q->where('status', $status);
+            });
+        }
+    }
 }

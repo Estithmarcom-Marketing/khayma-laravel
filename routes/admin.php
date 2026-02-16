@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
 use App\Http\Controllers\Api\V1\Admin\Customer\CustomerController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Home\HomeManagementController;
+use App\Http\Controllers\Api\V1\Admin\Order\OrderController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Admin\Product\ProductController;
@@ -182,7 +183,14 @@ Route::prefix('admin/v1')
             ->prefix('customers')
             ->group(function () {
                 Route::get('', [CustomerController::class, 'index'])->middleware('permission:read-customers');
+                Route::get('{customer}', [CustomerController::class, 'show'])->middleware('permission:read-customers');
                 Route::delete('{customer}', [CustomerController::class, 'destroy'])->middleware('permission:delete-customers');
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('orders')
+            ->group(function () {
+                Route::get('', [OrderController::class, 'index'])->middleware('permission:read-orders');
             });
 
         Route::middleware(['auth:admin', 'throttle:60,1'])

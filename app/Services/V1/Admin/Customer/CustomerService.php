@@ -18,6 +18,14 @@ class CustomerService
         return $query->paginate($filters['per_page'] ?? 10);
     }
 
+    public function getCustomerById($customerId)
+    {
+        return User::with('orders')
+        ->withCount('orders')
+        ->withSum('orders', 'total_price')
+        ->findOrFail($customerId);
+    }
+
     public function deleteCustomer($customerId)
     {
         $customer = User::findOrFail($customerId);

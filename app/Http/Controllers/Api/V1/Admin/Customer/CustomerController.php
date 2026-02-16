@@ -26,18 +26,29 @@ class CustomerController extends Controller
                 'meta' => $data['meta'],
                 'links' => $data['links'],
             ],
-            __('customer.customers_retrieved_successfully'),
+            __('customer.fetched'),
             status: Response::HTTP_OK);
+    }
+
+    public function show($customerId)
+    {
+        try {
+            $customer = $this->customerService->getCustomerById($customerId);
+            return ApiResponse::successResponse(new UserResource($customer), __('customer.fetched'), status: Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            Log::error('Failed to fetch customer', ['error' => $th->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('customer.error_fetch'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function destroy($customerId)
     {
         try {
             $this->customerService->deleteCustomer($customerId);
-            return ApiResponse::successResponse(null, __('customer.deleted_successfully'), status: Response::HTTP_OK);
+            return ApiResponse::successResponse(null, __('customer.deleted'), status: Response::HTTP_OK);
         } catch (\Throwable $th) {
             Log::error('Failed to delete customer', ['error' => $th->getMessage(), 'method' => __METHOD__]);
-            return ApiResponse::errorResponse('Failed to delete customer', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('customer.error_delete'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
        
     }
