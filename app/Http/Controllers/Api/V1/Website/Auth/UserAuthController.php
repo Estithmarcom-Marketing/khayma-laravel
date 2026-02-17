@@ -21,10 +21,10 @@ class UserAuthController extends Controller
             $validated = $request->validated();
             $data = $this->service->sendOtp($validated);
 
-            return ApiResponse::successResponse(null, 'OTP sent successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(null, __('auth.otp_sent_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to send OTP', ['error' => $e->getMessage(), 'method' => __METHOD__]);
-            return ApiResponse::errorResponse('Failed to send OTP', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('auth.otp_sent_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
     public function login(UserLoginRequest $request)

@@ -57,10 +57,10 @@ class ProfileManagementService
         });
     }
 
-    public function updatePhoneNumber(array $data)
+    public function sendOtpToNewPhone(array $data)
     {
-        $user = $this->user;
-        $phone = str_replace(['+', ' ', '-'], '', $data['phone']);
+
+        $phone = str_replace(['+', ' ', '-'], '', $this->user->phone);
         $otpCode = $data['otp_code'];
 
         return DB::transaction(function () use ($phone, $data, $otpCode) {
@@ -77,7 +77,8 @@ class ProfileManagementService
             $otp->save();
 
             $newPhoneNumber = str_replace(['+', ' ', '-'], '', $data['new_phone']);
-            $newOtp = random_int(1000, 9999);
+            // $newOtp = random_int(1000, 9999);
+            $newOtp = 1234;
             OtpCode::create([
                 'phone' => $newPhoneNumber,
                 'otp_code' => Hash::make($newOtp),
@@ -94,7 +95,8 @@ class ProfileManagementService
         });
 
     }
-    public function verifyNewPhoneNumber(array $data)
+
+    public function updatePhoneNumber(array $data)
     {
         $user = $this->user;
         $newPhone = str_replace(['+', ' ', '-'], '', $data['new_phone']);

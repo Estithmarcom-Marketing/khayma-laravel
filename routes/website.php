@@ -38,6 +38,9 @@ Route::middleware(['tokenfromcookie', 'locale'])
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
                 Route::patch('', [ProfileManagmentController::class, 'update']);
+                Route::post('phone/otp', [ProfileManagmentController::class, 'sendOtpForPhoneUpdate']);
+                Route::post('phone/verify', [ProfileManagmentController::class, 'sendOtpToNewPhone']);
+                Route::patch('phone', [ProfileManagmentController::class, 'updatePhoneNumber']);
             });
         Route::middleware(['throttle:120,1'])
             ->prefix('cities')

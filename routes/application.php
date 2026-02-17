@@ -38,6 +38,9 @@ Route::middleware(['locale'])
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
                 Route::patch('', [ProfileManagmentController::class, 'update']);
+                Route::post('phone/otp', [ProfileManagmentController::class, 'sendOtpForPhoneUpdate']);
+                Route::post('phone/verify', [ProfileManagmentController::class, 'sendOtpToNewPhone']);
+                Route::patch('phone', [ProfileManagmentController::class, 'updatePhoneNumber']);
             });
         Route::middleware(['throttle:60,1'])
             ->prefix('cities')
@@ -161,6 +164,6 @@ Route::middleware(['locale'])
                 Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
-            Route::post('tent', [CustomTentController::class, 'store']);
+        Route::post('tent', [CustomTentController::class, 'store']);
 
     });
