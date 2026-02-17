@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         $role = Role::where('name', 'super-admin')->first();
         $admin->assignRole($role);
         $this->call(CitySeeder::class);
+        $this->call(CityShipmentSeeder::class);
         $this->call(BrandSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(ColorSeeder::class);

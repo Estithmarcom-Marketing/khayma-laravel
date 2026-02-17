@@ -8,11 +8,11 @@ class CityService
 {
     public function list()
     {
-        return City::active()->get();
+        return City::select(['id', 'name_en', 'name_ar'])->active()->get();
     }
 
     public function show($id)
     {
-        return City::active()->find($id);
+        return City::select(['id', 'name_en', 'name_ar'])->active()->find($id);
     }
 }

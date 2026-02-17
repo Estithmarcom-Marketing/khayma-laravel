@@ -19,7 +19,7 @@ class AddressResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'value' => $this->value,
-            'city' => $this->whenLoaded('city', CityResource::make($this->city)),
+            'city' => $this->whenLoaded('city',fn() => CityResource::make($this->city)),
             'is_default' => (bool) $this->is_default,
             'additional_info' => $this->additional_info,
             'created_at' => $this->whenNotNull($this->created_at),
