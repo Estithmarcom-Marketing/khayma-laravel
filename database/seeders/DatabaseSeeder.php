@@ -40,9 +40,9 @@ class DatabaseSeeder extends Seeder
         $this->call(DeliveryMethodSeeder::class);
         $this->call(PaymentMethodSeeder::class);
 
-        Category::factory()->count(5)->create();
-        Brand::factory()->count(10)->create();
-        Product::factory()->count(500)->create();
+        // Category::factory()->count(5)->create();
+        // Brand::factory()->count(10)->create();
+        // Product::factory()->count(500)->create();
         $this->call(ProductVariationSeeder::class);
     }
 }
