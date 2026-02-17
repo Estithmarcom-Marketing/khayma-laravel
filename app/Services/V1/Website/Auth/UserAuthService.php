@@ -4,8 +4,6 @@ namespace App\Services\V1\Website\Auth;
 
 use App\Models\OtpCode;
 use App\Models\User;
-
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -60,7 +58,7 @@ class UserAuthService
             $user = User::firstOrCreate(
                 ['phone' => $phone],
                 [
-                    'name' => 'User '.substr($phone, -4),
+                    'name' => null,
                     'is_guest' => false,
                 ]
             );
@@ -83,9 +81,9 @@ class UserAuthService
         $user = auth()->user();
         if ($user) {
             $user->currentAccessToken()->delete();
+
             return true;
         }
         throw new \Exception('User not authenticated.');
     }
-    
 }
