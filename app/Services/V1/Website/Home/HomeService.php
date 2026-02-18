@@ -22,7 +22,9 @@ class HomeService
 
     public function getCategories()
     {
-        return Category::with(['media'])->whereNull('parent_id')->get();
+        return Category::select(['id', 'name_ar', 'name_en'])
+             ->
+        with(['media:id,model_id,name,file_name,collection_name,disk'])->whereNull('parent_id')->get();
     }
 
     public function getCommonQuestions()

@@ -9,7 +9,7 @@ class CategoryService
     public function list()
     {
         return Category::select(['id', 'name_ar', 'name_en'])
-            ->with(['media:id,model_id,name,file_name,collection_name,disk',
+            ->with([
                 'subCategories.media:id,model_id,name,file_name,collection_name,disk'])
             ->whereNull('parent_id')
             ->get();
@@ -18,7 +18,7 @@ class CategoryService
     public function show($id)
     {
         return Category::select(['id', 'name_ar', 'name_en'])
-            ->with(['media:id,model_id,name,file_name,collection_name,disk',
+            ->with([
                 'subCategories.media:id,model_id,name,file_name,collection_name,disk'])
             ->findorFail($id);
     }
