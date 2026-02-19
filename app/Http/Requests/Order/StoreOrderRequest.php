@@ -29,7 +29,7 @@ class StoreOrderRequest extends FormRequest
             'promo_code' => ['nullable', 'string', Rule::exists('promo_codes', 'code')->where('is_active', true)],
             'phone' => ['nullable', 'string', 'phone:SA'],
             'name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'string', 'email'],
+            'email' => ['nullable', 'string', 'email', 'unique:users,email,'.$this->user()->id],
         ];
     }
 
@@ -49,6 +49,7 @@ class StoreOrderRequest extends FormRequest
                 'name.max' => 'الاسم لا يجوز أن يكون أكثر من 255 حرفًا.',
                 'email.string' => 'البريد الإلكتروني يجب أن يكون نصًا.',
                 'email.email' => 'البريد الإلكتروني يجب أن يكون عنوان بريد إلكتروني صالح.',
+                'email.unique' => 'البريد الإلكتروني مستخدم بالفعل.',
             ];
         }
 
@@ -64,6 +65,7 @@ class StoreOrderRequest extends FormRequest
             'name.max' => 'The name may not be greater than 255 characters.',
             'email.string' => 'The email must be a string.',
             'email.email' => 'The email must be a valid email address.',
+            'email.unique' => 'The email has already been taken.',
         ];
     }
 }

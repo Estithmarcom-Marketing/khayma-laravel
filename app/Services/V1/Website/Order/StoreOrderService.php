@@ -51,7 +51,8 @@ class StoreOrderService
                 'delivery_method_id' => $data['delivery_method_id'],
                 'subtotal_price' => $subtotal,
                 'shipping_cost' => $shipping_cost,
-                'discount_amount' => $total['discount_of_promo_code'] + $discountOfOffer,
+                'discount_of_offer' => $discountOfOffer,
+                'discount_of_promo_code' => $total['discount_of_promo_code'],
                 'total_price' => $total['total'],
                 'promo_code' => $data['promo_code'] ?? null,
                 'status' => OrderStatusEnum::PENDING,
@@ -111,6 +112,7 @@ class StoreOrderService
     {
         $subtotal = 0;
         $discountOfOffer = 0;
+        $priceBeforeOffer = 0;
 
         $variationIds = $data['items']->pluck('product_variation_id');
 
@@ -131,6 +133,7 @@ class StoreOrderService
             }
 
             $price = $variation->price;
+            $priceBeforeOffer += $price * $item->quantity;
 
             if ($variation->offer > 0 &&
                 $variation->offer < $variation->price &&
@@ -148,7 +151,7 @@ class StoreOrderService
             }
         }
 
-        return ['subtotal' => $subtotal, 'discountOfOffer' => $discountOfOffer];
+        return ['subtotal' => $subtotal, 'discountOfOffer' => $discountOfOffer, 'priceBeforeOffer' => $priceBeforeOffer];
     }
 
     private function getShippingCost($deliveryMethodId, $address)
@@ -241,10 +244,14 @@ class StoreOrderService
         $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code, false);
 
         return [
-            'total' => (float) $total['total'],
-            'discount' => (float) ($discountOfOffer + $total['discount_of_promo_code']),
-            'shipping' => (float) $shipping_cost,
+            'price_before_offer' => (float) $validatedItems['priceBeforeOffer'],
+            'discount_of_offer' => (float) $discountOfOffer,
+            'discount_of_promo_code' => (float) $total['discount_of_promo_code'],
+            'discount_total' => (float) ($discountOfOffer + $total['discount_of_promo_code']),
             'subtotal' => (float) $subtotal,
+            'shipping' => (float) $shipping_cost,
+            'tax' => 0.00, // Tax calculation can be added here if needed
+            'total' => (float) $total['total'],
         ];
     }
 }

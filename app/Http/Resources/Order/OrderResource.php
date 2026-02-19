@@ -20,12 +20,14 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status->value,
-            'subtotal' => $this->subtotal_price,
-            'tax' => $this->tax_amount,
-            'shipping' => $this->shipping_cost,
-            'discount' => $this->discount_amount,
+            'subtotal' => (float) $this->subtotal_price,
+            'tax' => (float) $this->tax_amount,
+            'shipping' => (float) $this->shipping_cost,
+            'discount_of_offer' => (float) $this->discount_of_offer,
+            'discount_of_promo_code' => (float) $this->discount_of_promo_code,
+            'discount_total' => (float) ($this->discount_of_offer + $this->discount_of_promo_code),
             'promo_code' => $this->promo_code,
-            'total' => $this->total_price,
+            'total' => (float) $this->total_price,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
             'address' => new AddressResource($this->whenLoaded('address')),
             'address_details' => $this->address_details,
@@ -34,7 +36,7 @@ class OrderResource extends JsonResource
             'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
             'payment' => $this->whenLoaded('payments') ? $this->payments->map(function ($payment) {
                 return [
-                    'amount' => $payment->amount,
+                    'amount' => (float) $payment->amount,
                     'status' => $payment->status->value,
                 ];
             }) : null,
