@@ -28,4 +28,14 @@ class StoreDeliveryMethodRequest extends FormRequest
             'has_shipping_cost' => ['required', 'boolean'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name_ar.required' => __('shipping_methods.validation.name_ar_required'),
+            'name_en.required' => __('shipping_methods.validation.name_en_required'),
+            'is_active.required' => __('shipping_methods.validation.is_active_required'),
+            'has_shipping_cost.required' => __('shipping_methods.validation.has_shipping_cost_required'),
+        ];
+    }
 }
