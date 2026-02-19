@@ -24,6 +24,8 @@ class StoreCityRequest extends FormRequest
         return [
             'name_en' => ['required', 'string', 'max:255'],
             'name_ar' => ['required', 'string', 'max:255'],
+            'estimated_delivery_days' => ['nullable', 'integer', 'min:1'],
+            'cost' => ['required', 'numeric', 'min:0'],
             'is_active' => ['sometimes', 'boolean'],
             'can_ship' => ['sometimes', 'boolean'],
         ];
