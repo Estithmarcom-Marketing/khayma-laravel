@@ -15,6 +15,12 @@ class ProductVariationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
+    {
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
@@ -29,21 +35,49 @@ class ProductVariationResource extends JsonResource
             'color' => $this->whenLoaded('color', function () {
                 return [
                     'id' => $this->color->id,
-                    'name_en' => $this->color->name_en,
-                    'name_ar' => $this->color->name_ar,
+                    'name' => $this->color->name_ar,
                     'code' => $this->color->code,
                 ];
             }),
             'size' => $this->whenLoaded('size', function () {
                 return [
                     'id' => $this->size->id,
-                    'name_en' => $this->size->name_en,
-                    'name_ar' => $this->size->name_ar,
+                    'name' => $this->size->name_ar,
                 ];
             }),
             'properties' => PropertyResource::collection($this->whenLoaded('properties')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'product_id' => $this->product_id,
+            'sku' => $this->sku,
+            'stock_quantity' => $this->stock_quantity,
+            'is_active' => $this->is_active,
+            'is_in_reminder' => (bool) $this->is_in_reminder,
+            'price' => (float) $this->price,
+            'offer' => (float) $this->offer,
+            'offer_started_date' => $this->offer_started_date,
+            'offer_expired_date' => $this->offer_expired_date,
+            'color' => $this->whenLoaded('color', function () {
+                return [
+                    'id' => $this->color->id,
+                    'name' => $this->color->name_en,
+                    'code' => $this->color->code,
+                ];
+            }),
+            'size' => $this->whenLoaded('size', function () {
+                return [
+                    'id' => $this->size->id,
+                    'name' => $this->size->name_en,
+                ];
+            }),
+            'properties' => PropertyResource::collection($this->whenLoaded('properties')),
+
         ];
     }
 }

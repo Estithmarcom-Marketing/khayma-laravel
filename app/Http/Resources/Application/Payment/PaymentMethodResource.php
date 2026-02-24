@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Application\Color;
+namespace App\Http\Resources\Application\Payment;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ColorResource extends JsonResource
+class PaymentMethodResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -23,7 +23,8 @@ class ColorResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name_ar,
-            'code' => $this->code,
+            'type' => $this->type,
+            'payment_gateway' => $this->whenLoaded('paymentGateways', fn () => PaymentGatewayResource::collection($this->paymentGateways)),
         ];
     }
 
@@ -32,7 +33,8 @@ class ColorResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name_en,
-            'code' => $this->code,
+            'type' => $this->type,
+            'payment_gateway' => $this->whenLoaded('paymentGateways', fn () => PaymentGatewayResource::collection($this->paymentGateways)),
         ];
     }
 }

@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSeeder::class);
         $this->call(DeliveryMethodSeeder::class);
         $this->call(PaymentMethodSeeder::class);
+        $this->call(PaymentGatewaySeeder::class);
 
         // Category::factory()->count(5)->create();
         // Brand::factory()->count(10)->create();

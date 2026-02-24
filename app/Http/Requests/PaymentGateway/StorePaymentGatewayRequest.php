@@ -24,6 +24,7 @@ class StorePaymentGatewayRequest extends FormRequest
         return [
             'name_ar' => 'required|string|max:255|unique:payment_gateways,name_ar',
             'name_en' => 'required|string|max:255|unique:payment_gateways,name_en',
+            'gateway' => 'required|string|max:255|unique:payment_gateways,gateway',
             'is_active' => 'required|boolean',
             'payment_method_id' => 'required|exists:payment_methods,id',
         ];

@@ -12,22 +12,24 @@ class CategoryResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-     public function toArray(Request $request): array
+    public function toArray(Request $request): array
+    {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+    }
+
+    private function arabicResource()
     {
         return [
             'id' => $this->id,
-            'name_en' => $this->name_en,
-            'name_ar' => $this->name_ar,
-            'slug_en' => $this->slug_en,
-            'slug_ar' => $this->slug_ar,
-            'description_en' => $this->description_en,
-            'description_ar' => $this->description_ar,
+            'name' => $this->name_ar,
+            'slug' => $this->slug_ar,
+            'description' => $this->description_ar,
+
             'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('category'))),
             'parent' => $this->whenLoaded('parent', function () {
                 return $this->parent ? [
                     'id' => $this->parent->id,
-                    'name_en' => $this->parent->name_en,
-                    'name_ar' => $this->parent->name_ar,
+                    'name' => $this->parent->name_ar,
                 ] : null;
             }),
 
@@ -35,15 +37,38 @@ class CategoryResource extends JsonResource
                 return $this->subCategories->map(function ($child) {
                     return [
                         'id' => $child->id,
-                        'name_en' => $child->name_en,
-                        'name_ar' => $child->name_ar,
+                        'name' => $child->name_ar,
+                        'image' => $this->whenLoaded('media', $this->whenNotNull($child->getFirstMediaUrl('category'))),
+                    ];
+                });
+            }),
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name_en,
+            'slug' => $this->slug_en,
+            'description' => $this->description_en,
+            'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('category'))),
+            'parent' => $this->whenLoaded('parent', function () {
+                return $this->parent ? [
+                    'id' => $this->parent->id,
+                    'name' => $this->parent->name_en,
+                ] : null;
+            }),
+            'children' => $this->whenLoaded('subCategories', function () {
+                return $this->subCategories->map(function ($child) {
+                    return [
+                        'id' => $child->id,
+                        'name' => $child->name_en,
                         'image' => $this->whenLoaded('media', $this->whenNotNull($child->getFirstMediaUrl('category'))),
                     ];
                 });
             }),
 
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }

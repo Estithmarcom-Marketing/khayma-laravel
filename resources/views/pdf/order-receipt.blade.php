@@ -1,187 +1,444 @@
+@php $isAr = app()->getLocale() === 'ar'; @endphp
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}"
-      dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ $isAr ? 'rtl' : 'ltr' }}">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <style>
-        body {
-            font-family: cairo, sans-serif;
-            font-size: 12px;
-            color: #111;
-        }
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .rtl { direction: rtl; text-align: right; }
-        .ltr { direction: ltr; text-align: left; }
+body {
+    font-family: cairo, sans-serif;
+    font-size: 12px;
+    color: #1a2a35;
+    background: #eaf3f8;
+}
 
-        .number {
-            direction: ltr;
-            unicode-bidi: embed;
-        }
+.page-wrap {
+    padding: 20px;
+}
 
-        h1, h2, h3 {
-            margin: 0 0 10px 0;
-        }
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #cce4f5;
+    overflow: hidden;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
+/* ══ HEADER ══ */
+.header-inner {
+    width: 100%;
+    border-collapse: collapse;
+    border-bottom: 2px solid #cce4f5;
+}
 
-        th, td {
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-            vertical-align: top;
-        }
+.header-brand-cell {
+    padding: 18px 20px;
+    vertical-align: middle;
+    width: 50%;
+}
 
-        th {
-            background: #f5f5f5;
-            font-weight: bold;
-        }
+.header-meta-cell {
+    padding: 18px 20px;
+    vertical-align: middle;
+    width: 50%;
+    text-align: {{ $isAr ? 'left' : 'right' }};
+}
 
-        .section {
-            margin-top: 16px;
-        }
+.brand-logo-box {
+    display: inline-block;
+    background: #2f7fb0;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 1.4;
+    vertical-align: middle;
+    margin-{{ $isAr ? 'left' : 'right' }}: 10px;
+}
 
-        .totals td {
-            border: none;
-            padding: 4px 0;
-        }
+.brand-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1a2a35;
+    display: inline-block;
+    vertical-align: middle;
+}
 
-        .total-row {
-            font-weight: bold;
-            font-size: 13px;
-        }
-    </style>
+.brand-sub {
+    font-size: 10px;
+    color: #3a94cc;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+.meta-label {
+    font-size: 10px;
+    color: #7a95a5;
+}
+
+.meta-value {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1a2a35;
+    margin-bottom: 4px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    background: #e6faf1;
+    color: #27ae60;
+    border: 1px solid #a8e6c8;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* ══ INFO STRIP ══ */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-bottom: 2px solid #cce4f5;
+}
+
+.info-cell {
+    padding: 14px 20px;
+    vertical-align: top;
+    width: 33.33%;
+    border-{{ $isAr ? 'left' : 'right' }}: 1px solid #cce4f5;
+}
+
+.info-cell-last {
+    padding: 14px 20px;
+    vertical-align: top;
+    width: 33.33%;
+}
+
+.info-title {
+    font-weight: bold;
+    color: #2f7fb0;
+    font-size: 11px;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e7f3fb;
+}
+
+.info-row {
+    color: #4a6070;
+    font-size: 11px;
+    margin-bottom: 3px;
+    line-height: 1.5;
+}
+
+.info-row strong {
+    color: #1a2a35;
+}
+
+/* ══ ITEMS TABLE ══ */
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table thead tr {
+    background: #2f7fb0;
+    color: #ffffff;
+}
+
+.items-table th {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.items-table th.th-product {
+    text-align: {{ $isAr ? 'right' : 'left' }};
+}
+
+.items-table td {
+    padding: 11px 14px;
+    font-size: 11px;
+    color: #1a2a35;
+    text-align: center;
+    border-bottom: 1px solid #ddeef8;
+    vertical-align: middle;
+}
+
+.items-table td.td-product {
+    text-align: {{ $isAr ? 'right' : 'left' }};
+    font-weight: bold;
+}
+
+.items-table td small {
+    display: block;
+    color: #7a95a5;
+    font-size: 10px;
+    font-weight: normal;
+    margin-top: 2px;
+}
+
+.items-table td.td-total {
+    font-weight: bold;
+    color: #2f7fb0;
+}
+
+.row-alt {
+    background: #f5fafd;
+}
+
+/* ══ BOTTOM SECTION ══ */
+.bottom-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid #cce4f5;
+}
+
+.notes-cell {
+    width: 50%;
+    padding: 16px 20px;
+    vertical-align: top;
+    background: #e7f3fb;
+    border-{{ $isAr ? 'left' : 'right' }}: 1px solid #cce4f5;
+}
+
+.notes-title {
+    font-weight: bold;
+    color: #2f7fb0;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.notes-text {
+    color: #4a6070;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.totals-cell {
+    width: 50%;
+    padding: 16px 20px;
+    vertical-align: top;
+}
+
+.total-line {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+}
+
+.total-line td {
+    padding: 3px 0;
+    font-size: 12px;
+    color: #4a6070;
+}
+
+.tl-amount {
+    text-align: {{ $isAr ? 'left' : 'right' }};
+    font-weight: bold;
+    color: #1a2a35;
+}
+
+.tl-discount {
+    text-align: {{ $isAr ? 'left' : 'right' }};
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.grand-row {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid #3a94cc;
+    margin-top: 8px;
+}
+
+.grand-row td {
+    padding-top: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #1a2a35;
+}
+
+.grand-amount {
+    text-align: {{ $isAr ? 'left' : 'right' }};
+    color: #3a94cc;
+    font-size: 18px;
+}
+
+/* ══ FOOTER ══ */
+.footer {
+    background: #2f7fb0;
+    color: #ffffff;
+    text-align: center;
+    padding: 16px 20px;
+}
+
+.footer-title {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.footer-contacts {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.footer-contacts td {
+    text-align: center;
+    font-size: 11px;
+    color: #d0eaf8;
+    padding: 0 10px;
+}
+
+.footer-copy {
+    font-size: 10px;
+    color: #a0c8e0;
+    margin-top: 10px;
+}
+</style>
 </head>
 
-<body class="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+<body>
+<div class="page-wrap">
+<div class="card">
 
-{{-- ================= HEADER ================= --}}
-<h2>
-    {{ app()->getLocale() === 'ar' ? 'إيصال الطلب' : 'Order Receipt' }}
-</h2>
-
-<p>
-    {{ app()->getLocale() === 'ar' ? 'رقم الطلب' : 'Order ID' }}:
-    <span class="number">{{ $order->id }}</span>
-</p>
-
-<p>
-    {{ app()->getLocale() === 'ar' ? 'تاريخ الطلب' : 'Order Date' }}:
-    <span class="number">{{ $order->created_at->format('Y-m-d H:i') }}</span>
-</p>
-
-<hr>
-
-{{-- ================= CUSTOMER INFO ================= --}}
-<div class="section">
-    <h3>{{ app()->getLocale() === 'ar' ? 'بيانات العميل' : 'Customer Information' }}</h3>
-
-    <p>{{ $order->user->name }}</p>
-   
-
-    @if($order->user->phone)
-        <p class="number">{{ $order->user->phone }}</p>
-    @endif
-</div>
-
-{{-- ================= ADDRESS ================= --}}
-<div class="section">
-    <h3>{{ app()->getLocale() === 'ar' ? 'عنوان التوصيل' : 'Delivery Address' }}</h3>
-
-    <p>
-        {{ $order->address_details }} 
-    </p>
-</div>
-
-{{-- ================= DELIVERY METHOD ================= --}}
-<div class="section">
-    <h3>{{ app()->getLocale() === 'ar' ? 'طريقة التوصيل' : 'Delivery Method' }}</h3>
-
-    <p>
-        {{ $order->deliveryMethod->{'name_'.app()->getLocale()} }}
-    </p>
-</div>
-
-{{-- ================= ITEMS ================= --}}
-<div class="section">
-    <h3>{{ app()->getLocale() === 'ar' ? 'المنتجات' : 'Items' }}</h3>
-
-    <table>
-        <thead>
+    {{-- ══ HEADER ══ --}}
+    <table class="header-inner">
         <tr>
-            <th>{{ app()->getLocale() === 'ar' ? 'المنتج' : 'Product' }}</th>
-            <th>{{ app()->getLocale() === 'ar' ? 'الكمية' : 'Qty' }}</th>
-            <th>{{ app()->getLocale() === 'ar' ? 'السعر' : 'Price' }}</th>
-            <th>{{ app()->getLocale() === 'ar' ? 'الإجمالي' : 'Total' }}</th>
+            <td class="header-brand-cell">
+                <span class="brand-logo-box">AL<br>KHAIMA</span>
+                <span class="brand-name">{{ $isAr ? 'متجر الخيمة' : 'Al-Khaima Store' }}</span>
+                <div class="brand-sub">AL-KHAIMA STORE</div>
+            </td>
+            <td class="header-meta-cell">
+                <div class="meta-label">{{ $isAr ? 'رقم الطلب' : 'Order ID' }}</div>
+                <div class="meta-value">#{{ $order->id }}</div>
+                <div class="meta-label">{{ $isAr ? 'تاريخ الطلب' : 'Order Date' }}</div>
+                <div class="meta-value">{{ $order->created_at->format('Y-m-d H:i') }}</div>
+                <span class="badge">{{ $isAr ? 'مدفوعة' : 'Paid' }}</span>
+            </td>
         </tr>
-        </thead>
+    </table>
 
-        <tbody>
-        @foreach($order->items as $item)
-            @php
-                $price = (float) $item->productVariation->price;
-                $qty = (int) $item->quantity;
-            @endphp
+    {{-- ══ INFO STRIP ══ --}}
+    <table class="info-table">
+        <tr>
+            <td class="info-cell">
+                <div class="info-title">{{ $isAr ? 'بيانات العميل' : 'Customer' }}</div>
+                <div class="info-row"><strong>{{ $isAr ? 'الاسم' : 'Name' }}:</strong> {{ $order->user->name }}</div>
+                @if($order->user->phone)
+                    <div class="info-row"><strong>{{ $isAr ? 'الجوال' : 'Phone' }}:</strong> {{ $order->user->phone }}</div>
+                @endif
+            </td>
+            <td class="info-cell">
+                <div class="info-title">{{ $isAr ? 'عنوان التوصيل' : 'Delivery Address' }}</div>
+                <div class="info-row">{{ $order->address_details }}</div>
+            </td>
+            <td class="info-cell-last">
+                <div class="info-title">{{ $isAr ? 'طريقة التوصيل' : 'Delivery Method' }}</div>
+                <div class="info-row">{{ optional($order->deliveryMethod)->{'name_'.app()->getLocale()} }}</div>
+            </td>
+        </tr>
+    </table>
+
+    {{-- ══ ITEMS ══ --}}
+    <table class="items-table">
+        <thead>
             <tr>
-                <td>
-                    {{ $item->productVariation->product->{'name_'.app()->getLocale()} }}
-                    <br>
-                    <small class="number">
-                        SKU: {{ $item->productVariation->sku }}
-                    </small>
-                </td>
-                <td class="number">{{ $qty }}</td>
-                <td class="number">{{ number_format($price, 2) }}</td>
-                <td class="number">{{ number_format($price * $qty, 2) }}</td>
+                <th class="th-product">{{ $isAr ? 'المنتج' : 'Product' }}</th>
+                <th>{{ $isAr ? 'الكمية' : 'Qty' }}</th>
+                <th>{{ $isAr ? 'سعر الوحدة' : 'Unit Price' }}</th>
+                <th>{{ $isAr ? 'الإجمالي' : 'Total' }}</th>
             </tr>
-        @endforeach
+        </thead>
+        <tbody>
+            @foreach($order->items as $i => $item)
+                @php
+                    $price = (float) $item->productVariation->price;
+                    $qty   = (int)   $item->quantity;
+                @endphp
+                <tr class="{{ $i % 2 === 1 ? 'row-alt' : '' }}">
+                    <td class="td-product">
+                        {{ $item->productVariation->product->{'name_'.app()->getLocale()} }}
+                        <small>SKU: {{ $item->productVariation->sku }}</small>
+                    </td>
+                    <td>{{ $qty }}</td>
+                    <td>{{ number_format($price, 2) }}</td>
+                    <td class="td-total">{{ number_format($price * $qty, 2) }}</td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
-</div>
 
-{{-- ================= TOTALS ================= --}}
-<div class="section">
-    <table class="totals">
+    {{-- ══ NOTES + TOTALS ══ --}}
+    <table class="bottom-table">
         <tr>
-            <td>{{ app()->getLocale() === 'ar' ? 'المجموع الفرعي' : 'Subtotal' }}</td>
-            <td class="number">{{ number_format($order->subtotal_price, 2) }}</td>
-        </tr>
-
-        <tr>
-            <td>{{ app()->getLocale() === 'ar' ? 'الشحن' : 'Shipping' }}</td>
-            <td class="number">{{ number_format($order->shipping_cost, 2) }}</td>
-        </tr>
-
-        <tr>
-            <td>{{ app()->getLocale() === 'ar' ? 'الضريبة' : 'Tax' }}</td>
-            <td class="number">{{ number_format($order->tax_amount, 2) }}</td>
-        </tr>
-
-        @if($order->discount_amount > 0)
-            <tr>
-                <td>{{ app()->getLocale() === 'ar' ? 'الخصم' : 'Discount' }}</td>
-                <td class="number">-{{ number_format($order->discount_amount, 2) }}</td>
-            </tr>
-        @endif
-
-        <tr class="total-row">
-            <td>{{ app()->getLocale() === 'ar' ? 'الإجمالي' : 'Total' }}</td>
-            <td class="number">{{ number_format($order->total_price, 2) }}</td>
+            <td class="notes-cell">
+                <div class="notes-title">{{ $isAr ? 'ملاحظات' : 'Notes' }}:</div>
+                <div class="notes-text">
+                    {{ $isAr
+                        ? 'يرجى الاحتفاظ بهذا الإيصال لخدمات الضمان والاستبدال لمدة 14 يوماً من تاريخ الاستلام.'
+                        : 'Please keep this receipt for warranty and return services within 14 days of delivery.' }}
+                </div>
+            </td>
+            <td class="totals-cell">
+                <table class="total-line">
+                    <tr>
+                        <td>{{ $isAr ? 'المجموع الفرعي' : 'Subtotal' }}</td>
+                        <td class="tl-amount">{{ number_format($order->subtotal_price, 2) }}</td>
+                    </tr>
+                </table>
+                <table class="total-line">
+                    <tr>
+                        <td>{{ $isAr ? 'الشحن' : 'Shipping' }}</td>
+                        <td class="tl-amount">{{ number_format($order->shipping_cost, 2) }}</td>
+                    </tr>
+                </table>
+                <table class="total-line">
+                    <tr>
+                        <td>{{ $isAr ? 'الضريبة' : 'Tax' }}</td>
+                        <td class="tl-amount">{{ number_format($order->tax_amount, 2) }}</td>
+                    </tr>
+                </table>
+                @if($order->discount_amount > 0)
+                    <table class="total-line">
+                        <tr>
+                            <td>{{ $isAr ? 'الخصم' : 'Discount' }}</td>
+                            <td class="tl-discount">-{{ number_format($order->discount_amount, 2) }}</td>
+                        </tr>
+                    </table>
+                @endif
+                <table class="grand-row">
+                    <tr>
+                        <td>{{ $isAr ? 'الإجمالي الكلي' : 'Grand Total' }}</td>
+                        <td class="grand-amount">{{ number_format($order->total_price, 2) }}</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
+
+    {{-- ══ FOOTER ══ --}}
+    <div class="footer">
+        <div class="footer-title">{{ $isAr ? 'شكرًا لتسوقك معنا' : 'Thank you for your order!' }}</div>
+        <table class="footer-contacts">
+            <tr>
+                <td>&#9990; 92000XXXX</td>
+                <td>&#9993; support@store.com</td>
+                <td>&#9675; www.store.com</td>
+            </tr>
+        </table>
+        <div class="footer-copy">
+            {{ $isAr ? 'جميع الحقوق محفوظة' : 'All rights reserved' }} &copy; {{ date('Y') }}
+        </div>
+    </div>
+
 </div>
-
-{{-- ================= FOOTER ================= --}}
-<hr>
-
-<p style="text-align:center;">
-    {{ app()->getLocale() === 'ar'
-        ? 'شكرًا لتسوقك معنا'
-        : 'Thank you for your order' }}
-</p>
-
+</div>
 </body>
 </html>

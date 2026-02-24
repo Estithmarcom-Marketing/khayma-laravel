@@ -14,14 +14,26 @@ class PropertyResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
+    {
         return [
             'id' => $this->id,
-            'name_ar' => $this->name_ar,
-            'name_en' => $this->name_en,
-            'value_ar' => $this->pivot?->value_ar,
-            'value_en' => $this->pivot?->value_en,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'name' => $this->name_ar,
+            'value' => $this->pivot?->value_ar,
+
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name_en,
+            'value' => $this->pivot?->value_en,
         ];
     }
 }

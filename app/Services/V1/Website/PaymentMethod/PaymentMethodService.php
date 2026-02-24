@@ -8,7 +8,11 @@ class PaymentMethodService
 {
     public function list()
     {
-        return PaymentMethod::select('id', 'name_ar', 'name_en')
+        return PaymentMethod::select('id', 'name_ar', 'name_en', 'type')
+            ->with(['paymentGateways' => function ($q) {
+                $q->select('id', 'name_ar', 'name_en', 'gateway', 'payment_method_id')
+                    ->active();
+            }])
             ->active()
             ->get();
     }

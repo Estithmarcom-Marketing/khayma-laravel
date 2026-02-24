@@ -18,10 +18,11 @@ class PaymentGatewayResource extends JsonResource
             'id' => $this->id,
             'name_ar' => $this->name_ar,
             'name_en' => $this->name_en,
+            'gateway' => $this->gateway,
             'is_active' => $this->is_active,
             'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
-            'created_at' => $this->whenNotNull($this->created_at->toDateTimeString()),
-            'updated_at' => $this->whenNotNull($this->updated_at->toDateTimeString()),
+            'created_at' => $this->whenNotNull($this->created_at),
+            'updated_at' => $this->whenNotNull($this->updated_at),
         ];
     }
 }

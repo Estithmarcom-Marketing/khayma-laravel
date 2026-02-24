@@ -12,14 +12,33 @@ class NotificationResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-   public function toArray(Request $request): array
+    public function toArray(Request $request): array
+    {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
     {
         return [
             'id' => $this->id,
-            'title_ar' => $this->title_ar,
-            'title_en' => $this->title_en,
-            'body_ar' => $this->body_ar,
-            'body_en' => $this->body_en,
+            'title' => $this->title_ar,
+            'body' => $this->body_ar,
+            'type' => $this->type,
+            'is_read' => $this->is_read,
+            'notifiable_id' => $this->notifiable_id,
+            'notifiable_type' => $this->notifiable_type,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title_en,
+            'body' => $this->body_en,
             'type' => $this->type,
             'is_read' => $this->is_read,
             'notifiable_id' => $this->notifiable_id,

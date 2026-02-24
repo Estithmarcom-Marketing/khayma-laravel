@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Payments\PaymentGatewayEnum;
 use App\Enums\Payments\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +12,7 @@ class Payment extends Model
         'order_id',
         'payment_method_id',
         'payment_gateway_id',
+        'gateway',
         'amount',
         'status',
         'transaction_id',
@@ -21,6 +23,7 @@ class Payment extends Model
     protected $casts = [
         'meta_data' => 'array',
         'status' =>PaymentStatusEnum::class,
+        'gateway' => PaymentGatewayEnum::class,
     ];
 
     public function order()
