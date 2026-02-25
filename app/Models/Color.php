@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Color extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'name_en',
         'name_ar',
@@ -18,5 +19,4 @@ class Color extends Model
     {
         return $this->belongsToMany(Product::class);
     }
-    
 }
