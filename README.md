@@ -1,4 +1,4 @@
-# Project README
+# Khayma README
 
 > Developer reference — not full documentation. Read this before touching the codebase.
 
