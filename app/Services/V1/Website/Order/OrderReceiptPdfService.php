@@ -10,6 +10,10 @@ class OrderReceiptPdfService
 {
     public function generate(Order $order): string
     {
+        $user = auth('sanctum')->user();
+        if (! $user || $order->user_id !== $user->id) {
+            throw new \LogicException('Unauthorized to access this order receipt');
+        }
 
         $order->loadMissing([
             'items.productVariation.product',
@@ -20,18 +24,21 @@ class OrderReceiptPdfService
         ]);
 
         $locale = app()->getLocale();
-        $fileName = "receipt-{$order->id}-{$locale}.pdf";
+        $hash = md5($order->updated_at);
+        $fileName = "receipt-{$order->id}-{$hash}-{$locale}.pdf";
         $filePath = "receipts/{$fileName}";
 
-        if (Storage::disk('public')->exists($filePath)) {
-            return Storage::disk('public')->url($filePath);
+        $disk = Storage::disk('public');
+
+        if ($disk->exists($filePath)) {
+            return $disk->url($filePath);
         }
 
         $pdfBinary = $this->generatePdfBinary($order);
 
-        Storage::disk('public')->put($filePath, $pdfBinary);
+        $disk->put($filePath, $pdfBinary);
 
-        return Storage::disk('public')->url($filePath);
+        return $disk->url($filePath);
     }
 
     private function generatePdfBinary(Order $order): string

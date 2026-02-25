@@ -61,6 +61,7 @@ class ProductService
                 'category:id,name_ar,name_en',
                 'media:id,model_id,name,file_name,collection_name,disk',
             ]);
+
         return $query;
     }
 
@@ -78,6 +79,14 @@ class ProductService
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
                 'media:id,model_id,name,file_name,collection_name,disk',
+                'productVariations' => function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->withIsInReminder()
+                        ->active();
+                },
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size',
+                'productVariations.properties:id,name_ar,name_en',
             ])
             ->withExists($this->existsConditions($userId, $cartId))
             ->withAvg('reviews', 'rating')

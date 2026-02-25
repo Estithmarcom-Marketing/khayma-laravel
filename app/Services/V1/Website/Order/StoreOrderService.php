@@ -70,6 +70,7 @@ class StoreOrderService
                 'amount' => $total['total'],
                 'payment_method_id' => $data['payment_method_id'],
                 'payment_gateway_id' => null,
+                'gateway' => null,
                 'status' => PaymentStatusEnum::PENDING,
                 'transaction_id' => null,
                 'payment_response' => null,
@@ -78,16 +79,17 @@ class StoreOrderService
             $user->cart->items()->delete();
 
             return $order->load([
-                'items.productVariation.product',
+                'items.productVariation.product.category:id,name_ar,name_en',
                 'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
                 'items.productVariation' => function ($q) {
                     $q->selectWithActiveOffer()
                         ->withIsInReminder()
                         ->active();
                 },
-                'address',
+                'address.city:id,name_ar,name_en',
                 'deliveryMethod:id,name_ar,name_en',
-                'paymentMethod:id,name_ar,name_en',
+                'paymentMethod:id,name_ar,name_en,type',
+                'paymentMethod.paymentGateways:id,name_ar,name_en,gateway,payment_method_id'
             ]);
         });
         event(new OrderPlacement($result));

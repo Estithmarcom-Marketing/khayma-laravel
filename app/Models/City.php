@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class City extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'name_en',
         'name_ar',
         'is_active',
         'can_ship',
+        'zip',
     ];
 
     public function shipments()

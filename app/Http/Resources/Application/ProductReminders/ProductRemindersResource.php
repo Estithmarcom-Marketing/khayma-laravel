@@ -20,8 +20,8 @@ class ProductRemindersResource extends JsonResource
             'id' => $this->id,
             'product_variation' => $this->whenLoaded('productVariation', ProductVariationResource::make($this->productVariation)),
             'product' => $this->productVariation ? ProductResource::make($this->productVariation->product) : null,
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

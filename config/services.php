@@ -39,5 +39,27 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'payments_urls' => [
+        'success' => env('PAYMENTS_SUCCESS_URL'),
+        'cancel' => env('PAYMENTS_CANCEL_URL'),
+        'failure' => env('PAYMENTS_FAILURE_URL'),
+    ],
+    'tabby' => [
+        'merchant_code' => env('TABBY_MERCHANT_CODE'),
+        'secret_key' => env('TABBY_SECRET_KEY'),
+        'api_url' => env('TABBY_API_URL', 'https://api.tabby.ai/api/v2/checkout'),
+    ],
+    'tamara' => [
+        'env' => env('TAMARA_ENV', 'sandbox'),
+
+        'base_url' => env('TAMARA_ENV') === 'sandbox'
+            ? env('TAMARA_SANDBOX_BASE_URL')
+            : env('TAMARA_LIVE_BASE_URL'),
+
+        'token' => env('TAMARA_API_TOKEN'),
+        'notification_token' => env('TAMARA_NOTIFICATION_TOKEN'),
+        'public_key' => env('TAMARA_PUBLIC_KEY'),
+        'merchant_id' => env('TAMARA_MERCHANT_ID'),
+    ],
 
 ];

@@ -26,6 +26,7 @@ class PaymentGatewayService
         return PaymentGateway::create([
             'name_ar' => $data['name_ar'],
             'name_en' => $data['name_en'],
+            'gateway' => $data['gateway'],
             'payment_method_id' => $data['payment_method_id'],
             'is_active' => $data['is_active'] ?? true,
         ]);
@@ -36,6 +37,7 @@ class PaymentGatewayService
         $paymentGateway->update([
             'name_ar' => $data['name_ar'] ?? $paymentGateway->name_ar,
             'name_en' => $data['name_en'] ?? $paymentGateway->name_en,
+            'gateway' => $data['gateway'] ?? $paymentGateway->gateway,
             'payment_method_id' => $data['payment_method_id'] ?? $paymentGateway->payment_method_id,
             'is_active' => $data['is_active'] ?? $paymentGateway->is_active,
         ]);

@@ -10,20 +10,47 @@ use App\Models\Order;
 use App\Services\V1\Website\Order\OrderReceiptPdfService;
 use App\Services\V1\Website\Order\OrderService;
 use App\Services\V1\Website\Order\StoreOrderService;
+use App\Services\V1\Website\Payment\PaymentService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
-    public function __construct(protected OrderService $service, protected StoreOrderService $storeOrderService, protected OrderReceiptPdfService $orderReceiptPdfService) {}
+    public $user;
+
+    public function __construct(protected OrderService $service,
+        protected StoreOrderService $storeOrderService,
+        protected OrderReceiptPdfService $orderReceiptPdfService,
+        protected PaymentService $paymentService)
+    {
+        $this->user = auth('sanctum')->user();
+    }
 
     public function store(StoreOrderRequest $request)
     {
         try {
             $order = $this->storeOrderService->store($request->validated());
 
-            return ApiResponse::successResponse(['order' => OrderResource::make($order)], __('orders.created'), Response::HTTP_CREATED);
+            Log::info('Order created successfully', [
+                'order_id' => $order->id,
+                'payment_method' => $order->paymentMethod,
+                'user_id' => $this->user->id,
+            ]);
+
+            $dto = $this->paymentService->initiateIfNeeded(
+                $order,
+                $request->gateway
+            );
+
+            return ApiResponse::successResponse(
+                [
+                    'order' => OrderResource::make($order),
+                    'redirect_url' => $dto?->redirectUrl,
+                ],
+                __('orders.created'),
+                Response::HTTP_CREATED
+            );
         } catch (\LogicException $e) {
             Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

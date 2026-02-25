@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Services\V1\Admin\RolesAndPermissions\RolePermissionService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Http\Request;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;

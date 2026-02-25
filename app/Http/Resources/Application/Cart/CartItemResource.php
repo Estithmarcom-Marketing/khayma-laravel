@@ -14,15 +14,13 @@ class CartItemResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-     public function toArray(Request $request): array
+    public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'quantity' => $this->quantity,
             'product_variation' => ProductVariationResource::make($this->productVariation),
             'product' => $this->productVariation ? ProductResource::make($this->productVariation->product) : null,
-            'created_at' => optional($this->created_at),
-            'updated_at' => optional($this->updated_at),
         ];
     }
 }

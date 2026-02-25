@@ -4,7 +4,7 @@ namespace App\Http\Resources\Application\Order;
 
 use App\Http\Resources\Application\Address\AddressResource;
 use App\Http\Resources\Application\DeliveryMethod\DeliveryMethodResource;
-use App\Http\Resources\Application\PaymentMethod\PaymentMethodResource;
+use App\Http\Resources\Application\Payment\PaymentMethodResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

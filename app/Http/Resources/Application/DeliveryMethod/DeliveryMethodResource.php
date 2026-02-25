@@ -14,14 +14,23 @@ class DeliveryMethodResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
+    {
         return [
             'id' => $this->id,
-            'name_ar' => $this->name_ar,
-            'name_en' => $this->name_en,
-            'is_active' => $this->whenNotNull($this->is_active),
-            'has_shipping_cost' => $this->whenNotNull($this->has_shipping_cost),
-            'created_at' => $this->whenNotNull($this->created_at),
-            'updated_at' => $this->whenNotNull($this->updated_at),
+            'name' => $this->name_ar,
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name_en,
         ];
     }
 }

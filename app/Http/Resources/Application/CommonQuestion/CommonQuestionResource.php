@@ -12,16 +12,28 @@ class CommonQuestionResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-   public function toArray(Request $request): array
+    public function toArray(Request $request): array
+    {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
     {
         return [
             'id' => $this->id,
-            'question_ar' => $this->question_ar,
-            'question_en' => $this->question_en,
-            'answer_ar' => $this->answer_ar,
-            'answer_en' => $this->answer_en,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'question' => $this->question_ar,
+            'answer' => $this->answer_ar,
         ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'question' => $this->question_en,
+            'answer' => $this->answer_en,
+        ];
+
     }
 }

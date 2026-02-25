@@ -16,6 +16,7 @@ class PaymentMethodSeeder extends Seeder
             [
                 'name_ar' => ' كاش عند التوصيل',
                 'name_en' => 'Cash on Delivery',
+                'type' => 'cash',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -23,13 +24,7 @@ class PaymentMethodSeeder extends Seeder
             [
                 'name_ar' => ' بطاقة ائتمان',
                 'name_en' => 'Credit Card',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name_ar' => 'ابل باي',
-                'name_en' => 'Apple Pay',
+                'type' => 'online',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -37,6 +32,7 @@ class PaymentMethodSeeder extends Seeder
             [
                 'name_ar' => 'التقسيط',
                 'name_en' => 'Installments',
+                'type' => 'installment',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
