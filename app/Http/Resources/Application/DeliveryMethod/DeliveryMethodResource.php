@@ -23,6 +23,7 @@ class DeliveryMethodResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name_ar,
+            'has_shipping_cost' => $this->has_shipping_cost,
         ];
     }
 
@@ -31,6 +32,7 @@ class DeliveryMethodResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name_en,
+            'has_shipping_cost' => $this->has_shipping_cost,
         ];
     }
 }

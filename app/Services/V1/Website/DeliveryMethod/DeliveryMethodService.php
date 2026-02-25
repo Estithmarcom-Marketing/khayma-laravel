@@ -8,7 +8,7 @@ class DeliveryMethodService
 {
     public function list()
     {
-        return DeliveryMethod::select('id', 'name_ar', 'name_en')
+        return DeliveryMethod::select('id', 'name_ar', 'name_en','has_shipping_cost')
             ->active()
             ->get();
     }
