@@ -26,14 +26,16 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'tokenfromcookie' => \App\Http\Middleware\TokenFromCookie::class,
             'locale' => \App\Http\Middleware\SetLocale::class,
-            'verify_tabby_ip'=>\App\Http\Middleware\VerifyTabbyIp::class,
-            'verify_tamara_token'=>\App\Http\Middleware\VerifyTamaraToken::class
+            'verify_tabby_ip' => \App\Http\Middleware\VerifyTabbyIp::class,
+            'verify_tamara_token' => \App\Http\Middleware\VerifyTamaraToken::class,
 
         ]);
         $middleware->priority([
             \App\Http\Middleware\TokenFromCookie::class,
             \Illuminate\Auth\Middleware\Authenticate::class,
             \App\Http\Middleware\SetLocale::class, ]);
+        \App\Http\Middleware\VerifyTabbyIp::class;
+        \App\Http\Middleware\VerifyTamaraToken::class;
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, $request) {
