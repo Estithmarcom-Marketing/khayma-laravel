@@ -12,15 +12,27 @@ class ColorResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-     public function toArray(Request $request): array
+    public function toArray(Request $request): array
+    {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
     {
         return [
             'id' => $this->id,
-            'name_en' => $this->name_en,
-            'name_ar' => $this->name_ar,
+            'name' => $this->name_ar,
             'code' => $this->code,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name_en,
+            'code' => $this->code,
         ];
     }
 }

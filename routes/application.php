@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\Application\Home\HomeController;
 use App\Http\Controllers\Api\V1\Application\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Application\Order\OrderController;
 use App\Http\Controllers\Api\V1\Application\PaymentMethod\PaymentMethodController;
+use App\Http\Controllers\Api\V1\Application\PaymentWebhook\WebhookController;
 use App\Http\Controllers\Api\V1\Application\Product\ProductController;
 use App\Http\Controllers\Api\V1\Application\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Application\ProfileManagment\ProfileManagmentController;
@@ -165,5 +166,16 @@ Route::middleware(['locale'])
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
         Route::post('tent', [CustomTentController::class, 'store']);
+
+        Route::prefix('webhooks')->group(function () {
+
+            Route::post('/tabby', [WebhookController::class, 'tabby'])
+                ->name('webhooks.tabby')
+                ->middleware('verify_tabby_ip');
+
+            Route::post('/tamara', [WebhookController::class, 'tamara'])
+                ->name('webhooks.tamara')
+                ->middleware('verify_tamara_token');
+        });
 
     });

@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderControlle
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Website\Size\SizeController;
+use  App\Http\Controllers\Api\V1\Website\PaymentWebhook\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['tokenfromcookie', 'locale'])
@@ -166,4 +167,14 @@ Route::middleware(['tokenfromcookie', 'locale'])
             });
 
         Route::post('tent', [CustomTentController::class, 'store'])->middleware(['throttle:120,1']);
+        Route::prefix('webhooks')->group(function () {
+
+            Route::post('/tabby', [WebhookController::class, 'tabby'])
+                ->name('webhooks.tabby')
+                ->middleware('verify_tabby_ip');
+
+            Route::post('/tamara', [WebhookController::class,'tamara'])
+                ->name('webhooks.tamara')
+                ->middleware('verify_tamara_token');
+        });
     });

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Application\PaymentMethod;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Application\PaymentMethod\PaymentMethodResource;
+use App\Http\Resources\Application\Payment\PaymentMethodResource;
 use App\Services\V1\Website\PaymentMethod\PaymentMethodService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;

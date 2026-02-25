@@ -14,13 +14,17 @@ class BannerResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
+    {
         return [
             'id' => $this->id,
-            'title_ar' => $this->title_ar,
-            'title_en' => $this->title_en,
+            'title' => $this->title_ar,
             'position' => $this->position,
             'redirect_url' => $this->redirect_url,
-            'is_active' => $this->is_active,
             'banners' => $this->whenLoaded('media', function () {
                 return $this->media->map(function ($media) {
                     return [
@@ -30,8 +34,25 @@ class BannerResource extends JsonResource
                     ];
                 });
             }),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title_en,
+            'position' => $this->position,
+            'redirect_url' => $this->redirect_url,
+            'banners' => $this->whenLoaded('media', function () {
+                return $this->media->map(function ($media) {
+                    return [
+                        'id' => $media->id,
+                        'name' => $media->name,
+                        'url' => $media->original_url,
+                    ];
+                });
+            }),
         ];
     }
 }

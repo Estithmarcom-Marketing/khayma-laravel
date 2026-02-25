@@ -14,17 +14,32 @@ class BrandResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
+    {
         return [
             'id' => $this->id,
-            'name_ar' => $this->name_ar,
-            'name_en' => $this->name_en,
-            'description_ar' => $this->description_ar,
-            'description_en' => $this->description_en,
-            'slug_ar' => $this->slug_ar,
-            'slug_en' => $this->slug_en,
+            'name' => $this->name_ar,
+            'description' => $this->description_ar,
+            'slug' => $this->slug_ar,
             'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('brand'))),
-            'created_at' => $this->whenNotNull($this->created_at),
-            'updated_at' => $this->whenNotNull($this->updated_at),
+
         ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name_en,
+            'description' => $this->description_en,
+            'slug' => $this->slug_en,
+            'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('brand'))),
+
+        ];
+
     }
 }

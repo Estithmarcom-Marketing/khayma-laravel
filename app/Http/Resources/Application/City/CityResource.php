@@ -15,15 +15,25 @@ class CityResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
+    {
         return [
             'id' => $this->id,
-            'name_en' => $this->name_en,
-            'name_ar' => $this->name_ar,
-            'is_active' => $this->whenNotNull($this->is_active),
-            'can_ship' => $this->whenNotNull($this->can_ship),
-            'shipments' => $this->whenLoaded('shipments',fn()=> CityShipmentResource::collection($this->shipments)),
-            'created_at' => $this->whenNotNull($this->created_at),
-            'updated_at' => $this->whenNotNull($this->updated_at),
+            'name' => $this->name_ar,
+            'shipments' => $this->whenLoaded('shipments', fn () => CityShipmentResource::collection($this->shipments)),
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name_en,
+            'shipments' => $this->whenLoaded('shipments', fn () => CityShipmentResource::collection($this->shipments)),
         ];
     }
 }

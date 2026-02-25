@@ -19,8 +19,9 @@ class PaymentMethodResource extends JsonResource
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
             'is_active' => when($this->is_active, true),
+            'payment_gateway' => $this->whenLoaded('paymentGateways', fn () => PaymentGatewayResource::collection($this->paymentGateways)),
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'updated_at' => $this->updated_at,
         ];
     }
 }

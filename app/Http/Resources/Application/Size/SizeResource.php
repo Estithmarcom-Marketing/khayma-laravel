@@ -12,12 +12,25 @@ class SizeResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-  public function toArray(Request $request): array
+    public function toArray(Request $request): array
+    {
+        return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
+
+    }
+
+    private function arabicResource()
     {
         return [
             'id' => $this->id,
-            'name_ar' => $this->name_ar,
-            'name_en' => $this->name_en,
+            'name' => $this->name_ar,
+        ];
+    }
+
+    private function englishResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name_en,
         ];
     }
 }

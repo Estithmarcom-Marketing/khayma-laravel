@@ -29,11 +29,11 @@ Route::prefix('admin/v1')
             ->group(function () {
                 Route::get('', [AdminManagmentController::class, 'index'])->middleware('permission:read-admin');
                 Route::post('', [AdminManagmentController::class, 'store'])->middleware('permission:store-admin');
-                Route::get('{admin}', [AdminManagmentController::class, 'show'])->middleware('permission:read-admin'); 
-                Route::patch('{admin}', [AdminManagmentController::class, 'update'])->middleware('permission:store-admin'); 
+                Route::get('{admin}', [AdminManagmentController::class, 'show'])->middleware('permission:read-admin');
+                Route::patch('{admin}', [AdminManagmentController::class, 'update'])->middleware('permission:store-admin');
                 Route::delete('{admin}', [AdminManagmentController::class, 'destroy'])->middleware('permission:delete-admin');
             }
-        );
+            );
         Route::prefix('auth')
             ->group(function () {
                 Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:10,1');

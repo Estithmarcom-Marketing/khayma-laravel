@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Payments\PaymentGatewayEnum;
 use Illuminate\Database\Eloquent\Model;
 
 class PaymentGateway extends Model
@@ -9,8 +10,14 @@ class PaymentGateway extends Model
     protected $fillable = [
         'name_ar',
         'name_en',
+        'gateway',
         'payment_method_id',
         'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'gateway' => PaymentGatewayEnum::class,
     ];
 
     public function paymentMethod()

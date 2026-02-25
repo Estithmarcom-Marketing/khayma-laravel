@@ -71,7 +71,7 @@ class RolePermissionService
         return Role::query()
             ->select('id', 'name', 'guard_name', 'created_at', 'updated_at')
             ->with('permissions:id,name,guard_name')
-            ->withCount('permissions' , 'users')
+            ->withCount('permissions', 'users')
             ->latest()
             ->paginate(10);
     }
@@ -144,5 +144,4 @@ class RolePermissionService
             return $role->refresh()->load('permissions');
         });
     }
-
 }
