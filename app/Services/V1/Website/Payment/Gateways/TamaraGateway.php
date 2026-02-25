@@ -69,6 +69,7 @@ class TamaraGateway implements PaymentGatewayInterface
                 'cancel' => config('services.payments_urls.cancel'),
                 'failure' => config('services.payments_urls.failure'),
                 'success' => config('services.payments_urls.success'),
+                'notification_url' => config('services.tamara.notification_url')
             ],
             'shipping_address' => $this->mapAddress($order),
             'merchant_id' => (string) config('services.tamara.merchant_id'),

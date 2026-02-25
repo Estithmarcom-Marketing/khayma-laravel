@@ -48,6 +48,7 @@ return [
         'merchant_code' => env('TABBY_MERCHANT_CODE'),
         'secret_key' => env('TABBY_SECRET_KEY'),
         'api_url' => env('TABBY_API_URL', 'https://api.tabby.ai/api/v2/checkout'),
+        'allowed_ips'=>explode(',', env('TABBY_WEBHOOK_IPS')),
     ],
     'tamara' => [
         'env' => env('TAMARA_ENV', 'sandbox'),
@@ -56,10 +57,20 @@ return [
             ? env('TAMARA_SANDBOX_BASE_URL')
             : env('TAMARA_LIVE_BASE_URL'),
 
-        'token' => env('TAMARA_API_TOKEN'),
-        'notification_token' => env('TAMARA_NOTIFICATION_TOKEN'),
-        'public_key' => env('TAMARA_PUBLIC_KEY'),
+        'token' => env('TAMARA_ENV') === 'sandbox'
+            ? env('TAMARA_SANDBOX_API_TOKEN')
+            : env('TAMARA_API_TOKEN'),
+
+        'notification_token' => env('TAMARA_ENV') === 'sandbox'
+            ? env('TAMARA_SANDBOX_NOTIFICATION_TOKEN')
+            : env('TAMARA_NOTIFICATION_TOKEN'),
+
+        'public_key' => env('TAMARA_ENV') === 'sandbox'
+            ? env('TAMARA_SANDBOX_PUBLIC_KEY')
+            : env('TAMARA_PUBLIC_KEY'),
+
         'merchant_id' => env('TAMARA_MERCHANT_ID'),
+        'notification_url'=>env('TAMARA_NOTIFICATION_URL')
     ],
 
 ];

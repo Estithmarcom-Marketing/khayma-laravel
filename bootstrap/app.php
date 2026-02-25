@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'tokenfromcookie' => \App\Http\Middleware\TokenFromCookie::class,
             'locale' => \App\Http\Middleware\SetLocale::class,
+            'verify_tabby_ip'=>\App\Http\Middleware\VerifyTabbyIp::class,
+            'verify_tamara_token'=>\App\Http\Middleware\VerifyTamaraToken::class
 
         ]);
         $middleware->priority([

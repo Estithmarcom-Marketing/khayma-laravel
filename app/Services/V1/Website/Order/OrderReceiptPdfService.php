@@ -16,6 +16,7 @@ class OrderReceiptPdfService
         }
 
         $order->loadMissing([
+            // 'items.productVariation'=>,
             'items.productVariation.product',
             'user',
             'address',
