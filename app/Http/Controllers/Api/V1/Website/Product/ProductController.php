@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Website\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\FilterProductRequest;
-use App\Http\Resources\Application\ProductVariation\ProductVariationResource;
+use App\Http\Resources\ProductVariation\ProductVariationResource;
 use App\Http\Resources\Product\ProductResource;
 use App\Services\V1\Website\Product\ProductService;
 use App\Traits\Response\ApiResponse;
