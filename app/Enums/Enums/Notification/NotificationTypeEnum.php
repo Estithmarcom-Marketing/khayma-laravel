@@ -7,12 +7,14 @@ enum NotificationTypeEnum: string
     case ORDER_STATUS_UPDATED = 'order_status_updated';
     case ORDER_PLACED = 'order_placed';
     case PRODUCT_BACK_IN_STOCK = 'product_back_in_stock';
+    case ORDER_PAID = 'order_paid';
 
     public static function all(): array
     {
         return [
             self::ORDER_STATUS_UPDATED->value,
             self::ORDER_PLACED->value,
+            self::ORDER_PAID->value,
             self::PRODUCT_BACK_IN_STOCK->value,
         ];
     }
