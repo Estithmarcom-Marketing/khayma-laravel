@@ -4,12 +4,13 @@ namespace App\Enums\Payments;
 
 enum TamaraStatusEnum: string
 {
-    case AUTHORIZED = 'AUTHORIZED';
-    case APPROVED = 'APPROVED';
-    case CAPTURED = 'CAPTURED';
-    case DECLINED = 'DECLINED';
-    case CANCELLED = 'CANCELLED';
-    case EXPIRED = 'EXPIRED';
+    case AUTHORIZED = 'ORDER_AUTHORISED';
+    case APPROVED = 'ORDER_APPROVED';
+    case CAPTURED = 'ORDER_CAPTURED';
+    case DECLINED = 'ORDER_DECLINED';
+    case CANCELED = 'ORDER_CANCELED';
+    case EXPIRED = 'ORDER_EXPIRED';
+    case REFUNDED = 'ORDER_REFUNDED';
 
     public static function fromTabbyStatus(string $status): ?self
     {
@@ -18,7 +19,7 @@ enum TamaraStatusEnum: string
             'APPROVED' => self::APPROVED,
             'CAPTURED' => self::CAPTURED,
             'DECLINED' => self::DECLINED,
-            'CANCELLED' => self::CANCELLED,
+            'CANCELED' => self::CANCELED,
             'EXPIRED' => self::EXPIRED,
             default => null,
         };

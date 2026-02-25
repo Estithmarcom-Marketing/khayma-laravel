@@ -5,6 +5,7 @@ namespace App\Services\V1\Website\Payment\Gateways;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Payments\TamaraStatusEnum;
+use App\Events\Order\OrderPaid;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\V1\Website\Payment\Contracts\PaymentGatewayInterface;
@@ -69,7 +70,7 @@ class TamaraGateway implements PaymentGatewayInterface
                 'cancel' => config('services.payments_urls.cancel'),
                 'failure' => config('services.payments_urls.failure'),
                 'success' => config('services.payments_urls.success'),
-                'notification_url' => config('services.tamara.notification_url')
+                'notification_url' => config('services.tamara.notification_url'),
             ],
             'shipping_address' => $this->mapAddress($order),
             'merchant_id' => (string) config('services.tamara.merchant_id'),
@@ -140,11 +141,11 @@ class TamaraGateway implements PaymentGatewayInterface
             return;
         }
 
-        $status = strtoupper(data_get($payload, 'status'));
+        $status = strtoupper(data_get($payload, 'event_type'));
 
         match ($status) {
-            TamaraStatusEnum::APPROVED->value , TamaraStatusEnum::CAPTURED->value ,TamaraStatusEnum::AUTHORIZED->value => $this->markAsPaid($payment, $payload),
-            TamaraStatusEnum::DECLINED->value ,TamaraStatusEnum::EXPIRED->value,TamaraStatusEnum::CANCELLED->value => $this->markAsFailed($payment, $payload),
+            TamaraStatusEnum::CAPTURED->value => $this->markAsPaid($payment, $payload),
+            TamaraStatusEnum::DECLINED->value ,TamaraStatusEnum::EXPIRED->value,TamaraStatusEnum::CANCELED->value => $this->markAsFailed($payment, $payload),
             default => Log::info('Unhandled Tamara status', compact('status')),
         };
     }
@@ -175,6 +176,8 @@ class TamaraGateway implements PaymentGatewayInterface
                 ]);
             }
         });
+        $order = $payment->order;
+        event(new OrderPaid($order));
     }
 
     private function markAsFailed(Payment $payment, array $payload): void
