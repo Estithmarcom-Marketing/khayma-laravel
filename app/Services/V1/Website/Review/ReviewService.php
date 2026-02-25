@@ -60,4 +60,35 @@ class ReviewService
 
         return $reviewsQuery->paginate(10);
     }
+
+    public function getStatistics($id)
+    {
+        $product = Product::findOrFail($id);
+
+        $stats = $product->reviews()
+            ->selectRaw('
+            COUNT(*) as total_reviews,
+            AVG(rating) as average_rating,
+            SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as five_star,
+            SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) as four_star,
+            SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) as three_star,
+            SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as two_star,
+            SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as one_star
+        ')
+            ->first();
+
+        $totalReviews = $stats->total_reviews ?? 0;
+
+        return [
+            'totalReviews' => $totalReviews,
+            'averageRating' => round($stats->average_rating ?? 0, 1),
+            'ratingDistribution' => [
+                5 => $totalReviews > 0 ? round(($stats->five_star / $totalReviews) * 100, 1) : 0,
+                4 => $totalReviews > 0 ? round(($stats->four_star / $totalReviews) * 100, 1) : 0,
+                3 => $totalReviews > 0 ? round(($stats->three_star / $totalReviews) * 100, 1) : 0,
+                2 => $totalReviews > 0 ? round(($stats->two_star / $totalReviews) * 100, 1) : 0,
+                1 => $totalReviews > 0 ? round(($stats->one_star / $totalReviews) * 100, 1) : 0,
+            ],
+        ];
+    }
 }

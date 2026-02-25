@@ -22,7 +22,7 @@ class StoreAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-              'city_id' => 'required|exists:cities,id',
+            'city_id' => 'required|exists:cities,id',
             'name' => 'required|string|max:255',
             'value' => 'required|string|max:500',
             'is_default' => 'sometimes|boolean',

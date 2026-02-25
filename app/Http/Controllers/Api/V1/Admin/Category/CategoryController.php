@@ -225,6 +225,36 @@ class CategoryController extends Controller
         }
     }
 
+    public function categoriesNoPagination()
+    {
+        try {
+            $categories = $this->service->categoriesNoPagination();
+            $categories = CategoryResource::collection($categories);
+
+            return ApiResponse::successResponse(['categories' => $categories],
+                __('category.listed_all'),
+                Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('category.list_all_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function subCategoriesNoPagination(Category $category)
+    {
+        try {
+            $sub_categories = $this->service->subCategoriesNoPagination($category);
+            $sub_categories = CategoryResource::collection($sub_categories);
+
+            return ApiResponse::successResponse(['sub_categories' => $sub_categories],
+                __('category.listed_all'),
+                Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch sub-categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('category.failed_to_fetch_subcategories'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Build user-friendly import message
      */

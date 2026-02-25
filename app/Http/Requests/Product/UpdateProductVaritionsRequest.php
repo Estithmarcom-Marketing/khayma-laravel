@@ -30,7 +30,7 @@ class UpdateProductVaritionsRequest extends FormRequest
             'is_active' => 'sometimes|boolean',
             'offer' => 'sometimes|numeric|min:0',
             'offer_expired_date' => 'sometimes|date|after:today',
-            'offer_started_date' => 'sometimes|date' | 'before:offer_expired_date',
+            'offer_started_date' => 'sometimes|date|before:offer_expired_date',
         ];
     }
 }

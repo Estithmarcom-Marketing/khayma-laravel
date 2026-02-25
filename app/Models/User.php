@@ -75,7 +75,7 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Review::class);
     }
 
-    public function faviourites()
+    public function favourites()
     {
         return $this->hasMany(Favourite::class);
     }
@@ -104,5 +104,15 @@ class User extends Authenticatable implements HasMedia
         static::created(function ($user) {
             $user->cart()->create([]);
         });
+    }
+    
+    public function scopeSearch($query, $search)
+    {
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('phone', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%');
+        }
     }
 }

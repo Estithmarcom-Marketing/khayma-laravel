@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\User;
 
+use App\Http\Resources\Order\AdminOrderResource;
 use App\Http\Resources\RolesAndPermissions\PermissionResource;
 use App\Http\Resources\RolesAndPermissions\RoleResource;
 use Illuminate\Http\Request;
@@ -22,10 +23,12 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('profile'))),
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
-            'roles' => $this->whenLoaded('roles', RoleResource::collection($this->roles)),
-            'permissions' => $this->whenLoaded('permissions', PermissionResource::collection($this->permissions)),
+            'orders' => $this->whenLoaded('orders', fn () => AdminOrderResource::collection($this->orders)),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'orders_count' => $this->orders_count,
+            // 'roles' => $this->whenLoaded('roles', RoleResource::collection($this->roles)),
+            // 'permissions' => $this->whenLoaded('permissions', PermissionResource::collection($this->permissions)),
 
         ];
     }

@@ -2,7 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Admin;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,20 +21,28 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RolesAndPermissionsSeeder::class);
-        $user = User::firstOrCreate(
-            ['email' => 'mahmoudelsayed@gmail.com'],
+        $admin = Admin::firstOrCreate(
+            ['email' => 'admin@alkhimah.com'],
             [
-                'name' => 'Mahmoud Elsayed',
-                'password' => Hash::make('12345678'),
-                'phone' => '+201027832160',
+                'name' => 'Super Admin',
+                'password' => Hash::make('4s65dASFa6#$@dda4'),
             ]
         );
         $role = Role::where('name', 'super-admin')->first();
-        $user->assignRole($role);
+        $admin->assignRole($role);
         $this->call(CitySeeder::class);
+        $this->call(CityShipmentSeeder::class);
         $this->call(BrandSeeder::class);
         $this->call(CategorySeeder::class);
+        $this->call(ColorSeeder::class);
+        $this->call(SizeSeeder::class);
         $this->call(ProductSeeder::class);
+        $this->call(DeliveryMethodSeeder::class);
+        $this->call(PaymentMethodSeeder::class);
+
+        // Category::factory()->count(5)->create();
+        // Brand::factory()->count(10)->create();
+        // Product::factory()->count(500)->create();
         $this->call(ProductVariationSeeder::class);
     }
 }

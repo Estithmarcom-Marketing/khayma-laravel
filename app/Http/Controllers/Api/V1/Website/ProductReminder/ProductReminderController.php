@@ -52,10 +52,14 @@ class ProductReminderController extends Controller
     {
         try {
             $productReminder = $this->service->store($productVariation);
+            if (! $productReminder) {
+                return ApiResponse::errorResponse('Product is in stock', Response::HTTP_BAD_REQUEST);
+            }
 
             return ApiResponse::successResponse([
                 'product_reminder' => ProductRemindersResource::make($productReminder),
-            ], 'Product Reminder created successfully', Response::HTTP_CREATED);
+            ], 'Product Reminder created successfully',
+             Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error('Failed to create product reminder', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -63,16 +67,15 @@ class ProductReminderController extends Controller
         }
     }
 
-    public function destroy(ProductReminder $productReminder)
+    public function destroy(ProductVariation $productVariation)
     {
         try {
-            $this->service->delete($productReminder);
-
+            $this->service->delete($productVariation);
             return ApiResponse::successResponse([], 'Product Reminder deleted successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to delete product reminder', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse('Failed to delete product reminder', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

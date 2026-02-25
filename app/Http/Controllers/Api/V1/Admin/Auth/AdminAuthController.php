@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Resources\User\UserResource;
+use App\Http\Resources\Admin\AdminResource;
 use App\Services\V1\Admin\Auth\AdminAuthService;
 use App\Traits\Response\ApiResponse;
 use Log;
@@ -28,7 +27,7 @@ class AdminAuthController extends Controller
             }
             Log::info('Admin logged in successfully', ['admin_id' => $data['admin']->id]);
 
-            return ApiResponse::successResponse(['admin' => new UserResource($data['admin']), 'token' => $data['token']],
+            return ApiResponse::successResponse(['admin' => new AdminResource($data['admin']), 'token' => $data['token']],
                 'Admin logged in successfully',
                 Response::HTTP_OK);
         } catch (\Exception $e) {

@@ -19,10 +19,11 @@ class ProductVariationResource extends JsonResource
             'id' => $this->id,
             'product_id' => $this->product_id,
             'sku' => $this->sku,
-            'price' => $this->price,
             'stock_quantity' => $this->stock_quantity,
             'is_active' => $this->is_active,
-            'offer' => $this->offer,
+            'is_in_reminder' => (bool) $this->is_in_reminder,
+            'price' => (float) $this->price,
+            'offer' => (float) $this->offer,
             'offer_started_date' => $this->offer_started_date,
             'offer_expired_date' => $this->offer_expired_date,
             'color' => $this->whenLoaded('color', function () {
@@ -41,8 +42,8 @@ class ProductVariationResource extends JsonResource
                 ];
             }),
             'properties' => PropertyResource::collection($this->whenLoaded('properties')),
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

@@ -19,6 +19,7 @@ class DeliveryMethodResource extends JsonResource
             'name_ar' => $this->name_ar,
             'name_en' => $this->name_en,
             'is_active' => $this->whenNotNull($this->is_active),
+            'has_shipping_cost' => $this->whenNotNull($this->has_shipping_cost),
             'created_at' => $this->whenNotNull($this->created_at),
             'updated_at' => $this->whenNotNull($this->updated_at),
         ];

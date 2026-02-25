@@ -1,0 +1,257 @@
+<?php
+
+namespace App\Services\V1\Website\Order;
+
+use App\Enums\Orders\OrderStatusEnum;
+use App\Enums\Payments\PaymentStatusEnum;
+use App\Events\Order\OrderPlacement;
+use App\Models\Address;
+use App\Models\CityShipment;
+use App\Models\DeliveryMethod;
+use App\Models\Order;
+use App\Models\Payment;
+use App\Models\ProductVariation;
+use App\Models\PromoCode;
+use App\Services\V1\Website\Cart\CartService;
+use Illuminate\Support\Facades\DB;
+
+class StoreOrderService
+{
+    public $user;
+
+    public function __construct(public CartService $cartService)
+    {
+        $this->user = auth('sanctum')->user();
+    }
+
+    public function store(array $data)
+    {
+        $result = DB::transaction(function () use ($data) {
+
+            $user = $this->user;
+            $this->updateUserInfo($user, $data);
+            $data['items'] = $this->getCartItems($user);
+            if ($data['items']->isEmpty()) {
+                throw new \LogicException(message: 'Cart is empty');
+            }
+            $validatedItems = $this->validateCartItems($data, true);
+            $subtotal = $validatedItems['subtotal'];
+            $discountOfOffer = $validatedItems['discountOfOffer'];
+            $address = $this->getAddress($data);
+            $shipping_cost = $this->getShippingCost($data['delivery_method_id'] ?? null, $address);
+            $promo_code = $this->getPromoCode($data['promo_code'] ?? null);
+            $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code ?? null, true);
+
+            $order = Order::create([
+                'user_id' => $user->id,
+                'phone' => $data['phone'] ?? $user->phone,
+                'address_details' => $address->value ?? null,
+                'address_id' => $data['address_id'] ?? null,
+                'payment_method_id' => $data['payment_method_id'] ?? null,
+                'delivery_method_id' => $data['delivery_method_id'],
+                'subtotal_price' => $subtotal,
+                'shipping_cost' => $shipping_cost,
+                'discount_of_offer' => $discountOfOffer,
+                'discount_of_promo_code' => $total['discount_of_promo_code'],
+                'total_price' => $total['total'],
+                'promo_code' => $data['promo_code'] ?? null,
+                'status' => OrderStatusEnum::PENDING,
+            ]);
+
+            $order->items()->createMany($data['items']->map(function ($item) {
+                return [
+                    'product_variation_id' => $item->product_variation_id,
+                    'quantity' => $item->quantity,
+                ];
+            })->toArray());
+
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'amount' => $total['total'],
+                'payment_method_id' => $data['payment_method_id'],
+                'payment_gateway_id' => null,
+                'status' => PaymentStatusEnum::PENDING,
+                'transaction_id' => null,
+                'payment_response' => null,
+                'meta_data' => null,
+            ]);
+            $user->cart->items()->delete();
+
+            return $order->load([
+                'items.productVariation.product',
+                'items.productVariation.product.media:id,model_id,name,file_name,collection_name,disk',
+                'items.productVariation' => function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->withIsInReminder()
+                        ->active();
+                },
+                'address',
+                'deliveryMethod:id,name_ar,name_en',
+                'paymentMethod:id,name_ar,name_en',
+            ]);
+        });
+        event(new OrderPlacement($result));
+
+        return $result;
+    }
+
+    private function updateUserInfo($user, array $data)
+    {
+        if ((isset($data['name']) && $data['name'] != null) || (isset($data['email']) && $data['email'] != null)) {
+            $user->update(['name' => $data['name'] ?? $user->name,
+                'email' => $data['email'] ?? $user->email]);
+        }
+    }
+
+    private function getCartItems($user)
+    {
+        return $user->cart->items()->get();
+    }
+
+    private function validateCartItems(array $data, bool $decrementStock): array
+    {
+        $subtotal = 0;
+        $discountOfOffer = 0;
+        $priceBeforeOffer = 0;
+
+        $variationIds = $data['items']->pluck('product_variation_id');
+
+        $variations = ProductVariation::lockForUpdate()
+            ->whereIn('id', $variationIds)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($data['items'] as $item) {
+            $variation = $variations->get($item->product_variation_id);
+
+            if (! $variation) {
+                throw new \LogicException('Product variation not found');
+            }
+
+            if ($variation->stock_quantity < $item->quantity) {
+                throw new \LogicException('Insufficient stock');
+            }
+
+            $price = $variation->price;
+            $priceBeforeOffer += $price * $item->quantity;
+
+            if ($variation->offer > 0 &&
+                $variation->offer < $variation->price &&
+                $variation->offer_started_date <= now() &&
+                $variation->offer_expired_date >= now()) {
+
+                $price -= $variation->offer;
+                $discountOfOffer += $variation->offer * $item->quantity;
+            }
+
+            $subtotal += $price * $item->quantity;
+
+            if ($decrementStock) {
+                $variation->decrement('stock_quantity', $item->quantity);
+            }
+        }
+
+        return ['subtotal' => $subtotal, 'discountOfOffer' => $discountOfOffer, 'priceBeforeOffer' => $priceBeforeOffer];
+    }
+
+    private function getShippingCost($deliveryMethodId, $address)
+    {
+        if ($deliveryMethodId) {
+            $deliveryMethod = DeliveryMethod::where('id', $deliveryMethodId)->firstOrFail();
+
+            if (! $deliveryMethod->has_shipping_cost) {
+                return 0;
+            }
+            if (! $address) {
+                throw new \LogicException(__('orders.error_address'));
+            }
+            $cost = CityShipment::select('cost')->where('city_id', $address->city_id)->first();
+
+            return $cost?->cost ?? 0;
+
+        }
+
+        return 0;
+
+    }
+
+    private function getPromoCode($promoCode)
+    {
+        if ($promoCode) {
+            $promo = PromoCode::active()
+                ->where('code', $promoCode)
+                ->first();
+            if (! $promo) {
+                throw new \LogicException('Invalid promo code or promo code expired');
+            }
+
+            return $promo;
+        }
+
+        return null;
+    }
+
+    private function getAddress(array $data)
+    {
+        if (isset($data['address_id']) && $data['address_id'] != null) {
+            $address = Address::findOrFail($data['address_id']);
+            if ($address->user_id != $this->user->id) {
+                throw new \LogicException(message: 'Invalid address');
+            }
+
+            return $address;
+        }
+
+        return null;
+    }
+
+    private function calculateTotal($subtotal, $shipping_cost, $promo_code, bool $promoCodeIncrement)
+    {
+        $discount_of_promo_code = 0;
+        if ($promo_code) {
+            if ($promoCodeIncrement) {
+                $promo_code->increment('times_used');
+            }
+            if ($promo_code->is_percentage) {
+                $discount_of_promo_code = ($subtotal) * ($promo_code->value / 100);
+            } else {
+                $discount_of_promo_code = $promo_code->value;
+            }
+        }
+        $total = max(0, ($subtotal + $shipping_cost) - $discount_of_promo_code);
+
+        return ['total' => $total, 'discount_of_promo_code' => $discount_of_promo_code];
+    }
+
+    public function calculateTotalAmountOfOrder(array $data): array
+    {
+
+        $user = $this->user;
+
+        $data['items'] = $this->getCartItems($user);
+
+        if ($data['items']->isEmpty()) {
+            throw new \LogicException('Cart is empty');
+        }
+        $validatedItems = $this->validateCartItems($data, false);
+        $subtotal = $validatedItems['subtotal'];
+        $discountOfOffer = $validatedItems['discountOfOffer'];
+
+        $address = $this->getAddress($data);
+        $shipping_cost = $this->getShippingCost($data['delivery_method_id'] ?? null, $address);
+        $promo_code = $this->getPromoCode($data['promo_code'] ?? null);
+
+        $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code, false);
+
+        return [
+            'price_before_offer' => (float) $validatedItems['priceBeforeOffer'],
+            'discount_of_offer' => (float) $discountOfOffer,
+            'discount_of_promo_code' => (float) $total['discount_of_promo_code'],
+            'discount_total' => (float) ($discountOfOffer + $total['discount_of_promo_code']),
+            'subtotal' => (float) $subtotal,
+            'shipping' => (float) $shipping_cost,
+            'tax' => 0.00, // Tax calculation can be added here if needed
+            'total' => (float) $total['total'],
+        ];
+    }
+}

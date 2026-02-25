@@ -22,7 +22,22 @@ class OtpRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => 'required|phone:AUTO',
+            'phone' => 'required|phone:SA',
+        ];
+    }
+
+     public function messages(): array
+    {
+        $locale = app()->getLocale();
+        if ($locale == 'ar') {
+            return [
+                'phone.required' => 'رقم الهاتف مطلوب',
+                'phone.phone' => 'تنسيق رقم الهاتف غير صالح',
+            ];
+        }
+        return [
+            'phone.required' => 'Phone number is required',
+            'phone.phone' => 'Invalid phone number format',
         ];
     }
 }

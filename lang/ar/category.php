@@ -6,4 +6,5 @@ return [
 
     'listed_one' => 'تم عرض القسم بنجاح',
     'list_one_failed' => 'فشل في عرض القسم',
+    'failed_to_fetch_subcategories' => 'فشل في جلب الأقسام الفرعية',
 ];

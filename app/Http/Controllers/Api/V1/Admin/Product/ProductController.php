@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin\Product;
 
+use App\Exports\ProductExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\StoreProductVaritionsRequest;
@@ -17,12 +18,17 @@ use App\Models\Property;
 use App\Services\V1\Admin\Product\ProductService;
 use App\Services\V1\Admin\Product\ProductVariantService;
 use App\Services\V1\Admin\Product\VariantPropertyService;
+use App\Services\V1\Admin\SpreadsheetImportExport\SpreadsheetImportExportService;
 use App\Traits\Response\ApiResponse;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
-    public function __construct(protected ProductService $service, protected ProductVariantService $productVariantService, protected VariantPropertyService $variantPropertyService) {}
+    public function __construct(protected ProductService $service,
+        protected ProductVariantService $productVariantService,
+        protected VariantPropertyService $variantPropertyService,
+        protected SpreadsheetImportExportService $spreadsheetService) {}
 
     public function index()
     {
@@ -129,7 +135,7 @@ class ProductController extends Controller
     public function updateProductVariation(Product $product, ProductVariation $productVariation, UpdateProductVaritionsRequest $request)
     {
         try {
-            $variation = $this->productVariantService->updateVariation($product, $productVariation, $request->validated());
+            $variation = $this->productVariantService->updateVariation($productVariation, $request->validated());
 
             return ApiResponse::successResponse(['product_variation' => ProductVariationResource::make($variation)],
                 'Product variation updated successfully',
@@ -251,4 +257,25 @@ class ProductController extends Controller
             return ApiResponse::errorResponse('Failed to delete property', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+      public function exportCsv()
+    {
+        try {
+            return $this->spreadsheetService->exportCsv(new ProductExport, 'products');
+        } catch (\Exception $e) {
+            Log::error('Failed to export products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to export products', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+       public function exportExcel()
+    {
+        try {
+            return $this->spreadsheetService->exportExcel(new ProductExport, 'products');
+        } catch (\Exception $e) {
+            Log::error('Failed to export products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to export products', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }

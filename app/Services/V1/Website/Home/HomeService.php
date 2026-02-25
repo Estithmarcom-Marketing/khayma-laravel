@@ -22,7 +22,12 @@ class HomeService
 
     public function getCategories()
     {
-        return Category::with(['media', 'subCategories.media'])->whereNull('parent_id')->get();
+        return Category::select(['id', 'name_ar', 'name_en'])
+            ->
+        with(['media:id,model_id,name,file_name,collection_name,disk'])
+            ->whereNull('parent_id')
+            ->limit(10)
+            ->get();
     }
 
     public function getCommonQuestions()
@@ -34,28 +39,69 @@ class HomeService
 
     public function getLatestProducts()
     {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
         return Product::query()
             ->published()
-            ->with(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id', 'productVariations.color:id,name_ar,name_en,code', 'productVariations.size:id,name_ar,name_en', 'productVariations.properties:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1')])
+            ->with(['category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'productVariations' => function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->withIsInReminder()
+                        ->active();
+                },
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size',
+                'media:id,model_id,name,file_name,collection_name,disk'])
+            ->withCount(['reviews', 'favourites', 'orders'])
+            ->withAvg('reviews', 'rating')
             ->latest()
             ->paginate(10);
     }
 
     public function getCommonProducts()
     {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
         return Product::query()
             ->published()
-            ->withCount(['reviews', 'favourites'])
+            ->withCount(['reviews', 'favourites', 'orders'])
+            ->withAvg('reviews', 'rating')
+
             ->where(function ($q) {
                 $q->whereHas('reviews')
                     ->orWhereHas('favourites');
             })
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1')])
             ->with([
-                    'category:id,name_ar,name_en',
-                    'brand:id,name_ar,name_en',
-                    'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id', 
-                    'media:id,model_id,name,file_name,collection_name,disk',
-                ])
+                'category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'productVariations' => function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->withIsInReminder()
+                        ->active();
+                },
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ])
             ->orderByDesc('reviews_count')
             ->orderByDesc('favourites_count')
             ->paginate(10);
@@ -63,18 +109,71 @@ class HomeService
 
     public function getMostOrderdProducts()
     {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
         return Product::query()
             ->published()
-            ->withCount(['orders'])
+            ->withCount(['orders', 'reviews'])
+            ->withAvg('reviews', 'rating')
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1')])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'productVariations:id,product_id,sku,price,stock_quantity,offer,offer_started_date,offer_expired_date,color_id,size_id', 
+                'productVariations' => function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->withIsInReminder()
+                        ->active();
+                },
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size',
                 'media:id,model_id,name,file_name,collection_name,disk',
             ])
             ->orderByDesc('orders_count')
             ->paginate(10);
     }
+
+    public function getSuggestedProducts()
+    {
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $cartId = $user?->cart?->id;
+
+        return Product::query()
+            ->published()
+            ->withCount(['reviews', 'favourites', 'orders'])
+            ->withAvg('reviews', 'rating')
+            ->whereHas('category')
+            ->withExists([
+                'favourites as is_favourite' => fn ($q) => $userId
+                ? $q->where('user_id', $userId)
+                : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn ($q) => $cartId
+                    ? $q->where('cart_id', $cartId)
+                    : $q->whereRaw('0 = 1')])
+            ->with([
+                'category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'productVariations' => function ($q) {
+                    $q->selectWithActiveOffer()
+                        ->withIsInReminder()
+                        ->active();
+                },
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ])
+            ->inRandomOrder()
+            ->paginate(10);
+    }
+
     public function getHomeReviews()
     {
         return Review::query()

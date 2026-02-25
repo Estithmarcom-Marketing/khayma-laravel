@@ -59,4 +59,11 @@ class BrandService
     {
         return $brand->clearMediaCollection('brand')->delete();
     }
+
+    public function brandsNoPagination()
+    {
+        return Brand::Select(['id', 'name_ar', 'name_en'])
+        ->with('media:id,model_id,name,file_name,collection_name,disk')
+        ->get();
+    }
 }

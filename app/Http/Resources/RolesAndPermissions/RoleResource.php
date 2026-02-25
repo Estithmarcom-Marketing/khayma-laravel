@@ -18,12 +18,21 @@ class RoleResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'guard_name' => $this->guard_name,
+            'users_count' => $this->users_count,
+            'permissions_count' => $this->permissions_count,
 
             'permissions' => $this->whenLoaded('permissions', function () {
-                return $this->permissions->pluck('name');
+                return $this->permissions->pluck('name')->map(function ($permission) {
+                    return $this->translatePermission($permission);
+                });
             }),
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
         ];
+    }
+
+    private function translatePermission(string $permission): string
+    {
+        return __('permission.' . $permission);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Color\ColorResource;
 use App\Services\V1\Website\Color\ColorService;
 use App\Traits\Response\ApiResponse;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class ColorController extends Controller
@@ -19,12 +20,12 @@ class ColorController extends Controller
 
             return ApiResponse::successResponse(
                 ['colors' => ColorResource::collection($colors)],
-                'Colors retrieved successfully',
+                __('color.list_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch colors', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch colors', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('color.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -34,12 +35,12 @@ class ColorController extends Controller
             $color = $this->service->show($id);
 
             return ApiResponse::successResponse(['color' => ColorResource::make($color)],
-                'Color retrieved successfully',
+                __('color.show_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch color', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch color', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('color.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

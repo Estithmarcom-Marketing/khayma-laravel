@@ -24,10 +24,11 @@ class ProductResource extends JsonResource
             'slug_ar' => $this->slug_ar,
             'slug_en' => $this->slug_en,
             'is_published' => $this->when(isset($this->is_published), fn () => (bool) $this->is_published),
-            'is_favorite' => $this->when(isset($this->is_favorite), fn () => (bool) $this->is_favorite),
+            'is_favourite' => $this->when(isset($this->is_favourite), fn () => (bool) $this->is_favourite),
             'is_in_cart' => $this->when(isset($this->is_in_cart), fn () => (bool) $this->is_in_cart),
-            'price' => $this->when(isset($this->product_variations_min_price), fn () => (float) $this->product_variations_min_price),
-
+            'order_count' => $this->when(isset($this->orders_count), fn () => (int) $this->orders_count),
+            'price' => $this->when(isset($this->price), fn () => (float) $this->price),
+            'offer' => $this->when(isset($this->offer), fn () => (float) $this->offer),
             'category' => $this->whenLoaded('category', function () {
                 return [
                     'id' => $this->category->id,
@@ -55,9 +56,12 @@ class ProductResource extends JsonResource
                 return [
                     'average' => round((float) ($this->reviews_avg_rating ?? 0), 1),
                     'count' => (int) ($this->reviews_count ?? 0),
-                    'has_reviews' => ($this->reviews_count ?? 0) > 0,
+
                 ];
-            }),
+            }, [
+                'average' => 0,
+                'count' => 0,
+            ]),
             'meta_title_ar' => $this->meta_title_ar,
             'meta_title_en' => $this->meta_title_en,
             'meta_description_ar' => $this->meta_description_ar,

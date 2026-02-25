@@ -25,11 +25,11 @@ class FavouriteController extends Controller
                 'favourites' => $favourites['data'],
                 'meta' => $favourites['meta'],
                 'links' => $favourites['links'],
-            ], 'Favourites retrieved successfully', Response::HTTP_OK);
+            ], __('favourite.list_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch favourites', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch favourites', Response::HTTP_INTERNAL_SERVER_ERROR
+            return ApiResponse::errorResponse(__('favourite.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR
             );
 
         }
@@ -43,24 +43,25 @@ class FavouriteController extends Controller
 
             return ApiResponse::successResponse([
                 'favourite' => $favourite,
-            ], 'Favourite created successfully', Response::HTTP_CREATED);
+            ], __('favourite.store_success'), Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error('Failed to create favourite', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to create favourite', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('favourite.store_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function destroy(Favourite $favourite)
+    public function destroy(Product $product)
     {
         try {
-            $this->service->deleteProductFromFavourite($favourite);
+            $this->service->deleteProductFromFavourite($product);
 
-            return ApiResponse::successResponse([], 'Favourite deleted successfully', Response::HTTP_NO_CONTENT);
+            return ApiResponse::successResponse([],
+                __('favourite.delete_success'), Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Failed to delete favourite', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to delete favourite', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('favourite.delete_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -73,11 +74,11 @@ class FavouriteController extends Controller
 
             return ApiResponse::successResponse([
                 'favourite' => $favourite,
-            ], 'Favourite retrieved successfully', Response::HTTP_OK);
+            ], __('favourite.show_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch favourite', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch favourite', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('favourite.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

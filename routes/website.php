@@ -2,25 +2,30 @@
 
 use App\Http\Controllers\Api\V1\Website\Address\AddressController;
 use App\Http\Controllers\Api\V1\Website\Auth\UserAuthController;
+use App\Http\Controllers\Api\V1\Website\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Website\Cart\CartController;
 use App\Http\Controllers\Api\V1\Website\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Website\City\CityController;
 use App\Http\Controllers\Api\V1\Website\Color\ColorController;
+use App\Http\Controllers\Api\V1\Website\CustomTent\CustomTentController;
+use App\Http\Controllers\Api\V1\Website\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
 use App\Http\Controllers\Api\V1\Website\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Website\Order\OrderController;
+use App\Http\Controllers\Api\V1\Website\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
+use App\Http\Controllers\Api\V1\Website\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['tokenfromcookie', 'locale'])
     ->prefix('website/v1')
     ->group(function () {
 
-        Route::middleware('throttle:10,1')
+        Route::middleware('throttle:120,1')
             ->prefix('auth')
             ->group(function () {
                 Route::post('otp', [UserAuthController::class, 'sendOtp']);
@@ -28,13 +33,22 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('logout', [UserAuthController::class, 'logout'])->middleware(['auth:sanctum']);
 
             });
-        Route::middleware(['throttle:10,1', 'auth:sanctum'])
+        Route::middleware(['throttle:120,1', 'auth:sanctum'])
             ->prefix('profile')
             ->group(function () {
                 Route::get('', [ProfileManagmentController::class, 'getAuthenticatedUser']);
                 Route::patch('', [ProfileManagmentController::class, 'update']);
+                Route::post('phone/otp', [ProfileManagmentController::class, 'sendOtpForPhoneUpdate']);
+                Route::post('phone/verify', [ProfileManagmentController::class, 'sendOtpToNewPhone']);
+                Route::patch('phone', [ProfileManagmentController::class, 'updatePhoneNumber']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
+            ->prefix('cities')
+            ->group(function () {
+                Route::get('', [CityController::class, 'index']);
+                Route::get('{id}', [CityController::class, 'show']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('addresses')
             ->group(function () {
                 Route::get('', [AddressController::class, 'index']);
@@ -43,81 +57,107 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::get('{address}', [AddressController::class, 'show']);
                 Route::delete('{address}', [AddressController::class, 'destroy']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
-            ->prefix('cart')
-            ->group(function () {
-                Route::get('', [CartController::class, 'getCart']);
-                Route::get('{cart}', [CartController::class, 'getCartItems']);
-                Route::post('items', [CartController::class, 'addToCart']);
-                Route::patch('items/{cartProduct}', [CartController::class, 'updateCartItem']);
-                Route::delete('items/{cartProduct}', [CartController::class, 'removeCartItem']);
-                Route::delete('', [CartController::class, 'clearCart']);
-            });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
-            ->prefix('favourites')
-            ->group(function () {
-                Route::get('', [FavouriteController::class, 'index']);
-                Route::get('{favourite}', [FavouriteController::class, 'show']);
-                Route::post('products/{product}', [FavouriteController::class, 'store']);
-                Route::delete('{favourite}', [FavouriteController::class, 'destroy']);
-            });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
-            ->prefix('product-reminders')
-            ->group(function () {
-                Route::get('', [ProductReminderController::class, 'index']);
-                Route::get('{productReminder}', [ProductReminderController::class, 'show']);
-                Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
-                Route::delete('{productReminder}', [ProductReminderController::class, 'destroy']);
-            });
-        Route::middleware(['throttle:60,1'])
-            ->prefix('reviews')
-            ->group(function () {
-                Route::get('', [ReviewController::class, 'getMyReviews'])->middleware(['auth:sanctum']);
-                Route::get('products/{product}', [ReviewController::class, 'getProductReviews']);
-                Route::post('', [ReviewController::class, 'store'])->middleware(['auth:sanctum']);
-                Route::patch('{review}', [ReviewController::class, 'update'])->middleware(['auth:sanctum']);
-                Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware(['auth:sanctum']);
-            });
-        Route::middleware('throttle:60,1')
+        Route::middleware('throttle:180,1')
             ->prefix('home')
             ->group(function () {
                 Route::get('banners', [HomeController::class, 'getHomeBanners']);
                 Route::get('categories', [HomeController::class, 'getHomeCategories']);
-                Route::get('latest-products', [HomeController::class, 'getLatestProducts']);
-                Route::get('common-products', [HomeController::class, 'getCommonProducts']);
-                Route::get('most-ordered-products', [HomeController::class, 'getMostOrderdProducts']);
+                Route::get('products/latest', [HomeController::class, 'getLatestProducts']);
+                Route::get('products/common', [HomeController::class, 'getCommonProducts']);
+                Route::get('products/most-orderd', [HomeController::class, 'getMostOrderdProducts']);
+                Route::get('products/suggested', [HomeController::class, 'getSuggestedProducts']);
                 Route::get('reviews', [HomeController::class, 'getHomeReviews']);
-                Route::get('common-questions', [HomeController::class, 'getCommonQuestions']);
+                Route::get('questions/common', [HomeController::class, 'getCommonQuestions']);
             });
-        Route::middleware('throttle:60,1')
+        Route::middleware('throttle:120,1')
             ->prefix('products')
             ->group(function () {
                 Route::get('', [ProductController::class, 'filter']);
-                Route::get('{id}', [ProductController::class, 'show']);
+                Route::get('{identifier}', [ProductController::class, 'show']);
+                Route::get('{identifier}/related', [ProductController::class, 'getRelatedProducts']);
+                Route::get('{identifier}/variations', [ProductController::class, 'showVariations']);
             });
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
-            ->prefix('orders')
-            ->group(function () {
-                Route::post('', [OrderController::class, 'store']);
-                Route::get('', [OrderController::class, 'index']);
-                Route::get('canceled', [OrderController::class, 'listCanceled']);
-                Route::get('{id}', [OrderController::class, 'show']);
-                Route::post('{id}/cancel', [OrderController::class, 'cancel']);
-            });
-        Route::middleware(['throttle:60,1'])
-            ->prefix('colors')
-            ->group(function () {
-                Route::get('', [ColorController::class, 'index']);
-                Route::get('{id}', [ColorController::class, 'show']);
-            });
-        Route::middleware(['throttle:60,1'])
+        Route::middleware(['throttle:120,1'])
             ->prefix('categories')
             ->group(function () {
                 Route::get('', [CategoryController::class, 'index']);
                 Route::get('{id}', [CategoryController::class, 'show']);
             });
+        Route::middleware(['throttle:120,1'])
+            ->prefix('brands')
+            ->group(function () {
+                Route::get('', [BrandController::class, 'index']);
+                Route::get('{id}', [BrandController::class, 'show']);
+            });
+        Route::middleware(['throttle:120,1'])
+            ->prefix('colors')
+            ->group(function () {
+                Route::get('', [ColorController::class, 'index']);
+                Route::get('{id}', [ColorController::class, 'show']);
+            });
+        Route::middleware(['throttle:120,1'])
+            ->prefix('sizes')
+            ->group(function () {
+                Route::get('', [SizeController::class, 'index']);
+                Route::get('{id}', [SizeController::class, 'show']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
+            ->prefix('cart')
+            ->group(function () {
+                Route::get('', [CartController::class, 'getCartItems']);
+                Route::post('', [CartController::class, 'addToCart']);
+                Route::patch('{variationId}', [CartController::class, 'updateCartItem']);
+                Route::delete('{variationId}', [CartController::class, 'removeCartItem']);
+                Route::delete('', [CartController::class, 'clearCart']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
+            ->prefix('favourites')
+            ->group(function () {
+                Route::get('', [FavouriteController::class, 'index']);
+                Route::get('{favourite}', [FavouriteController::class, 'show']);
+                Route::post('products/{product}', [FavouriteController::class, 'store']);
+                Route::delete('products/{product}', [FavouriteController::class, 'destroy']);
+            });
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
+            ->prefix('product-reminders')
+            ->group(function () {
+                Route::get('', [ProductReminderController::class, 'index']);
+                Route::get('{productReminder}', [ProductReminderController::class, 'show']);
+                Route::post('variations/{productVariation}', [ProductReminderController::class, 'store']);
+                Route::delete('variations/{productVariation}', [ProductReminderController::class, 'destroy']);
+            });
+        Route::middleware(['throttle:120,1'])
+            ->prefix('reviews')
+            ->group(function () {
+                Route::get('', [ReviewController::class, 'getMyReviews'])->middleware(['auth:sanctum']);
+                Route::get('products/{product}', [ReviewController::class, 'getProductReviews']);
+                Route::get('statistics/{id}', [ReviewController::class, 'getStatistics']);
+                Route::post('', [ReviewController::class, 'store'])->middleware(['auth:sanctum']);
+                Route::patch('{review}', [ReviewController::class, 'update'])->middleware(['auth:sanctum']);
+                Route::delete('{review}', [ReviewController::class, 'destroy'])->middleware(['auth:sanctum']);
+            });
 
-        Route::middleware(['auth:sanctum', 'throttle:60,1'])
+        Route::get('delivery-methods', [DeliveryMethodController::class, 'index'])
+            ->middleware('throttle:120,1');
+        Route::get('payment-methods', [PaymentMethodController::class, 'index'])
+            ->middleware('throttle:120,1');
+
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
+            ->prefix('orders')
+            ->group(function () {
+                Route::post('', [OrderController::class, 'store']);
+                Route::get('', [OrderController::class, 'index']);
+
+                Route::get('filter', [OrderController::class, 'filter']);
+                Route::post('calculate', [OrderController::class, 'calculateTotalAmountOfOrder']);
+
+                Route::get('{order}/receipt', [OrderController::class, 'receipt']);
+                Route::post('{id}/reorder', [OrderController::class, 'reorder']);
+                Route::get('{id}', [OrderController::class, 'show']);
+                Route::post('{id}/cancel', [OrderController::class, 'cancel']);
+            });
+
+        Route::middleware(['auth:sanctum', 'throttle:120,1'])
             ->prefix('notifications')
             ->group(function () {
                 Route::get('', [NotificationController::class, 'index']);
@@ -125,10 +165,5 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
 
-        Route::middleware(['throttle:60,1'])
-            ->prefix('cities')
-            ->group(function () {
-                Route::get('', [CityController::class, 'index']);
-                Route::get('{id}', [CityController::class, 'show']);
-            });
+        Route::post('tent', [CustomTentController::class, 'store'])->middleware(['throttle:120,1']);
     });

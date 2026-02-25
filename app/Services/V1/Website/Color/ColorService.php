@@ -8,11 +8,11 @@ class ColorService
 {
     public function list()
     {
-        return Color::select(['id', 'code'])->get();
+        return Color::select(['id', 'name_ar','name_en','code'])->get();
     }
 
     public function show($id)
     {
-        return Color::select(['id', 'code'])->where('id', $id)->first();
+        return Color::select(['id','name_ar','name_en', 'code'])->where('id', $id)->first();
     }
 }

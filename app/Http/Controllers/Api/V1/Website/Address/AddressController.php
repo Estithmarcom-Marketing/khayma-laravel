@@ -9,7 +9,7 @@ use App\Http\Resources\Address\AddressResource;
 use App\Models\Address;
 use App\Services\V1\Website\Address\AddressService;
 use App\Traits\Response\ApiResponse;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AddressController extends Controller
@@ -39,15 +39,13 @@ class AddressController extends Controller
             $validated = $request->validated();
             $user = auth()->user();
             $address = $this->service->store($user, $validated);
-            $address->load('city');
 
             return ApiResponse::successResponse(
-                [
-                    'address' => AddressResource::make($address)],
+                ['address' => AddressResource::make($address)],
                 __('address.store_success'),
                 Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('Failed to store address', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to store address', ['error' => $e->getMessage(), 'method' => __METHOD__, 'request_data' => $validated]);
 
             return ApiResponse::errorResponse(__('address.store_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -61,9 +59,9 @@ class AddressController extends Controller
 
             return ApiResponse::successResponse([
                 'address' => AddressResource::make($address),
-            ], __('address.updated_success'), Response::HTTP_OK);
+            ], __('address.update_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('Failed to update address', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to update address', ['error' => $e->getMessage(), 'method' => __METHOD__, 'request_data' => $validated]);
 
             return ApiResponse::errorResponse(__('address.update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

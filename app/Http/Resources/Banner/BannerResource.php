@@ -12,7 +12,7 @@ class BannerResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
@@ -30,9 +30,8 @@ class BannerResource extends JsonResource
                     ];
                 });
             }),
-            'created_at' => $this->whenNotNull($this->created_at?->toDateTimeString()),
-            'updated_at' => $this->whenNotNull($this->updated_at?->toDateTimeString()),
-
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

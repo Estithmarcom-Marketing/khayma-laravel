@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Http\Resources\Application\Color;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ColorResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+     public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name_en' => $this->name_en,
+            'name_ar' => $this->name_ar,
+            'code' => $this->code,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+}

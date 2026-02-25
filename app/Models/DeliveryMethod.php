@@ -10,6 +10,7 @@ class DeliveryMethod extends Model
         'name_ar',
         'name_en',
         'is_active',
+        'has_shipping_cost',
     ];
 
     public function orders()

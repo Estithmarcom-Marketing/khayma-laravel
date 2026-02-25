@@ -2,7 +2,7 @@
 
 namespace App\Services\V1\Admin\Auth;
 
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 
 class AdminAuthService
@@ -11,7 +11,7 @@ class AdminAuthService
 
     public function login(array $data)
     {
-        $user = User::Where('email', $data['email'])->first();
+        $user = Admin::Where('email', $data['email'])->first();
 
         if (! $user || ! Hash::check($data['password'], $user->password)) {
             return false;

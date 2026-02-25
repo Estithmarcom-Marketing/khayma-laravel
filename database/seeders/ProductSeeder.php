@@ -18,9 +18,9 @@ class ProductSeeder extends Seeder
         $now = Carbon::now();
 
         
-        $fabrics = Category::where('slug_en', 'fabrics')->first();
-        $tents = Category::where('slug_en', 'tents')->first();
-        $seating = Category::where('slug_en', 'outdoor-seating')->first();
+        $fabrics = Category::where('slug_en', 'indoor-fabrics')->first();
+        $tents = Category::where('slug_en', 'camping-tents')->first();
+        $seating = Category::where('slug_en', 'luxury-outdoor-seating')->first();
         $khayma_Brand = Brand::where('slug_en', 'khayma')->first();
 
         $products = [
