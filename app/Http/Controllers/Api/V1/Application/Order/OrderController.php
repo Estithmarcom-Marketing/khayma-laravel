@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Application\Order;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Application\Order\CalculateTotalRequest;
 use App\Http\Requests\Application\Order\FilterOrderRequest;
 use App\Http\Requests\Application\Order\StoreOrderRequest;
 use App\Http\Resources\Application\Order\OrderResource;
@@ -160,7 +161,7 @@ class OrderController extends Controller
         }
     }
 
-    public function calculateTotalAmountOfOrder(StoreOrderRequest $request)
+    public function calculateTotalAmountOfOrder(CalculateTotalRequest $request)
     {
         try {
             $totalAmount = $this->storeOrderService->calculateTotalAmountOfOrder($request->validated());
