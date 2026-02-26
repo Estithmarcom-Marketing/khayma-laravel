@@ -79,8 +79,8 @@ it's the most important but still more is exist
 
 | Service | Package | Purpose |
 |---|---|---|
-| **Tabby** | custom integration | Buy now, pay later — payment gateway |
-| **Tamara** | custom integration | Buy now, pay later — payment gateway |
+| **Tabby** | custom integration | Installment — payment gateway |
+| **Tamara** | custom integration | Installment — payment gateway |
 | **Algolia** | `algolia/algoliasearch-client-php` + `laravel/scout` | Full-text search. `toSearchableArray()` defines indexed fields. |
 | **Sentry** | `sentry/sentry-laravel` | Error tracking & performance monitoring |
 
