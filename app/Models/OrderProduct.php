@@ -10,8 +10,8 @@ class OrderProduct extends Model
         'order_id',
         'product_variation_id',
         'quantity',
-        // price after discount
-        // offer    
+        'price',
+        'offer',
     ];
 
     public function order()

@@ -16,12 +16,12 @@ class OrderReceiptPdfService
         }
 
         $order->loadMissing([
-            // 'items.productVariation'=>,
-            'items.productVariation.product',
+            'items.productVariation.product:id,name_ar,name_en',
             'user',
-            'address',
             'deliveryMethod',
-            'payments',
+            'payments' => function ($query) {
+                $query->latest();
+            },
         ]);
 
         $locale = app()->getLocale();

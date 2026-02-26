@@ -6,6 +6,7 @@ use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Payments\TamaraStatusEnum;
 use App\Events\Order\OrderPaid;
+use App\Events\Order\OrderStatusUpdated;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\V1\Website\Payment\Contracts\PaymentGatewayInterface;
@@ -178,6 +179,7 @@ class TamaraGateway implements PaymentGatewayInterface
         });
         $order = $payment->order;
         event(new OrderPaid($order));
+        event(new OrderStatusUpdated($order));
     }
 
     private function markAsFailed(Payment $payment, array $payload): void

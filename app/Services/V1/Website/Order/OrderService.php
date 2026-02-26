@@ -30,7 +30,7 @@ class OrderService
             'address.city.shipments:id,city_id,cost,estimated_delivery_days',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
-            'payments:id,order_id,amount,status',
+            'payments:id,order_id,amount,status,gateway',
         ])
             ->where('user_id', $this->user->id)
             ->findOrFail($id);
@@ -50,7 +50,7 @@ class OrderService
             'address.city.shipments:id,city_id,cost,estimated_delivery_days',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
-            'payments:id,order_id,amount,status',
+            'payments:id,order_id,amount,status,gateway',
         ])->latest()->paginate(10);
     }
     public function filter(array $filters)
@@ -67,7 +67,7 @@ class OrderService
             'address.city.shipments:id,city_id,cost,estimated_delivery_days',
             'deliveryMethod:id,name_ar,name_en',
             'paymentMethod:id,name_ar,name_en',
-            'payments:id,order_id,amount,status',
+            'payments:id,order_id,amount,status,gateway',
         ]);
 
         $limit = $filters['limit'] ?? 4;
@@ -116,6 +116,6 @@ class OrderService
         ]);
 
     }
-    
+
 
 }

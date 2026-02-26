@@ -37,6 +37,7 @@ class StoreOrderService
             $validatedItems = $this->validateCartItems($data, true);
             $subtotal = $validatedItems['subtotal'];
             $discountOfOffer = $validatedItems['discountOfOffer'];
+            $enrichedItems = $validatedItems['enrichedItems'];
             $address = $this->getAddress($data);
             $shipping_cost = $this->getShippingCost($data['delivery_method_id'] ?? null, $address);
             $promo_code = $this->getPromoCode($data['promo_code'] ?? null);
@@ -58,10 +59,12 @@ class StoreOrderService
                 'status' => OrderStatusEnum::PENDING,
             ]);
 
-            $order->items()->createMany($data['items']->map(function ($item) {
+            $order->items()->createMany($enrichedItems->map(function ($item) {
                 return [
                     'product_variation_id' => $item->product_variation_id,
                     'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'offer' => $item->offer,
                 ];
             })->toArray());
 
@@ -89,7 +92,7 @@ class StoreOrderService
                 'address.city:id,name_ar,name_en',
                 'deliveryMethod:id,name_ar,name_en',
                 'paymentMethod:id,name_ar,name_en,type',
-                'paymentMethod.paymentGateways:id,name_ar,name_en,gateway,payment_method_id'
+                'payments:id,order_id,amount,status,gateway',
             ]);
         });
         event(new OrderPlacement($result));
@@ -115,6 +118,7 @@ class StoreOrderService
         $subtotal = 0;
         $discountOfOffer = 0;
         $priceBeforeOffer = 0;
+        $enrichedItems = collect();
 
         $variationIds = $data['items']->pluck('product_variation_id');
 
@@ -130,30 +134,45 @@ class StoreOrderService
                 throw new \LogicException('Product variation not found');
             }
 
-            if ($variation->stock_quantity < $item->quantity) {
+            if (($variation->stock_quantity < $item->quantity) && $decrementStock) {
                 throw new \LogicException('Insufficient stock');
             }
 
             $price = $variation->price;
             $priceBeforeOffer += $price * $item->quantity;
 
+            $activeOffer = 0;
+
             if ($variation->offer > 0 &&
                 $variation->offer < $variation->price &&
                 $variation->offer_started_date <= now() &&
                 $variation->offer_expired_date >= now()) {
 
+                $activeOffer = $variation->offer;
                 $price -= $variation->offer;
                 $discountOfOffer += $variation->offer * $item->quantity;
             }
 
             $subtotal += $price * $item->quantity;
 
+            $enrichedItems->push((object) [
+                'product_variation_id' => $item->product_variation_id,
+                'quantity' => $item->quantity,
+                'price' => $variation->price,
+                'offer' => $activeOffer,
+            ]);
+
             if ($decrementStock) {
                 $variation->decrement('stock_quantity', $item->quantity);
             }
         }
 
-        return ['subtotal' => $subtotal, 'discountOfOffer' => $discountOfOffer, 'priceBeforeOffer' => $priceBeforeOffer];
+        return [
+            'subtotal' => $subtotal,
+            'discountOfOffer' => $discountOfOffer,
+            'priceBeforeOffer' => $priceBeforeOffer,
+            'enrichedItems' => $enrichedItems,
+        ];
     }
 
     private function getShippingCost($deliveryMethodId, $address)

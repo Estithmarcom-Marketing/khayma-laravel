@@ -20,4 +20,15 @@ enum OrderStatusEnum: string
             self::CANCELED->value,
         ];
     }
+
+    public function label(): array
+    {
+        return match ($this) {
+            self::PENDING => ['ar' => 'قيد المراجعة', 'en' => 'under review'],
+            self::PROCESSING => ['ar' => 'قيد التجهيز', 'en' => 'being prepared'],
+            self::SHIPPED => ['ar' => 'تم الشحن', 'en' => 'shipped'],
+            self::DELIVERED => ['ar' => 'تم التسليم', 'en' => 'delivered'],
+            self::CANCELED => ['ar' => 'تم الإلغاء', 'en' => 'canceled'],
+        };
+    }
 }

@@ -377,8 +377,8 @@
                 <tbody>
                     @foreach ($order->items as $i => $item)
                         @php
-                            $price = (float) $item->productVariation->price;
-                            $offer = (float) $item->productVariation->offer;
+                            $price = (float) $item->price;
+                            $offer = (float) $item->offer;
                             $qty = (int) $item->quantity;
                         @endphp
                         <tr class="{{ $i % 2 === 1 ? 'row-alt' : '' }}">
