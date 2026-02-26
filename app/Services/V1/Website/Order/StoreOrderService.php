@@ -275,4 +275,24 @@ class StoreOrderService
             'total' => (float) $total['total'],
         ];
     }
+
+    public function rollbackOrder(Order $order): void
+    {
+        $user = $this->user;
+        foreach ($order->items as $item) {
+            $item->productVariation->increment('stock_quantity', $item->quantity);
+
+            $cartItem = $user->cart->items()->where('product_variation_id', $item->product_variation_id)->first();
+
+            if ($cartItem) {
+                $cartItem->increment('quantity', $item->quantity);
+            } else {
+                $user->cart->items()->create([
+                    'product_variation_id' => $item->product_variation_id,
+                    'quantity' => $item->quantity,
+                ]);
+            }
+        }
+        $order->delete();
+    }
 }

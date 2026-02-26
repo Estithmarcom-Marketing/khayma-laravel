@@ -39,10 +39,25 @@ class OrderController extends Controller
                 'user_id' => $this->user->id,
             ]);
 
-            $dto = $this->paymentService->initiateIfNeeded(
-                $order,
-                $request->gateway
-            );
+            try {
+                $dto = $this->paymentService->initiateIfNeeded(
+                    $order,
+                    $request->gateway
+                );
+            } catch (\Exception $e) {
+                Log::error('Payment failed, rolling back order', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                    'method' => __METHOD__,
+                ]);
+
+                $this->storeOrderService->rollbackOrder($order);
+
+                return ApiResponse::errorResponse(
+                    __('orders.payment_failed_retry'),
+                    Response::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
 
             return ApiResponse::successResponse(
                 [
@@ -52,6 +67,7 @@ class OrderController extends Controller
                 __('orders.created'),
                 Response::HTTP_CREATED
             );
+
         } catch (\LogicException $e) {
             Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

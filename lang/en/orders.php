@@ -8,6 +8,7 @@ return [
     'reordered' => 'Order Reordered Successfully',
     'deleted' => 'Order Deleted Successfully',
     'canceled' => 'Order Canceled Successfully',
+    'payment_failed_retry' => 'Payment failed, your cart has been restored. Please try again.',
     'error_create' => 'Failed to create order',
     'error_cancel' => 'Failed to cancel order',
     'error_update' => 'Failed to update order',
@@ -34,6 +35,6 @@ return [
     'email_email' => 'The email must be a valid email address.',
     'gateway_required' => 'The payment gateway field is required when the payment method is not cash.',
     'gateway_in' => 'The selected payment gateway is invalid.',
-    'gateway_valid'=> 'The selected gateway is not available for this payment method.'
+    'gateway_valid' => 'The selected gateway is not available for this payment method.',
 
 ];

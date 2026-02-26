@@ -5,12 +5,13 @@ namespace App\Models;
 use App\Enums\Orders\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Order extends Model implements HasMedia
 {
-    use HasUlids ,InteractsWithMedia;
+    use HasUlids ,InteractsWithMedia , SoftDeletes;
 
     protected $keyType = 'string';
 
@@ -83,9 +84,9 @@ class Order extends Model implements HasMedia
     {
         if ($search) {
             $query->whereHas('user', function ($q) use ($search) {
-                    $q->search($search);
-                })
-                ->orWhere('id', 'like', '%' . $search . '%');
+                $q->search($search);
+            })
+                ->orWhere('id', 'like', '%'.$search.'%');
         }
     }
 

@@ -48,7 +48,7 @@ return [
         'merchant_code' => env('TABBY_MERCHANT_CODE'),
         'secret_key' => env('TABBY_SECRET_KEY'),
         'api_url' => env('TABBY_API_URL', 'https://api.tabby.ai/api/v2/checkout'),
-        'allowed_ips'=>explode(',', env('TABBY_WEBHOOK_IPS')),
+        'allowed_ips' => explode(',', env('TABBY_WEBHOOK_IPS')),
     ],
     'tamara' => [
         'env' => env('TAMARA_ENV', 'sandbox'),
@@ -70,7 +70,7 @@ return [
             : env('TAMARA_PUBLIC_KEY'),
 
         'merchant_id' => env('TAMARA_MERCHANT_ID'),
-        'notification_url'=>env('TAMARA_NOTIFICATION_URL')
+        'notification_url' => env('TAMARA_NOTIFICATION_URL'),
     ],
 
 ];
