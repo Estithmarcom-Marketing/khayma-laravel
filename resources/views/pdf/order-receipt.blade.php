@@ -2,7 +2,7 @@
     $isAr = app()->getLocale() === 'ar';
     $payment = $order->payments->first();
     $isPaid = $payment && $payment->status->value == 'completed';
-    $logoPath = public_path('storage/alkhimah-logo-1.png');
+    $logoPath = public_path('storage/alkhimah-logo-1.webp');
 
 @endphp
 
