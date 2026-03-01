@@ -75,10 +75,10 @@ class Order extends Model implements HasMedia
         return $this->hasMany(OrderProduct::class);
     }
 
-    public function cart()
-    {
-        return $this->belongsTo(Cart::class);
-    }
+    // public function cart()
+    // {
+    //     return $this->belongsTo(Cart::class);
+    // }
 
     public function scopeSearch($query, $search)
     {
