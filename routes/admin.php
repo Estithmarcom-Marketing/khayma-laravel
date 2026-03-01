@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
-use App\Http\Controllers\Api\V1\Admin\City\CityShipmentController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
 use App\Http\Controllers\Api\V1\Admin\Customer\CustomerController;
@@ -73,15 +72,7 @@ Route::prefix('admin/v1')
                 Route::get('{city}', [CityController::class, 'show'])->middleware('permission:read-city');
                 Route::delete('{city}', [CityController::class, 'destroy'])->middleware('permission:delete-city');
             });
-        Route::middleware(['auth:admin', 'throttle:60,1'])
-            ->prefix('city-shipments')
-            ->group(function () {
-                Route::get('', [CityShipmentController::class, 'index'])->middleware('permission:read-city-shipment');
-                Route::get('{cityShipment}', [CityShipmentController::class, 'show'])->middleware('permission:read-city-shipment');
-                Route::post('cities/{city}', [CityShipmentController::class, 'store'])->middleware('permission:store-city-shipment');
-                Route::patch('{cityShipment}', [CityShipmentController::class, 'update'])->middleware('permission:store-city-shipment');
-                Route::delete('{cityShipment}', [CityShipmentController::class, 'destroy'])->middleware('permission:delete-city-shipment');
-            });
+        
         Route::middleware(['auth:admin', 'throttle:60,1'])
             ->prefix('colors')
             ->group(function () {
@@ -191,6 +182,8 @@ Route::prefix('admin/v1')
             ->prefix('orders')
             ->group(function () {
                 Route::get('', [OrderController::class, 'index'])->middleware('permission:read-orders');
+                Route::get('{order}', [OrderController::class, 'show'])->middleware('permission:read-orders');
+                Route::patch('{order}', [OrderController::class, 'updateOrder'])->middleware('permission:store-orders');
             });
 
         Route::middleware(['auth:admin', 'throttle:60,1'])
