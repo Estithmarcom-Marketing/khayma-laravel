@@ -91,9 +91,9 @@ class TamaraGateway implements PaymentGatewayInterface
 
     private function mapItem($item): array
     {
-        $price = $item->productVariation->price;
+        $price = $item->price;
         $quantity = $item->quantity;
-        $discount = $item->productVariation->offer;
+        $discount = $item->offer;
 
         return [
             'name' => $item->productVariation->product->name_ar,

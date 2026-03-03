@@ -15,10 +15,16 @@ use Illuminate\Support\Facades\Log;
 
 class TabbyGateway implements PaymentGatewayInterface
 {
+    public function __construct()
+    {
+        logger(config('services.tabby'));
+    }
+
     public function createPayment(Order $order): PaymentResponseDTO
     {
         $user = $order->user;
         $payload = $this->createPayload($order);
+        Log::info('Tabby payment payload', $payload);
 
         $response = $this->createCheckoutSession($payload);
 
@@ -49,7 +55,7 @@ class TabbyGateway implements PaymentGatewayInterface
                 'amount' => (string) $order->total_price,
                 'currency' => 'SAR',
                 'description' => "Order #{$order->id}",
-                'lang' => 'ar',
+
                 'buyer' => [
                     'name' => $user->name ?? 'Customer',
                     'email' => $user->email,
@@ -66,7 +72,8 @@ class TabbyGateway implements PaymentGatewayInterface
                         return [
                             'title' => $item->productVariation->product->name_ar ?? 'Product',
                             'quantity' => $item->quantity,
-                            'unit_price' => (string) $item->productVariation->price,
+                            'unit_price' => (string) $item->price,
+                            'discount_amount' => (string) $item->offer ?? '0',
                             'category' => $item->productVariation->product->category->name_ar ?? 'Category',
                             'reference_id' => (string) $item->product_variation_id,
                         ];
@@ -77,18 +84,20 @@ class TabbyGateway implements PaymentGatewayInterface
                     'loyalty_level' => 0,
                 ],
                 'order_history' => [
-                    'purchased_at' => $order->created_at,
-                    'amount' => (string) $order->total_price,
-                    'status' => 'new',
-                    'buyer' => [
-                        'name' => $user->name ?? 'Customer',
-                        'email' => $user->email,
-                        'phone' => $order->phone,
-                    ],
-                    'shipping_address' => [
-                        'city' => $order->address ? $order->address->city->name_ar : 'City',
-                        'address' => $order->address_details ?? 'Address',
-                        'zip' => $order->address ? $order->address->city->zip : '00000',
+                    [
+                        'purchased_at' => $order->created_at,
+                        'amount' => (string) $order->total_price,
+                        'status' => 'new',
+                        'buyer' => [
+                            'name' => $user->name ?? 'Customer',
+                            'email' => $user->email,
+                            'phone' => $order->phone,
+                        ],
+                        'shipping_address' => [
+                            'city' => $order->address ? $order->address->city->name_ar : 'City',
+                            'address' => $order->address_details ?? 'Address',
+                            'zip' => $order->address ? $order->address->city->zip : '00000',
+                        ],
                     ],
                 ],
 
@@ -106,10 +115,13 @@ class TabbyGateway implements PaymentGatewayInterface
 
     private function createCheckoutSession($payload)
     {
-        return Http::withToken(config('services.tabby.secret_key'))
+        $response = Http::withToken(config('services.tabby.secret_key'))
+            ->withHeaders(['Content-Type' => 'application/json'])
             ->post(config('services.tabby.api_url'), $payload)
-            ->throw()
             ->json();
+        Log::info('Tabby response', $response);
+
+        return $response;
 
     }
 

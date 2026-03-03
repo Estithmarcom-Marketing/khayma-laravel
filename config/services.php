@@ -46,7 +46,13 @@ return [
     ],
     'tabby' => [
         'merchant_code' => env('TABBY_MERCHANT_CODE'),
-        'secret_key' => env('TABBY_SECRET_KEY'),
+        'secret_key' => env('TABBY_ENV') === 'test'
+            ? env('TABBY_TEST_SECRET_KEY')
+            : env('TABBY_SECRET_KEY'),
+        'public_key' => env('TABBY_ENV') === 'test'
+            ? env('TABBY_TEST_PUBLIC_KEY')
+            : env('TABBY_PUBLIC_KEY'),
+
         'api_url' => env('TABBY_API_URL', 'https://api.tabby.ai/api/v2/checkout'),
         'allowed_ips' => explode(',', env('TABBY_WEBHOOK_IPS')),
     ],

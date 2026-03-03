@@ -89,7 +89,7 @@ class StoreOrderService
                         ->withIsInReminder()
                         ->active();
                 },
-                'address.city:id,name_ar,name_en',
+                'address.city:id,name_ar,name_en,zip',
                 'deliveryMethod:id,name_ar,name_en',
                 'paymentMethod:id,name_ar,name_en,type',
                 'payments:id,order_id,amount,status,gateway',
