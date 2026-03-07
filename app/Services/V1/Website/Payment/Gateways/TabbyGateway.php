@@ -118,6 +118,7 @@ class TabbyGateway implements PaymentGatewayInterface
         $response = Http::withToken(config('services.tabby.secret_key'))
             ->withHeaders(['Content-Type' => 'application/json'])
             ->post(config('services.tabby.api_url'), $payload)
+            ->throw()
             ->json();
         Log::info('Tabby response', $response);
 
