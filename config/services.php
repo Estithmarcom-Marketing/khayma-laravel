@@ -45,7 +45,9 @@ return [
         'failure' => env('PAYMENTS_FAILURE_URL'),
     ],
     'tabby' => [
-        'merchant_code' => env('TABBY_MERCHANT_CODE'),
+        'merchant_code' => env('TABBY_ENV') === 'test'
+            ? env('TABBY_TEST_MERCHANT_CODE')
+            : env('TABBY_MERCHANT_CODE'),
         'secret_key' => env('TABBY_ENV') === 'test'
             ? env('TABBY_TEST_SECRET_KEY')
             : env('TABBY_SECRET_KEY'),
