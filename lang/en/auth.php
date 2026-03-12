@@ -21,4 +21,6 @@ return [
     'otp_sent_success' => 'OTP code sent successfully',
     'otp_sent_failed' => 'Failed to send OTP code. Please try again later.',
 
+    'otp_message' => 'Your OTP Code is: :otp',
+
 ];

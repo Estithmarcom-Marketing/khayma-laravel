@@ -4,12 +4,15 @@ namespace App\Services\V1\Website\Auth;
 
 use App\Models\OtpCode;
 use App\Models\User;
+use App\Services\V1\Website\TqnyatSms\TqnyatSmsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserAuthService
 {
+    public function __construct(protected TqnyatSmsService $service) {}
+
     public function generateOtp()
     {
         return random_int(1000, 9999);
@@ -29,14 +32,15 @@ class UserAuthService
             ]);
 
             try {
-                // send sms
-                Log::info('OTP sent via WhatsApp', ['phone' => $data['phone'], 'otp' => $otp, 'method' => __METHOD__]);  // temporarily for testing
+
+                $message = __('auth.otp_message', ['otp' => $otp]);
+                // $this->service->send($phoneNumber, $message);
+                Log::info('OTP sent via sms', ['phone' => $data['phone'], 'message' => $message, 'otp' => $otp, 'method' => __METHOD__]);  // temporarily for testing
             } catch (\Exception $e) {
-                Log::error('Failed to send OTP via WhatsApp', ['phone' => $data['phone'], 'error' => $e->getMessage(), 'method' => __METHOD__]);
+                Log::error('Failed to send OTP via sms', ['phone' => $data['phone'], 'error' => $e->getMessage(), 'method' => __METHOD__]);
+                throw $e;
             }
-
         });
-
     }
 
     public function login(array $data)
@@ -73,12 +77,11 @@ class UserAuthService
                 'user' => $user,
             ];
         });
-
     }
 
     public function logout()
     {
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
         if ($user) {
             $user->currentAccessToken()->delete();
 

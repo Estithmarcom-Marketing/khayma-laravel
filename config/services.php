@@ -80,5 +80,10 @@ return [
         'merchant_id' => env('TAMARA_MERCHANT_ID'),
         'notification_url' => env('TAMARA_NOTIFICATION_URL'),
     ],
+    'tqnyat' => [
+        'base_url' => env('TQNYAT_BASE_URL'),
+        'api_token' => env('TQNYAT_API_TOKEN'),
+        'sender' => env('TQNYAT_SENDER'),
+    ],
 
 ];
