@@ -120,7 +120,6 @@ class TabbyGateway implements PaymentGatewayInterface
             ->post(config('services.tabby.api_url'), $payload)
             ->throw()
             ->json();
-        Log::info('Tabby response', $response);
 
         return $response;
 

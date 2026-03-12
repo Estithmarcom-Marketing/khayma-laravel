@@ -61,9 +61,9 @@ return [
     'tamara' => [
         'env' => env('TAMARA_ENV', 'sandbox'),
 
-        'base_url' => env('TAMARA_ENV') === 'sandbox'
-            ? env('TAMARA_SANDBOX_BASE_URL')
-            : env('TAMARA_LIVE_BASE_URL'),
+        'api_url' => env('TAMARA_ENV') === 'sandbox'
+            ? env('TAMARA_SANDBOX_API_URL')
+            : env('TAMARA_LIVE_API_URL'),
 
         'token' => env('TAMARA_ENV') === 'sandbox'
             ? env('TAMARA_SANDBOX_API_TOKEN')
@@ -80,8 +80,12 @@ return [
         'merchant_id' => env('TAMARA_MERCHANT_ID'),
         'notification_url' => env('TAMARA_NOTIFICATION_URL'),
     ],
+    'myfatoorah' => [
+        'api_url' => env('MYFATOORAH_API_URL'),
+        'api_key' => env('MYFATOORAH_API_KEY'),
+    ],
     'tqnyat' => [
-        'base_url' => env('TQNYAT_BASE_URL'),
+        'api_url' => env('TQNYAT_API_URL'),
         'api_token' => env('TQNYAT_API_TOKEN'),
         'sender' => env('TQNYAT_SENDER'),
     ],

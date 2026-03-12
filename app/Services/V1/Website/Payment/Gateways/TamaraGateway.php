@@ -28,6 +28,8 @@ class TamaraGateway implements PaymentGatewayInterface
 
         $payload = $this->createPayload($order);
 
+        Log::info('Tamara payment payload', $payload);
+
         $response = $this->createCheckoutSession($payload);
 
         Log::info('Tamara payment response',
@@ -84,7 +86,8 @@ class TamaraGateway implements PaymentGatewayInterface
         Log::info('Payload sent to tamara ', ['payload' => $payload, 'method' => __METHOD__]);
 
         return Http::withToken(config('services.tamara.token'))
-            ->post(config('services.tamara.base_url'), $payload)
+            ->withHeaders(['Content-Type' => 'application/json'])
+            ->post(config('services.tamara.api_url'), $payload)
             ->throw()
             ->json();
     }
