@@ -83,6 +83,7 @@ return [
     'myfatoorah' => [
         'api_url' => env('MYFATOORAH_API_URL'),
         'api_key' => env('MYFATOORAH_API_KEY'),
+        'webhook_secret' => env('MYFATOORAH_WEBHOOK_SECRET'),
     ],
     'tqnyat' => [
         'api_url' => env('TQNYAT_API_URL'),

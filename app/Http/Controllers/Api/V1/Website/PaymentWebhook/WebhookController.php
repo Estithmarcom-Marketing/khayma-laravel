@@ -25,6 +25,11 @@ class WebhookController extends Controller
         return $this->handle($request, PaymentGatewayEnum::TAMARA);
     }
 
+    public function myfatoorah(Request $request)
+    {
+        return $this->handle($request, PaymentGatewayEnum::MYFATOORAH);
+    }
+
     private function handle(Request $request, PaymentGatewayEnum $gateway)
     {
         try {

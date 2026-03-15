@@ -176,6 +176,10 @@ Route::middleware(['locale'])
             Route::post('/tamara', [WebhookController::class, 'tamara'])
                 ->name('webhooks.tamara')
                 ->middleware('verify_tamara_token');
+            Route::post('/myfatoorah', [WebhookController::class, 'myfatoorah'])
+                ->name('webhooks.myfatoorah')
+                ->middleware('verify_myfatoorah_signature');
+
         });
 
     });

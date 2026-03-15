@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'locale' => \App\Http\Middleware\SetLocale::class,
             'verify_tabby_ip' => \App\Http\Middleware\VerifyTabbyIp::class,
             'verify_tamara_token' => \App\Http\Middleware\VerifyTamaraToken::class,
+            'verify_myfatoorah_signature' => \App\Http\Middleware\VerifyMyFatoorahSignature::class,
 
         ]);
         $middleware->priority([
@@ -36,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class, ]);
         \App\Http\Middleware\VerifyTabbyIp::class;
         \App\Http\Middleware\VerifyTamaraToken::class;
+        \App\Http\Middleware\VerifyMyFatoorahSignature::class;
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, $request) {

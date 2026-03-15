@@ -14,12 +14,12 @@ use App\Http\Controllers\Api\V1\Website\Home\HomeController;
 use App\Http\Controllers\Api\V1\Website\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Website\Order\OrderController;
 use App\Http\Controllers\Api\V1\Website\PaymentMethod\PaymentMethodController;
+use App\Http\Controllers\Api\V1\Website\PaymentWebhook\WebhookController;
 use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Website\Size\SizeController;
-use  App\Http\Controllers\Api\V1\Website\PaymentWebhook\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['tokenfromcookie', 'locale'])
@@ -173,8 +173,11 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 ->name('webhooks.tabby')
                 ->middleware('verify_tabby_ip');
 
-            Route::post('/tamara', [WebhookController::class,'tamara'])
+            Route::post('/tamara', [WebhookController::class, 'tamara'])
                 ->name('webhooks.tamara')
                 ->middleware('verify_tamara_token');
+            Route::post('/myfatoorah', [WebhookController::class, 'myfatoorah'])
+                ->name('webhooks.myfatoorah')
+                ->middleware('verify_myfatoorah_signature');
         });
     });
