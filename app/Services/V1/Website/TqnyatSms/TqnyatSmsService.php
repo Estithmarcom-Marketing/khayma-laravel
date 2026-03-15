@@ -14,7 +14,7 @@ class TqnyatSmsService
             ->withHeaders(['Content-Type' => 'application/json'])
             ->retry(3, 100)
             ->timeout(10)
-            ->post(config('services.tqnyat.base_url'), [
+            ->post(config('services.tqnyat.api_url'), [
                 'recipients' => [$phone],
                 'body' => $message,
                 'sender' => config('services.tqnyat.sender'),
