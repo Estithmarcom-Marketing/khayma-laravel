@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Admin\Product\ProductController;
 use App\Http\Controllers\Api\V1\Admin\PromoCode\PromoCodeController;
 use App\Http\Controllers\Api\V1\Admin\Property\PropertyController;
+use App\Http\Controllers\Api\V1\Admin\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use Illuminate\Support\Facades\Route;
@@ -234,5 +235,12 @@ Route::prefix('admin/v1')
                 Route::get('home', [HomeManagementController::class, 'getHomeBanners']);
                 Route::post('', [HomeManagementController::class, 'storeBanners']);
                 Route::delete('{banner}', [HomeManagementController::class, 'destroy']);
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('reviews')
+            ->group(function () {
+                Route::get('', [ReviewController::class, 'index']);
+                Route::delete('{review}', [ReviewController::class, 'destroy']);
             });
     });
