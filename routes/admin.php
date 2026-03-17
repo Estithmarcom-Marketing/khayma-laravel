@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Admin\AdminManagment\AdminManagmentController;
 use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
+use App\Http\Controllers\Api\V1\Admin\Banner\BannerController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
 use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
@@ -9,7 +10,6 @@ use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
 use App\Http\Controllers\Api\V1\Admin\Customer\CustomerController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
-use App\Http\Controllers\Api\V1\Admin\Home\HomeManagementController;
 use App\Http\Controllers\Api\V1\Admin\Order\OrderController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
@@ -232,10 +232,8 @@ Route::prefix('admin/v1')
         Route::middleware(['auth:admin', 'throttle:60,1'])
             ->prefix('banners')
             ->group(function () {
-                Route::get('', [HomeManagementController::class, 'getBanners']);
-                Route::get('home', [HomeManagementController::class, 'getHomeBanners']);
-                Route::post('', [HomeManagementController::class, 'storeBanners']);
-                Route::delete('{banner}', [HomeManagementController::class, 'destroy']);
+                Route::get('', [BannerController::class, 'index']);
+                Route::patch('{banner}', [BannerController::class, 'update']);
             });
 
         Route::middleware(['auth:admin', 'throttle:60,1'])
