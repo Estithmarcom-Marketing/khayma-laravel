@@ -20,6 +20,9 @@ return [
     'notification_title' => 'طلب جديد',
     'notification_body' => 'لديك طلب جديد',
 
+    'repaid' => 'تم اعادة دفع الطلب بنجاح',
+    'error_repay' => 'فشل اعادة دفع الطلب',
+
     // validations of store order request
     'address_id_required_with' => 'حقل العنوان مطلوب عندما لا تكون طريقة التوصيل "استلام في المتجر".',
     'address_id_exists' => 'العنوان المحدد غير صالح.',

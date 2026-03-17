@@ -155,6 +155,7 @@ Route::middleware(['locale'])
 
                 Route::get('{order}/receipt', [OrderController::class, 'receipt']);
                 Route::post('{id}/reorder', [OrderController::class, 'reorder']);
+                Route::post('{order}/repay', [OrderController::class, 'repay']);
                 Route::get('{id}', [OrderController::class, 'show']);
                 Route::post('{id}/cancel', [OrderController::class, 'cancel']);
             });

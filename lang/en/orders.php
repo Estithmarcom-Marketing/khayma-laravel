@@ -20,6 +20,9 @@ return [
     'notification_title' => 'New Order',
     'notification_body' => 'You have a new order',
 
+
+    'repaid' => 'Order Repaid Successfully',
+    'error_repay' => 'Failed to repay order',
     // validations of store order request
 
     'address_id_required_with' => 'The address field is required when a delivery method is not In-Store Pickup.',

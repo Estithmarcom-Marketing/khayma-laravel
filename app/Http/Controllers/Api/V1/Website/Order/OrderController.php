@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Website\Order;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\CalculateTotalRequest;
 use App\Http\Requests\Order\FilterOrderRequest;
+use App\Http\Requests\Order\RepayOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Models\Order;
@@ -192,6 +193,45 @@ class OrderController extends Controller
             Log::error('Failed to calculate total amount of order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to calculate total amount of order', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function repay(Order $order, RepayOrderRequest $request)
+    {
+        try {
+
+            $result = $this->service->repay($order, $request->validated());
+
+            return ApiResponse::successResponse(
+                [
+                    'order' => OrderResource::make($result['order']),
+                    'redirect_url' => $result['redirect_url'],
+                ],
+                __('orders.repaid'),
+                Response::HTTP_OK
+            );
+
+        } catch (\LogicException $e) {
+            Log::error('Failed to repay order', [
+                'error' => $e->getMessage(),
+                'method' => __METHOD__,
+            ]);
+
+            return ApiResponse::errorResponse(
+                $e->getMessage(),
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        } catch (\Exception $e) {
+
+            Log::error('Failed to repay order', [
+                'error' => $e->getMessage(),
+                'method' => __METHOD__,
+            ]);
+
+            return ApiResponse::errorResponse(
+                __('orders.error_repay'),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

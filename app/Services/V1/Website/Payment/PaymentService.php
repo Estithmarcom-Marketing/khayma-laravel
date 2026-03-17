@@ -4,6 +4,7 @@ namespace App\Services\V1\Website\Payment;
 
 use App\Enums\Payments\PaymentGatewayEnum;
 use App\Enums\Payments\PaymentMethodTypeEnum;
+use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\V1\Website\Payment\Contracts\PaymentGatewayInterface;
@@ -68,10 +69,36 @@ class PaymentService
         $payment = $order->payments()->latest()->first();
 
         if (! $payment) {
-            throw new \LogicException("No payment found for order {$order->id}");
+            $payment = $order->payments()->create([
+                'amount' => $order->total_price,
+                'payment_method_id' => $order->payment_method_id,
+                'status' => PaymentStatusEnum::PENDING,
+            ]);
         }
 
         return $payment;
+    }
+
+    public function resetPayment(Order $order): Payment
+    {
+        return DB::transaction(function () use ($order) {
+
+            $order->payments()
+                ->where('status', PaymentStatusEnum::PENDING)
+                ->update([
+                    'status' => PaymentStatusEnum::FAILED,
+                ]);
+
+            return $order->payments()->create([
+                'amount' => $order->total_price,
+                'payment_method_id' => $order->payment_method_id,
+                'payment_gateway_id' => null,
+                'gateway' => null,
+                'status' => PaymentStatusEnum::PENDING,
+                'transaction_id' => null,
+                'meta_data' => null,
+            ]);
+        });
     }
 
     private function resolveGateway(PaymentGatewayEnum $gatewayEnum): PaymentGatewayInterface
