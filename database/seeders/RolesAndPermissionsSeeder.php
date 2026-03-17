@@ -90,6 +90,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'read-questions',
             'store-question',
             'delete-question',
+
+            'read-settings',
+            'store-settings',
         ];
 
   
