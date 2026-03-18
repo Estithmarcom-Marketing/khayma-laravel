@@ -8,6 +8,7 @@ use App\Http\Resources\Stats\OrdersStatsResource;
 use App\Http\Resources\Stats\PendingOrdersStatsResource;
 use App\Http\Resources\Stats\ProductsStatsResource;
 use App\Http\Resources\Stats\RevenueStatsResource;
+use App\Http\Resources\Stats\SalesChartResource;
 use App\Services\V1\Admin\Stats\StatsService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
@@ -66,6 +67,17 @@ class StatsController extends Controller
         try {
             $count = $this->statsService->getTotalPendingOrders();
             return ApiResponse::successResponse(new PendingOrdersStatsResource($count), __('stats.retrieved'), Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error(__('stats.error_retrieved'), [$e->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('stats.error_retrieved'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function salesChart()
+    {
+        try {
+            $data = $this->statsService->getSalesChart();
+            return ApiResponse::successResponse(SalesChartResource::collection($data), __('stats.retrieved'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error(__('stats.error_retrieved'), [$e->getMessage(), 'method' => __METHOD__]);
             return ApiResponse::errorResponse(__('stats.error_retrieved'), Response::HTTP_INTERNAL_SERVER_ERROR);
