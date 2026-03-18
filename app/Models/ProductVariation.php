@@ -29,7 +29,7 @@ class ProductVariation extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function reminders()
@@ -54,7 +54,7 @@ class ProductVariation extends Model
 
     public function scopeWithIsInReminder($query, ?int $userId = null)
     {
-        $userId = $userId ?? auth()->id();
+        $userId = $userId ?? auth('sanctum')->id();
 
         if (! $userId) {
             return $query;
@@ -80,14 +80,14 @@ class ProductVariation extends Model
             'price',
             'sku',
             'is_active',
-            DB::raw("CASE 
-                    WHEN offer IS NOT NULL 
+            DB::raw("CASE
+                    WHEN offer IS NOT NULL
                         AND (
                                 (offer_started_date IS NULL AND offer_expired_date IS NULL)
                                 OR (offer_started_date <= '{$now}' AND offer_expired_date >= '{$now}')
-                            )      
-                        THEN offer 
-                        ELSE NULL 
+                            )
+                        THEN offer
+                        ELSE NULL
                     END as offer"),
 
         ];
