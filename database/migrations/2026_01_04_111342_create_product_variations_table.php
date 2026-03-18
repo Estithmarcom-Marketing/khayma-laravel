@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->restrictOnDelete();
             $table->foreignId('color_id')->constrained('colors')->onDelete('cascade')->nullable();
             $table->foreignId('size_id')->constrained('sizes')->onDelete('cascade')->nullable();
             $table->decimal('price', 8, 2);
@@ -37,9 +37,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_variations');
         Schema::table('product_variations', function (Blueprint $table) {
-            $table->dropIndex(['product_id', 'color_id', 'size_id', 'sku', 'offer_expired_date', 'offer_started_date']);
+            $table->dropIndex('pv_product_color_size_sku_offer_idx');
         });
+
+        Schema::dropIfExists('product_variations');
     }
 };

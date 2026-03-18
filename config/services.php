@@ -81,14 +81,14 @@ return [
         'notification_url' => env('TAMARA_NOTIFICATION_URL'),
     ],
     'myfatoorah' => [
-        'api_url' => env('MYFATOORAH_API_URL'),
-        'api_key' => env('MYFATOORAH_API_KEY'),
-        'webhook_secret' => env('MYFATOORAH_WEBHOOK_SECRET'),
+        'api_url' => env('MYFATOORAH_ENV') === 'test' ? env('MYFATOORAH_TEST_API_URL') : env('MYFATOORAH_LIVE_API_URL'),
+        'api_key' => env('MYFATOORAH_ENV') === 'test' ? env('MYFATOORAH_TEST_API_KEY') : env('MYFATOORAH_LIVE_API_KEY'),
+        'webhook_secret' => env('MYFATOORAH_ENV') === 'test' ? env('MYFATOORAH_TEST_WEBHOOK_SECRET') : env('MYFATOORAH_LIVE_WEBHOOK_SECRET'),
+        'webhook_url' => env('MYFATOORAH_WEBHOOK_URL'),
     ],
     'tqnyat' => [
         'api_url' => env('TQNYAT_API_URL'),
         'api_token' => env('TQNYAT_API_TOKEN'),
         'sender' => env('TQNYAT_SENDER'),
     ],
-
 ];

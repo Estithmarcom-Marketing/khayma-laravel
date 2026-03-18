@@ -81,6 +81,8 @@ it's the most important but still more is exist
 |---|---|---|
 | **Tabby** | custom integration | Installment — payment gateway |
 | **Tamara** | custom integration | Installment — payment gateway |
+| **My Fatoorah** |  custom  integration | Payment gateway — online payments (cards, Apple Pay, KNET, etc.) |
+| **Tqnyat SMS** | custom integration (`tqnyat/api`) | SMS provider — sending OTPs, notifications|
 | **Algolia** | `algolia/algoliasearch-client-php` + `laravel/scout` | Full-text search. `toSearchableArray()` defines indexed fields. |
 | **Sentry** | `sentry/sentry-laravel` | Error tracking & performance monitoring |
 

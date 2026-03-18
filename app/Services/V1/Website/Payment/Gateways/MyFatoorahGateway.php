@@ -58,7 +58,7 @@ class MyFatoorahGateway implements PaymentGatewayInterface
             ],
             'IntegrationUrls' => [
                 'Redirection' => config('services.payments_urls.success'),
-                'Webhook' => route('webhooks.myfatoorah'),
+                'Webhook' => config('services.myfatoorah.webhook_url'),
             ],
             'CustomerReference' => (string) $order->id,
             'Language' => app()->isLocale('ar') ? 'AR' : 'EN',
