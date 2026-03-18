@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Admin\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsController;
 use App\Http\Controllers\Api\V1\Admin\Setting\SettingController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
+use App\Http\Controllers\Api\V1\Admin\Stats\StatsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin/v1')
@@ -248,5 +249,15 @@ Route::prefix('admin/v1')
             ->group(function () {
                 Route::get('', [SettingController::class, 'index'])->middleware('permission:read-settings');
                 Route::post('', [SettingController::class, 'createOrUpdate'])->middleware('permission:store-settings');
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('stats')
+            ->group(function () {
+                Route::get('orders', [StatsController::class, 'ordersStats']);
+                Route::get('revenue', [StatsController::class, 'revenueStats']);
+                Route::get('products', [StatsController::class, 'productsStats']);
+                Route::get('customers', [StatsController::class, 'customersStats']);
+                Route::get('pending-orders', [StatsController::class, 'pendingOrdersStats']);
             });
     });
