@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Log;
 
 class MyFatoorahGateway implements PaymentGatewayInterface
 {
+    public function __construct()
+    {
+        logger(config('services.myfatoorah'));
+    }
+
     public function createPayment(Order $order): PaymentResponseDTO
     {
         $payload = $this->createPayload($order);
@@ -67,8 +72,15 @@ class MyFatoorahGateway implements PaymentGatewayInterface
 
     private function createCheckoutSession($payload)
     {
-        $response = Http::withToken(config('services.myfatoorah.api_key'))
-            ->withHeaders(['Content-Type' => 'application/json'])
+        // $response = Http::withToken(config('services.myfatoorah.api_key'))
+        //     ->withHeaders(['Content-Type' => 'application/json'])
+        //     ->post(config('services.myfatoorah.api_url'), $payload)
+        //     ->throw()
+        //     ->json();
+
+        $response = Http::withHeaders(
+            ['Content-Type' => 'application/json',
+                'Authorization' => 'Bearer '.config('services.myfatoorah.api_key')])
             ->post(config('services.myfatoorah.api_url'), $payload)
             ->throw()
             ->json();
