@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Admin\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsController;
 use App\Http\Controllers\Api\V1\Admin\Setting\SettingController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
+use App\Http\Controllers\Api\V1\Admin\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Admin\Reports\SalesReportController;
 use App\Http\Controllers\Api\V1\Admin\Stats\StatsController;
 use Illuminate\Support\Facades\Route;
@@ -261,6 +262,12 @@ Route::prefix('admin/v1')
                 Route::get('customers', [StatsController::class, 'customersStats']);
                 Route::get('pending-orders', [StatsController::class, 'pendingOrdersStats']);
                 Route::get('sales-chart', [StatsController::class, 'salesChart']);
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('product-reminders')
+            ->group(function () {
+                Route::get('', [ProductReminderController::class, 'index']);
             });
 
         Route::middleware(['auth:admin', 'throttle:60,1'])
