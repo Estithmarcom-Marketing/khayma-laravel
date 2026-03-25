@@ -34,12 +34,17 @@ class SalesReportService
             default => 'MONTH(created_at)',
         };
 
+        $statuses = [OrderStatusEnum::SHIPPED, OrderStatusEnum::DELIVERED];
+
         $opSub = DB::table('order_products')
-            ->selectRaw('order_id, SUM(quantity) as quantity_sum')
-            ->groupBy('order_id');
+            ->join('orders', 'orders.id', '=', 'order_products.order_id')
+            ->where('orders.created_at', '>=', $startDate)
+            ->whereIn('orders.status', $statuses)
+            ->selectRaw('order_products.order_id, SUM(order_products.quantity) as quantity_sum')
+            ->groupBy('order_products.order_id');
 
         return Order::where('created_at', '>=', $startDate)
-            ->whereIn('status' ,[ OrderStatusEnum::SHIPPED , OrderStatusEnum::DELIVERED])
+            ->whereIn('status', $statuses)
             ->selectRaw("
                 {$groupExpr}                                   as period_group,
                 COUNT(orders.id)                               as orders_count,
