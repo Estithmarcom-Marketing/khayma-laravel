@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\AdminManagment\AdminManagmentController;
+use App\Http\Controllers\Api\V1\Admin\CustomTent\CustomTentController;
 use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Api\V1\Admin\Banner\BannerController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
@@ -275,5 +276,14 @@ Route::prefix('admin/v1')
             ->group(function () {
                 Route::get('sales/by-date', [SalesReportController::class, 'byDate']);
                 Route::get('sales/by-payment-method', [SalesReportController::class, 'byPaymentMethod']);
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('custom-tents')
+            ->group(function () {
+                Route::get('', [CustomTentController::class, 'index']);
+                Route::get('{customTent}', [CustomTentController::class, 'show']);
+                Route::patch('{customTent}/change-status', [CustomTentController::class, 'changeStatus']);
+                Route::delete('{customTent}', [CustomTentController::class, 'destroy']);
             });
     });
