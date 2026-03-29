@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\AdminManagment\AdminManagmentController;
+use App\Http\Controllers\Api\V1\Admin\CustomTent\CustomTentController;
 use App\Http\Controllers\Api\V1\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Api\V1\Admin\Banner\BannerController;
 use App\Http\Controllers\Api\V1\Admin\Brand\BrandController;
@@ -20,6 +21,8 @@ use App\Http\Controllers\Api\V1\Admin\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Admin\RolesAndPermissions\RolesPermissionsController;
 use App\Http\Controllers\Api\V1\Admin\Setting\SettingController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
+use App\Http\Controllers\Api\V1\Admin\ProductReminder\ProductReminderController;
+use App\Http\Controllers\Api\V1\Admin\Reports\SalesReportController;
 use App\Http\Controllers\Api\V1\Admin\Stats\StatsController;
 use Illuminate\Support\Facades\Route;
 
@@ -260,5 +263,27 @@ Route::prefix('admin/v1')
                 Route::get('customers', [StatsController::class, 'customersStats']);
                 Route::get('pending-orders', [StatsController::class, 'pendingOrdersStats']);
                 Route::get('sales-chart', [StatsController::class, 'salesChart']);
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('product-reminders')
+            ->group(function () {
+                Route::get('', [ProductReminderController::class, 'index']);
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('reports')
+            ->group(function () {
+                Route::get('sales/by-date', [SalesReportController::class, 'byDate']);
+                Route::get('sales/by-payment-method', [SalesReportController::class, 'byPaymentMethod']);
+            });
+
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('custom-tents')
+            ->group(function () {
+                Route::get('', [CustomTentController::class, 'index']);
+                Route::get('{customTent}', [CustomTentController::class, 'show']);
+                Route::patch('{customTent}/change-status', [CustomTentController::class, 'changeStatus']);
+                Route::delete('{customTent}', [CustomTentController::class, 'destroy']);
             });
     });
