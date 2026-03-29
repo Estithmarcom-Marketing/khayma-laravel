@@ -46,22 +46,23 @@ class PaymentService
             $gateway = $this->resolveGateway($gatewayEnum);
 
             $dto = $this->createGatewayPayment($gateway, $order, $gatewayEnum);
-            DB::transaction(function () use ($payment, $dto, $gatewayEnum) {
-                $this->updatePayment($payment, $dto, $gatewayEnum);
-            });
+
+            $this->updatePayment($payment, $dto, $gatewayEnum);
 
             return $dto;
-
         } catch (\Exception $e) {
-            Log::error('Failed to create payment',
-                ['error' => $e->getMessage(),
+            Log::error(
+                'Failed to create payment',
+                [
+                    'error' => $e->getMessage(),
                     'payment' => $payment,
                     'gateway' => $gateway,
                     'dto' => $dto,
-                    'method' => __METHOD__]);
+                    'method' => __METHOD__,
+                ]
+            );
             throw $e;
         }
-
     }
 
     private function getOrderPayment(Order $order): Payment
