@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Website\Color\ColorController;
 use App\Http\Controllers\Api\V1\Website\CustomTent\CustomTentController;
 use App\Http\Controllers\Api\V1\Website\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Website\Favourite\FavouriteController;
+use App\Http\Controllers\Api\V1\Website\Fcm\FcmController;
 use App\Http\Controllers\Api\V1\Website\Home\HomeController;
 use App\Http\Controllers\Api\V1\Website\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Website\Order\OrderController;
@@ -181,4 +182,9 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 ->name('webhooks.myfatoorah')
                 ->middleware('verify_myfatoorah_signature');
         });
+          Route::middleware(['auth:sanctum'])
+            ->prefix('fcm-tokens')
+            ->group(function () {
+                Route::patch('', [FcmController::class, 'update']);
+            });
     });

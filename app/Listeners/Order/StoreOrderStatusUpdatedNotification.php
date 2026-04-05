@@ -6,18 +6,27 @@ use App\Enums\Enums\Notification\NotificationTypeEnum;
 use App\Events\Order\OrderStatusUpdated;
 use App\Models\Notification;
 use App\Models\Order;
+use App\Services\Firebase\FcmService;
 use Illuminate\Support\Facades\Log;
 
 class StoreOrderStatusUpdatedNotification
 {
+    protected FcmService $fcm;
+
+    public function __construct(FcmService $fcm)
+    {
+        $this->fcm = $fcm;
+    }
+
     public function handle(OrderStatusUpdated $event): void
     {
+        $order = $event->order;
 
         try {
-            $label = $event->order->status->label();
+            $label = $order->status->label();
             $notification = Notification::create([
-                'user_id' => $event->order->user_id,
-                'notifiable_id' => $event->order->id,
+                'user_id' => $order->user_id,
+                'notifiable_id' => $order->id,
                 'notifiable_type' => Order::class,
                 'type' => NotificationTypeEnum::ORDER_STATUS_UPDATED,
                 'is_read' => false,
@@ -26,18 +35,34 @@ class StoreOrderStatusUpdatedNotification
                 'body_ar' => "طلبك الآن {$label['ar']}",
                 'body_en' => "Your order is now {$label['en']}",
             ]);
-            Log::info("Order #{$event->order->id} status changed", [
-                'order_id' => $event->order->id,
-                'status' => $event->order->status->value,
+
+            $userTokens = $order->user->fcmTokens()->pluck('token')->toArray();
+
+            if (!empty($userTokens)) {
+                $this->fcm->sendToMany(
+                    $userTokens,
+                    $notification->title_en,
+                    $notification->body_en,
+                    [
+                        'order_id' => $order->id,
+                        'status' => $order->status->value,
+                        'type' => NotificationTypeEnum::ORDER_STATUS_UPDATED->value
+                    ]
+                );
+            }
+
+            Log::info("Order #{$order->id} status changed", [
+                'order_id' => $order->id,
+                'status' => $order->status->value,
                 'notification_id' => $notification->id,
+                'tokens_sent' => count($userTokens)
             ]);
         } catch (\Exception $e) {
             Log::error('Order Status Notification Error', [
-                'order_id' => $event->order->id,
-                'status' => $event->order->status->value ?? null,
+                'order_id' => $order->id,
+                'status' => $order->status->value ?? null,
                 'error' => $e->getMessage(),
             ]);
         }
-
     }
 }

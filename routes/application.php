@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Application\Color\ColorController;
 use App\Http\Controllers\Api\V1\Application\CustomTent\CustomTentController;
 use App\Http\Controllers\Api\V1\Application\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Application\Favourite\FavouriteController;
+use App\Http\Controllers\Api\V1\Application\Fcm\FcmController;
 use App\Http\Controllers\Api\V1\Application\Home\HomeController;
 use App\Http\Controllers\Api\V1\Application\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Application\Order\OrderController;
@@ -166,7 +167,7 @@ Route::middleware(['locale'])
                 Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
-        Route::post('tent', [CustomTentController::class, 'store']);
+        Route::post('tent', [CustomTentController::class, 'store'])->middleware(['throttle:120,1']);
 
         Route::prefix('webhooks')->group(function () {
 
@@ -180,7 +181,10 @@ Route::middleware(['locale'])
             Route::post('/myfatoorah', [WebhookController::class, 'myfatoorah'])
                 ->name('webhooks.myfatoorah')
                 ->middleware('verify_myfatoorah_signature');
-
         });
-
+        Route::middleware(['auth:sanctum'])
+            ->prefix('fcm-tokens')
+            ->group(function () {
+                Route::patch('', [FcmController::class, 'update']);
+            });
     });
