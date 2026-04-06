@@ -50,6 +50,8 @@ class StoreOrderStatusUpdatedNotification
                         'type' => NotificationTypeEnum::ORDER_STATUS_UPDATED->value
                     ]
                 );
+            }else {
+                Log::info("No FCM tokens found for {$order->user->phone}");
             }
 
             Log::info("Order #{$order->id} status changed", [
