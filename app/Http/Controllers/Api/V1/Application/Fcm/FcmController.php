@@ -9,6 +9,7 @@ use App\Traits\Response\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Validation\ValidationException;
 
 class FcmController extends Controller
 {
@@ -41,6 +42,20 @@ class FcmController extends Controller
                 [],
                 __('fcm_token.test_notification_sent_successfully'),
                 Response::HTTP_OK
+            );
+        } catch (ValidationException $e) {
+            Log::error(
+                'Failed to send test notification',
+                [
+                    'error' => $e->getMessage(),
+                    'request' => $validated ?? $request->all(),
+                    'method' => __METHOD__
+                ]
+            );
+
+            return ApiResponse::errorResponse(
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         } catch (\Exception $e) {
             Log::error(
