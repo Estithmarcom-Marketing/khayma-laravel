@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Firebase;
+namespace App\Services\V1\Admin\Firebase;
 
 use App\Enums\Platform\PlatformEnum;
 use App\Models\FcmToken;
