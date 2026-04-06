@@ -18,13 +18,13 @@ class FcmController extends Controller
     {
         try {
             $this->service->updateFcmToken($request->validated());
-            return ApiResponse::success([], __('fcm_token.updated_successfully'), Response::HTTP_OK);
+            return ApiResponse::successResponse([], __('fcm_token.updated_successfully'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error(
                 'Failed to update fcm token',
                 ['error' => $e->getMessage(), 'request' => $request->validated(), 'method' => __METHOD__]
             );
-            return ApiResponse::error(__('fcm_token.updated_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('fcm_token.updated_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -17,7 +17,7 @@ class FcmService
                 'platform' => PlatformEnum::from($data['platform'])
             ],
             [
-                'token' => $data['fcm_token']
+                'token' => $data['token']
             ]
         );
     }
