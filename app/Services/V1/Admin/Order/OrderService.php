@@ -3,6 +3,7 @@
 namespace App\Services\V1\Admin\Order;
 
 use App\Enums\Orders\OrderStatusEnum;
+use App\Events\Order\OrderStatusUpdated;
 use App\Models\Order;
 
 class OrderService
@@ -24,28 +25,29 @@ class OrderService
                 $query->where('status', $order_status);
             })
             ->when($payment_status, function ($query) use ($payment_status) {
-               $query->paymentStatusFilter($payment_status);
+                $query->paymentStatusFilter($payment_status);
             })
             ->when($is_delivered !== null, function ($query) use ($is_delivered) {
                 $query->isDelivered($is_delivered);
             })
-            ->paginate($limit); 
+            ->latest()
+            ->paginate($limit);
         return $orders;
     }
 
     public function getOrderById($id)
     {
         return Order::with([
-            'user', 
-            'items.productVariation.product', 
-            'paymentMethod', 
+            'user',
+            'items.productVariation.product',
+            'paymentMethod',
             'payments',
             'address',
             'deliveryMethod'
         ])->find($id);
     }
 
-    public function updateOrder($id , $data)
+    public function updateOrder($id, $data)
     {
         $order = Order::find($id);
         if (!$order) {
@@ -63,5 +65,6 @@ class OrderService
         if ($status == OrderStatusEnum::DELIVERED) {
             $order->update(['delivered_at' => now()]);
         }
+        event(new OrderStatusUpdated($order));
     }
 }
