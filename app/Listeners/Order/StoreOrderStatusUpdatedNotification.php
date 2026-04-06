@@ -6,7 +6,7 @@ use App\Enums\Enums\Notification\NotificationTypeEnum;
 use App\Events\Order\OrderStatusUpdated;
 use App\Models\Notification;
 use App\Models\Order;
-use App\Services\Firebase\FcmService;
+use App\Services\V1\Admin\Firebase\FcmService;
 use Illuminate\Support\Facades\Log;
 
 class StoreOrderStatusUpdatedNotification
