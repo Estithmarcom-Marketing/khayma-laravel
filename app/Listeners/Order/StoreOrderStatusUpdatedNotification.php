@@ -39,6 +39,7 @@ class StoreOrderStatusUpdatedNotification
             $userTokens = $order->user->fcmTokens()->pluck('token')->toArray();
 
             if (!empty($userTokens)) {
+                Log::info("Sending FCM notification to {$order->user->phone}");
                 $this->fcm->sendToMany(
                     $userTokens,
                     $notification->title_en,
