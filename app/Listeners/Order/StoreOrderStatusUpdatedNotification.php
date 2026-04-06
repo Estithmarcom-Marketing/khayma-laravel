@@ -11,16 +11,14 @@ use Illuminate\Support\Facades\Log;
 
 class StoreOrderStatusUpdatedNotification
 {
-    protected FcmService $fcm;
 
-    public function __construct(FcmService $fcm)
-    {
-        $this->fcm = $fcm;
-    }
+
+    public function __construct(protected FcmService $fcm) {}
 
     public function handle(OrderStatusUpdated $event): void
     {
         $order = $event->order;
+        $isAr = app()->getLocale() == 'ar';
 
         try {
             $label = $order->status->label();
@@ -37,20 +35,22 @@ class StoreOrderStatusUpdatedNotification
             ]);
 
             $userTokens = $order->user->fcmTokens()->pluck('token')->toArray();
+            $title = $isAr ? $notification->title_ar : $notification->title_en;
+            $body = $isAr ? $notification->body_ar : $notification->body_en;
 
             if (!empty($userTokens)) {
                 Log::info("Sending FCM notification to {$order->user->phone}");
                 $this->fcm->sendToMany(
                     $userTokens,
-                    $notification->title_en,
-                    $notification->body_en,
+                    $title,
+                    $body,
                     [
                         'order_id' => $order->id,
                         'status' => $order->status->value,
                         'type' => NotificationTypeEnum::ORDER_STATUS_UPDATED->value
                     ]
                 );
-            }else {
+            } else {
                 Log::info("No FCM tokens found for {$order->user->phone}");
             }
 

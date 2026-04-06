@@ -186,5 +186,6 @@ Route::middleware(['locale'])
             ->prefix('fcm-tokens')
             ->group(function () {
                 Route::patch('', [FcmController::class, 'update']);
+                Route::post('', [FcmController::class, 'sendTestNotification']);
             });
     });
