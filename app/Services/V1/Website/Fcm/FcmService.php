@@ -3,6 +3,7 @@
 namespace App\Services\V1\Website\Fcm;
 
 use App\Enums\Platform\PlatformEnum;
+use App\Events\Fcm\UserFcmTokenUpdated;
 use App\Models\FcmToken;
 use App\Services\V1\Admin\Firebase\FcmService as FirebaseFcmService;
 use Illuminate\Support\Facades\Log;
@@ -23,6 +24,7 @@ class FcmService
                 'token' => $data['token']
             ]
         );
+        event(new UserFcmTokenUpdated($user));
     }
     public function sendTestNotification(array $data)
     {
