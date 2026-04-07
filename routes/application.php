@@ -23,7 +23,7 @@ use App\Http\Controllers\Api\V1\Application\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Application\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['locale'])
+Route::middleware(['locale','json'])
     ->prefix('application/v1')
     ->group(function () {
         Route::middleware('throttle:30,1')

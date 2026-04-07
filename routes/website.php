@@ -23,7 +23,7 @@ use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Website\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['tokenfromcookie', 'locale'])
+Route::middleware(['tokenfromcookie', 'locale', 'json'])
     ->prefix('website/v1')
     ->group(function () {
 
@@ -33,7 +33,6 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 Route::post('otp', [UserAuthController::class, 'sendOtp']);
                 Route::post('login', [UserAuthController::class, 'login']);
                 Route::post('logout', [UserAuthController::class, 'logout'])->middleware(['auth:sanctum']);
-
             });
         Route::middleware(['throttle:120,1', 'auth:sanctum'])
             ->prefix('profile')
@@ -182,7 +181,7 @@ Route::middleware(['tokenfromcookie', 'locale'])
                 ->name('webhooks.myfatoorah')
                 ->middleware('verify_myfatoorah_signature');
         });
-          Route::middleware(['auth:sanctum'])
+        Route::middleware(['auth:sanctum'])
             ->prefix('fcm-tokens')
             ->group(function () {
                 Route::patch('', [FcmController::class, 'update']);

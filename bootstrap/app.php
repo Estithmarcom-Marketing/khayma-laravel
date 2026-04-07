@@ -8,14 +8,14 @@ use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
+        web: __DIR__ . '/../routes/web.php',
         api: [
-            __DIR__.'/../routes/api.php',
-            __DIR__.'/../routes/admin.php',
-            __DIR__.'/../routes/website.php',
-            __DIR__.'/../routes/application.php',
+            __DIR__ . '/../routes/api.php',
+            __DIR__ . '/../routes/admin.php',
+            __DIR__ . '/../routes/website.php',
+            __DIR__ . '/../routes/application.php',
         ],
-        commands: __DIR__.'/../routes/console.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
 
     )
@@ -26,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'tokenfromcookie' => \App\Http\Middleware\TokenFromCookie::class,
             'locale' => \App\Http\Middleware\SetLocale::class,
+            'json' => \App\Http\Middleware\SetJsonHeader::class,
             'verify_tabby_ip' => \App\Http\Middleware\VerifyTabbyIp::class,
             'verify_tamara_token' => \App\Http\Middleware\VerifyTamaraToken::class,
             'verify_myfatoorah_signature' => \App\Http\Middleware\VerifyMyFatoorahSignature::class,
@@ -34,10 +35,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->priority([
             \App\Http\Middleware\TokenFromCookie::class,
             \Illuminate\Auth\Middleware\Authenticate::class,
-            \App\Http\Middleware\SetLocale::class, ]);
-        \App\Http\Middleware\VerifyTabbyIp::class;
-        \App\Http\Middleware\VerifyTamaraToken::class;
-        \App\Http\Middleware\VerifyMyFatoorahSignature::class;
+            \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\SetJsonHeader::class,
+            \App\Http\Middleware\VerifyTabbyIp::class,
+            \App\Http\Middleware\VerifyTamaraToken::class,
+            \App\Http\Middleware\VerifyMyFatoorahSignature::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, $request) {

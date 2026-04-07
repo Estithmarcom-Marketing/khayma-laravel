@@ -27,7 +27,7 @@ use App\Http\Controllers\Api\V1\Admin\Stats\StatsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin/v1')
-    ->middleware(['locale'])
+    ->middleware(['locale','json'])
     ->group(function () {
         Route::prefix('admins')
             ->middleware(['auth:admin', 'throttle:120,1'])
@@ -78,7 +78,7 @@ Route::prefix('admin/v1')
                 Route::get('{city}', [CityController::class, 'show'])->middleware('permission:read-city');
                 Route::delete('{city}', [CityController::class, 'destroy'])->middleware('permission:delete-city');
             });
-        
+
         Route::middleware(['auth:admin', 'throttle:60,1'])
             ->prefix('colors')
             ->group(function () {
