@@ -23,7 +23,7 @@ use App\Http\Controllers\Api\V1\Application\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Application\Size\SizeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['locale','json'])
+Route::middleware(['locale', 'json'])
     ->prefix('application/v1')
     ->group(function () {
         Route::middleware('throttle:30,1')
@@ -186,6 +186,5 @@ Route::middleware(['locale','json'])
             ->prefix('fcm-tokens')
             ->group(function () {
                 Route::patch('', [FcmController::class, 'update']);
-                Route::post('', [FcmController::class, 'sendTestNotification']);
             });
     });

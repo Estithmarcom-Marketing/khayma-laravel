@@ -26,15 +26,4 @@ class FcmService
         );
         event(new UserFcmTokenUpdated($user));
     }
-    public function sendTestNotification(array $data)
-    {
-        $user = auth('sanctum')->user();
-        $tokens = FcmToken::where('user_id', $user->id)->pluck('token')->toArray();
-        if (!empty($tokens)) {
-            Log::info("Sending test FCM notification to {$user->phone}");
-            $this->service->sendToMany($tokens, $data['title'], $data['body']);
-        } else {
-            Log::info("No FCM tokens found for {$user->phone} in test notification mood");
-        }
-    }
 }

@@ -28,49 +28,4 @@ class FcmController extends Controller
             return ApiResponse::errorResponse(__('fcm_token.updated_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    public function sendTestNotification(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'body' => 'required|string|max:255',
-            ]);
-
-            $this->service->sendTestNotification($validated);
-
-            return ApiResponse::successResponse(
-                [],
-                __('fcm_token.test_notification_sent_successfully'),
-                Response::HTTP_OK
-            );
-        } catch (ValidationException $e) {
-            Log::error(
-                'Failed to send test notification',
-                [
-                    'error' => $e->getMessage(),
-                    'request' => $validated ?? $request->all(),
-                    'method' => __METHOD__
-                ]
-            );
-
-            return ApiResponse::errorResponse(
-                $e->getMessage(),
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        } catch (\Exception $e) {
-            Log::error(
-                'Failed to send test notification',
-                [
-                    'error' => $e->getMessage(),
-                    'request' => $validated ?? $request->all(),
-                    'method' => __METHOD__
-                ]
-            );
-
-            return ApiResponse::errorResponse(
-                __('fcm_token.test_notification_sent_failed'),
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
 }

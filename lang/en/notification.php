@@ -4,6 +4,9 @@ return [
     'list_success' => 'Notifications retrieved successfully',
     'list_failed' => 'Failed to fetch notifications',
 
+    'sent_successfully' => 'Notification sent successfully',
+    'sent_failed' => 'Failed to send notification',
+
     'unread_success' => 'Unread notifications retrieved successfully',
     'unread_failed' => 'Failed to fetch unread notifications',
 

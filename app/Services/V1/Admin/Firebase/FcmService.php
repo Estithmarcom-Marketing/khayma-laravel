@@ -43,5 +43,17 @@ class FcmService
 
         return $this->messaging->sendMulticast($message, $tokens);
     }
+    public function sendToTopic(
+        string $topic,
+        string $title,
+        string $body,
+        array $data = []
+    ) {
+        $message = CloudMessage::new()
+            ->withNotification(Notification::create($title, $body))
+            ->withData($data)
+            ->withTopic($topic);
 
+        return $this->messaging->send($message);
+    }
 }

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
 use App\Http\Controllers\Api\V1\Admin\Customer\CustomerController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
+use App\Http\Controllers\Api\V1\Admin\Fcm\SendNotificationsWithFcmController;
 use App\Http\Controllers\Api\V1\Admin\Order\OrderController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
@@ -27,17 +28,18 @@ use App\Http\Controllers\Api\V1\Admin\Stats\StatsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin/v1')
-    ->middleware(['locale','json'])
+    ->middleware(['locale', 'json'])
     ->group(function () {
         Route::prefix('admins')
             ->middleware(['auth:admin', 'throttle:120,1'])
-            ->group(function () {
-                Route::get('', [AdminManagmentController::class, 'index'])->middleware('permission:read-admin');
-                Route::post('', [AdminManagmentController::class, 'store'])->middleware('permission:store-admin');
-                Route::get('{admin}', [AdminManagmentController::class, 'show'])->middleware('permission:read-admin');
-                Route::patch('{admin}', [AdminManagmentController::class, 'update'])->middleware('permission:store-admin');
-                Route::delete('{admin}', [AdminManagmentController::class, 'destroy'])->middleware('permission:delete-admin');
-            }
+            ->group(
+                function () {
+                    Route::get('', [AdminManagmentController::class, 'index'])->middleware('permission:read-admin');
+                    Route::post('', [AdminManagmentController::class, 'store'])->middleware('permission:store-admin');
+                    Route::get('{admin}', [AdminManagmentController::class, 'show'])->middleware('permission:read-admin');
+                    Route::patch('{admin}', [AdminManagmentController::class, 'update'])->middleware('permission:store-admin');
+                    Route::delete('{admin}', [AdminManagmentController::class, 'destroy'])->middleware('permission:delete-admin');
+                }
             );
         Route::prefix('auth')
             ->group(function () {
@@ -202,7 +204,6 @@ Route::prefix('admin/v1')
                 Route::post('', [ProductController::class, 'store'])->middleware('permission:store-product');
                 Route::patch('{product}', [ProductController::class, 'update'])->middleware('permission:store-product');
                 Route::delete('{product}', [ProductController::class, 'destroy'])->middleware('permission:delete-product');
-
             });
         Route::middleware(['auth:admin', 'throttle:60,1'])
             ->prefix('products/{product}/variations')
@@ -213,7 +214,6 @@ Route::prefix('admin/v1')
                 Route::post('', [ProductController::class, 'storeProductVariation'])->middleware('permission:store-product');
                 Route::patch('{productVariation}', [ProductController::class, 'updateProductVariation'])->middleware('permission:store-product');
                 Route::delete('{productVariation}', [ProductController::class, 'destroyProductVariation'])->middleware('permission:delete-product');
-
             });
         Route::middleware(['auth:admin', 'throttle:60,1'])
             ->prefix('products/{product}/variations/{productVariation}/properties')
@@ -285,5 +285,11 @@ Route::prefix('admin/v1')
                 Route::get('{customTent}', [CustomTentController::class, 'show']);
                 Route::patch('{customTent}/change-status', [CustomTentController::class, 'changeStatus']);
                 Route::delete('{customTent}', [CustomTentController::class, 'destroy']);
+            });
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('notifications')
+            ->group(function () {
+                Route::post('/topic', [SendNotificationsWithFcmController::class, 'sendToTopic']);
+                Route::post('/users', [SendNotificationsWithFcmController::class, 'sendToMany']);
             });
     });
