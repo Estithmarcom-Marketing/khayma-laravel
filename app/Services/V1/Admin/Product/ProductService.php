@@ -84,7 +84,7 @@ class ProductService
                 $product->addMedia($image)->toMediaCollection('products');
             }
         }
-        return $product->load(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])->refresh();
+        return $product->load(['category:id,parent_id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])->refresh();
     }
 
     public function delete(Product $product)
