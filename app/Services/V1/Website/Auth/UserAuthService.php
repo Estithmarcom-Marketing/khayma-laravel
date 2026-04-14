@@ -55,7 +55,7 @@ class UserAuthService
             ->first();
 
         if (! $otp || ! Hash::check($otpCode, $otp->otp_code) || $otp->expires_at->isPast()) {
-            throw new \Exception('Invalid or expired OTP code.');
+            throw new \LogicException(__('auth.invalid_otp'));
         }
 
         return DB::transaction(function () use ($phone, $otp) {
@@ -87,6 +87,6 @@ class UserAuthService
 
             return true;
         }
-        throw new \Exception('User not authenticated.');
+        throw new \LogicException(__('auth.unauthenticated'));
     }
 }

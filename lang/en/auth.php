@@ -17,10 +17,18 @@ return [
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'unauthorized' => 'Unauthorized',
+    'unauthenticated' => 'Unauthenticated',
 
     'otp_sent_success' => 'OTP code sent successfully',
     'otp_sent_failed' => 'Failed to send OTP code. Please try again later.',
 
     'otp_message' => 'Your OTP Code is: :otp',
+    'invalid_otp' => 'Invalid OTP code or expired.',
+
+    'logged_in_successfully' => 'You are logged in successfully',
+    'logged_in_failed' => 'Login failed. Please try again.',
+
+    'logged_out_successfully' => 'You are logged out successfully',
+    'logged_out_failed' => 'Logout failed. Please try again.',
 
 ];

@@ -21,11 +21,11 @@ class UserAuthController extends Controller
             $validated = $request->validated();
             $data = $this->service->sendOtp($validated);
 
-            return ApiResponse::successResponse(null, 'OTP sent successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(null, __('auth.otp_sent_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to send OTP', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to send OTP', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('auth.otp_sent_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -36,13 +36,17 @@ class UserAuthController extends Controller
 
             return ApiResponse::successResponse(
                 ['user' => UserResource::make($data['user']), 'token' => $data['token']],
-                'User logged in successfully',
-                Response::HTTP_OK);
+                __('auth.logged_in_successfully'),
+                Response::HTTP_OK
+            );
+        } catch (\LogicException $e) {
+            Log::error('Failed to login user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         } catch (\Exception $e) {
             Log::error('Failed to login user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to login user', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('auth.logged_in_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -51,11 +55,15 @@ class UserAuthController extends Controller
         try {
             $this->service->logout();
 
-            return ApiResponse::successResponse(null, 'User logged out successfully', Response::HTTP_OK);
+            return ApiResponse::successResponse(null, __('auth.logged_out_successfully'), Response::HTTP_OK);
+        } catch (\LogicException $e) {
+            Log::error('Failed to logout user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         } catch (\Exception $e) {
             Log::error('Failed to logout user', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to logout user', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('auth.logged_out_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
