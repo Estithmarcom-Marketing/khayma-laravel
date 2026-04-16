@@ -44,4 +44,10 @@ class OrderController extends Controller
         }
         return ApiResponse::successResponse(new OrderResource($order), __('orders.updated'), status: Response::HTTP_OK);
     }
+
+    public function exportExcel()
+    {
+        return $this->orderService->exportExcel();
+        
+    }
 }
