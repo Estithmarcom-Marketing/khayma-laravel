@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Api\V1\Admin\Order;
 
+use App\Exports\OrdersExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\GetOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Resources\Dashboard\Order\OrderResource;
 use App\Services\V1\Admin\Order\OrderService;
+use App\Services\V1\Admin\SpreadsheetImportExport\SpreadsheetImportExportService;
 use App\Traits\Response\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
-    public function __construct(private OrderService $orderService){}
+    public function __construct(
+        private OrderService $orderService,
+        private SpreadsheetImportExportService $spreadsheetService,
+    ) {}
 
     public function index(GetOrderRequest $request)
     {
@@ -47,7 +52,6 @@ class OrderController extends Controller
 
     public function exportExcel()
     {
-        return $this->orderService->exportExcel();
-        
+        return $this->spreadsheetService->exportExcel(new OrdersExport, 'orders');
     }
 }

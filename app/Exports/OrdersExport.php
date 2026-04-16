@@ -3,35 +3,58 @@
 namespace App\Exports;
 
 use App\Models\Order;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
 use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class OrdersExport implements FromCollection, WithHeadings, WithCustomCsvSettings
+class OrdersExport implements FromQuery, WithMapping, WithHeadings, WithCustomCsvSettings, WithCustomChunkSize
 {
-    public function collection()
+    /**
+     * Return a query builder — maatwebsite/excel will process it in chunks
+     * (see chunkSize()) so only N rows + their relations live in RAM at once.
+     */
+    public function query(): Builder
     {
         return Order::with(['user', 'paymentMethod', 'deliveryMethod', 'items'])
-            ->get()
-            ->map(function (Order $order) {
-                return [
-                    $order->id,
-                    optional($order->user)->name ?? '—',
-                    $order->phone ?? optional($order->user)->phone ?? '—',
-                    $order->status?->label()['ar'] ?? $order->getRawOriginal('status'),
-                    $order->subtotal_price,
-                    $order->shipping_cost,
-                    $order->tax_amount,
-                    $order->discount_of_offer,
-                    $order->discount_of_promo_code ?? '—',
-                    $order->promo_code ?? '—',
-                    $order->total_price,
-                    optional($order->paymentMethod)->name_ar ?? '—',
-                    optional($order->deliveryMethod)->name_ar ?? '—',
-                    $order->items->count(),
-                    $order->created_at?->format('Y-m-d H:i:s'),
-                ];
-            });
+            ->oldest('id'); // deterministic order required for chunked processing
+    }
+
+    /**
+     * Map a single Order model to the flat array that becomes one spreadsheet row.
+     * Called per-row; never holds the full result-set in memory.
+     */
+    public function map($order): array
+    {
+        return [
+            $order->id,
+            optional($order->user)->name ?? '—',
+            $order->phone ?? optional($order->user)->phone ?? '—',
+            $order->status?->label()['ar'] ?? $order->getRawOriginal('status'),
+            $order->subtotal_price,
+            $order->shipping_cost,
+            $order->tax_amount,
+            $order->discount_of_offer,
+            $order->discount_of_promo_code ?? '—',
+            $order->promo_code ?? '—',
+            $order->total_price,
+            optional($order->paymentMethod)->name_ar ?? '—',
+            optional($order->deliveryMethod)->name_ar ?? '—',
+            $order->items->count(),
+            $order->created_at?->format('Y-m-d H:i:s'),
+        ];
+    }
+
+    /**
+     * Process 500 rows per chunk.
+     * Each batch fetches 500 orders + their eager-loaded relations, writes them,
+     * then frees that memory before loading the next batch.
+     */
+    public function chunkSize(): int
+    {
+        return 500;
     }
 
     public function headings(): array
