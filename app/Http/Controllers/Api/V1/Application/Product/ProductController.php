@@ -11,11 +11,14 @@ use App\Traits\Response\ApiResponse;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Product')]
 class ProductController extends Controller
 {
     public function __construct(protected ProductService $service) {}
-
+/**
+ * @unauthenticated
+ */
     public function filter(FilterProductRequest $request)
     {
         try {
@@ -35,6 +38,9 @@ class ProductController extends Controller
             return ApiResponse::errorResponse(__('product.filter_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
 
     public function showVariations($identifier)
     {
@@ -50,7 +56,9 @@ class ProductController extends Controller
             return ApiResponse::errorResponse(__('product.variations_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * @unauthenticated
+     */
     public function show($identifier)
     {
         try {
@@ -64,7 +72,9 @@ class ProductController extends Controller
             return ApiResponse::errorResponse(__('product.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * @unauthenticated
+     */
     public function getRelatedProducts($identifier)
     {
         try {

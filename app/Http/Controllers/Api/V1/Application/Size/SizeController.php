@@ -9,11 +9,14 @@ use App\Services\V1\Website\Size\SizeService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Sizes')]
 class SizeController extends Controller
 {
     public function __construct(protected SizeService $service) {}
-
+    /**
+     * @unauthenticated
+     */
     public function index()
     {
         try {
@@ -29,7 +32,9 @@ class SizeController extends Controller
                 Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * @unauthenticated
+     */
     public function show($id)
     {
         try {

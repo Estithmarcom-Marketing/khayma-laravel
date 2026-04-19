@@ -10,7 +10,8 @@ use App\Services\V1\Website\ProfileManagement\ProfileManagementService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Profile Management')]
 class ProfileManagmentController extends Controller
 {
     public function __construct(protected ProfileManagementService $service) {}

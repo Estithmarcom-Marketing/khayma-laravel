@@ -10,11 +10,15 @@ use App\Services\V1\Website\Auth\UserAuthService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Application Authentication')]
 class UserAuthController extends Controller
 {
     public function __construct(protected UserAuthService $service) {}
-
+    /**
+     * @unauthenticated
+     */
     public function sendOtp(OtpRequest $request)
     {
         try {
@@ -28,6 +32,9 @@ class UserAuthController extends Controller
             return ApiResponse::errorResponse(__('auth.otp_sent_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
 
     public function login(UserLoginRequest $request)
     {

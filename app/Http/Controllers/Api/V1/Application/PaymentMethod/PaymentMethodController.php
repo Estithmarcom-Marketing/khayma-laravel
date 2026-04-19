@@ -10,10 +10,14 @@ use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Payment Methods')]
 class PaymentMethodController extends Controller
 {
     public function __construct(protected PaymentMethodService $service) {}
-
+    /**
+     * @unauthenticated
+    */
     public function index()
     {
         try {

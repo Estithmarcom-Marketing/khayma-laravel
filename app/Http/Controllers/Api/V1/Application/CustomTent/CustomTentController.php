@@ -10,7 +10,8 @@ use App\Services\V1\Website\CustomTent\CustomTentService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Custom Tent')]
 class CustomTentController extends Controller
 {
     public function __construct(protected CustomTentService $service){}

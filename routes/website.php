@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderControlle
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
 use App\Http\Controllers\Api\V1\Website\Size\SizeController;
+use App\Http\Controllers\Api\V1\Website\StaticPage\StaticPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['tokenfromcookie', 'locale', 'json'])
@@ -185,5 +186,10 @@ Route::middleware(['tokenfromcookie', 'locale', 'json'])
             ->prefix('fcm-tokens')
             ->group(function () {
                 Route::patch('', [FcmController::class, 'update']);
+            });
+        Route::prefix('static-pages')
+            ->group(function () {
+                Route::get('', [StaticPageController::class, 'index']);
+                Route::get('{identifier}', [StaticPageController::class, 'show']);
             });
     });

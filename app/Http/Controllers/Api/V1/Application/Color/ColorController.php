@@ -8,11 +8,15 @@ use App\Services\V1\Website\Color\ColorService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Application Color')]
 class ColorController extends Controller
 {
     public function __construct(protected ColorService $service) {}
-
+    /**
+     * @unauthenticated
+     */
     public function index()
     {
         try {
@@ -21,7 +25,8 @@ class ColorController extends Controller
             return ApiResponse::successResponse(
                 ['colors' => ColorResource::collection($colors)],
                 __('color.list_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch colors', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -34,9 +39,11 @@ class ColorController extends Controller
         try {
             $color = $this->service->show($id);
 
-            return ApiResponse::successResponse(['color' => ColorResource::make($color)],
+            return ApiResponse::successResponse(
+                ['color' => ColorResource::make($color)],
                 __('color.show_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch color', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

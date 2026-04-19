@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
+use function App\Helpers\normalize_saudi_phone_number;
+
 class UserAuthService
 {
     public function __construct(protected TqnyatSmsService $service) {}
@@ -23,7 +25,7 @@ class UserAuthService
         return DB::transaction(function () use ($data) {
             $otp = $this->generateOtp();
             // $otp = 1234;
-            $phoneNumber = str_replace(['+', ' ', '-'], '', $data['phone']);
+            $phoneNumber = normalize_saudi_phone_number($data['phone']);
             OtpCode::create([
                 'phone' => $phoneNumber,
                 'otp_code' => Hash::make($otp),
@@ -45,7 +47,7 @@ class UserAuthService
 
     public function login(array $data)
     {
-        $phone = str_replace(['+', ' ', '-'], '', $data['phone']);
+        $phone = normalize_saudi_phone_number($data['phone']);
 
         $otpCode = $data['otp_code'];
 

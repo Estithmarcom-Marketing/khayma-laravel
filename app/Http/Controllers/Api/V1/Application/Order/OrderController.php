@@ -16,16 +16,19 @@ use App\Services\V1\Website\Payment\PaymentService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Application Orders')]
 class OrderController extends Controller
 {
     public $user;
 
-    public function __construct(protected OrderService $service,
+    public function __construct(
+        protected OrderService $service,
         protected StoreOrderService $storeOrderService,
         protected OrderReceiptPdfService $orderReceiptPdfService,
-        protected PaymentService $paymentService)
-    {
+        protected PaymentService $paymentService
+    ) {
         $this->user = auth('sanctum')->user();
     }
 
@@ -68,12 +71,10 @@ class OrderController extends Controller
                 __('orders.created'),
                 Response::HTTP_CREATED
             );
-
         } catch (\LogicException $e) {
             Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
-
         } catch (\Exception $e) {
             Log::error('Failed to create order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -114,11 +115,14 @@ class OrderController extends Controller
             $orders = OrderResource::collection($orders)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['orders' => $orders['data'],
+                [
+                    'orders' => $orders['data'],
                     'meta' => $orders['meta'],
-                    'links' => $orders['links']],
+                    'links' => $orders['links']
+                ],
                 __('orders.fetched'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -133,11 +137,14 @@ class OrderController extends Controller
             $orders = OrderResource::collection($orders)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['orders' => $orders['data'],
+                [
+                    'orders' => $orders['data'],
                     'meta' => $orders['meta'],
-                    'links' => $orders['links']],
+                    'links' => $orders['links']
+                ],
                 __('orders.fetched'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch orders', ['error' => $e->getMessage(), 'url' => request()->url(), 'query' => request()->query(), 'method' => __METHOD__]);
 
@@ -167,7 +174,6 @@ class OrderController extends Controller
             return ApiResponse::successResponse([
                 'receipt' => $url,
             ], __('orders.fetched'), Response::HTTP_OK);
-
         } catch (\Exception $e) {
             Log::error('Failed to fetch receipt', [
                 'error' => $e->getMessage(),
@@ -188,7 +194,6 @@ class OrderController extends Controller
             Log::error('Failed to calculate total amount of order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
-
         } catch (\Exception $e) {
             Log::error('Failed to calculate total amount of order', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -210,7 +215,6 @@ class OrderController extends Controller
                 __('orders.repaid'),
                 Response::HTTP_OK
             );
-
         } catch (\LogicException $e) {
             Log::error('Failed to repay order', [
                 'error' => $e->getMessage(),

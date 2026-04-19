@@ -8,11 +8,15 @@ use App\Services\V1\Website\Category\CategoryService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Application Category')]
 class CategoryController extends Controller
 {
     public function __construct(protected CategoryService $service) {}
-
+    /**
+     * @unauthenticated
+     */
     public function index()
     {
         try {
@@ -21,16 +25,19 @@ class CategoryController extends Controller
             return ApiResponse::successResponse(
                 ['categories' => CategoryResource::collection($categories)],
                 __('category.listed_all'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(
                 __('category.list_all_failed'),
-                Response::HTTP_INTERNAL_SERVER_ERROR);
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
-
+    /** * @unauthenticated
+     */
     public function show($id)
     {
         try {
@@ -39,13 +46,15 @@ class CategoryController extends Controller
             return ApiResponse::successResponse(
                 ['category' => new CategoryResource($category)],
                 __('category.listed_one'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(
                 __('category.list_one_failed'),
-                Response::HTTP_INTERNAL_SERVER_ERROR);
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

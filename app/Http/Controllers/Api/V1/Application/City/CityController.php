@@ -8,11 +8,14 @@ use App\Services\V1\Website\City\CityService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application City')]
 class CityController extends Controller
 {
     public function __construct(protected CityService $service) {}
-
+    /**
+     * @unauthenticated
+     */
     public function index()
     {
         try {
@@ -26,7 +29,9 @@ class CityController extends Controller
             return ApiResponse::errorResponse(__('city.retrieve_all_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * @unauthenticated
+     */
     public function show($id)
     {
         try {

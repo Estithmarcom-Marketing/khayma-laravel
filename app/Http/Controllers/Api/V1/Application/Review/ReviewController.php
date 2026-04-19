@@ -12,7 +12,9 @@ use App\Services\V1\Website\Review\ReviewService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Application Review')]
 class ReviewController extends Controller
 {
     public function __construct(protected ReviewService $service) {}
@@ -24,18 +26,23 @@ class ReviewController extends Controller
             $reviews = ReviewResource::collection($reviews)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['reviews' => $reviews['data'],
+                [
+                    'reviews' => $reviews['data'],
                     'meta' => $reviews['meta'],
-                    'links' => $reviews['links']],
+                    'links' => $reviews['links']
+                ],
                 __('review.list_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch reviews', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('review.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * @unauthenticated
+     */
     public function getProductReviews(Product $product)
     {
         try {
@@ -43,18 +50,23 @@ class ReviewController extends Controller
             $reviews = ReviewResource::collection($reviews)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['reviews' => $reviews['data'],
+                [
+                    'reviews' => $reviews['data'],
                     'meta' => $reviews['meta'],
-                    'links' => $reviews['links']],
+                    'links' => $reviews['links']
+                ],
                 __('review.list_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch reviews', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('review.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * @unauthenticated
+     */
     public function getStatistics($id)
     {
         try {
@@ -73,8 +85,11 @@ class ReviewController extends Controller
         try {
             $review = $this->service->store($request->validated());
 
-            return ApiResponse::successResponse(['review' => ReviewResource::make($review)],
-                __('review.store_success'), Response::HTTP_CREATED);
+            return ApiResponse::successResponse(
+                ['review' => ReviewResource::make($review)],
+                __('review.store_success'),
+                Response::HTTP_CREATED
+            );
         } catch (\Exception $e) {
             Log::error('Failed to create review', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -87,8 +102,11 @@ class ReviewController extends Controller
         try {
             $review = $this->service->update($request->validated(), $review);
 
-            return ApiResponse::successResponse(['review' => ReviewResource::make($review)],
-                __('review.update_success'), Response::HTTP_OK);
+            return ApiResponse::successResponse(
+                ['review' => ReviewResource::make($review)],
+                __('review.update_success'),
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to update review', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

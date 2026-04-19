@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\ValidationException;
 
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Fcm')]
+
 class FcmController extends Controller
 {
     use ApiResponse;

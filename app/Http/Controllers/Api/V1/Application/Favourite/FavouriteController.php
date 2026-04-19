@@ -10,7 +10,8 @@ use App\Services\V1\Website\Favourite\FavouriteService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Favourite')]
 class FavouriteController extends Controller
 {
     public function __construct(protected FavouriteService $service) {}

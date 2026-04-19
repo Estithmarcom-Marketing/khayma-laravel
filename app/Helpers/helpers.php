@@ -25,4 +25,28 @@ if (! function_exists('make_slug')) {
 
         return $slug . '-' . $i;
     }
+    if (! function_exists('normalize_saudi_phone_number')) {
+        function normalize_saudi_phone_number(string $phone): string
+        {
+            $phone = preg_replace('/\D/', '', $phone);
+
+            if (str_starts_with($phone, '00')) {
+                $phone = substr($phone, 2);
+            }
+
+            if (preg_match('/^966\d{9}$/', $phone)) {
+                return $phone;
+            }
+
+            if (preg_match('/^0(\d{9})$/', $phone, $matches)) {
+                return '966' . $matches[1];
+            }
+
+            if (preg_match('/^5\d{8}$/', $phone)) {
+                return '966' . $phone;
+            }
+
+            return $phone;
+        }
+    }
 }

@@ -11,7 +11,8 @@ use App\Services\V1\Website\Address\AddressService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Application Address')]
 class AddressController extends Controller
 {
     public function __construct(protected AddressService $service) {}

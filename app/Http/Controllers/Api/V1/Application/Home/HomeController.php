@@ -13,10 +13,18 @@ use App\Services\V1\Website\Home\HomeService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Application Home')]
 class HomeController extends Controller
 {
+    /**
+     * @unauthenticated
+     */
     public function __construct(protected HomeService $service) {}
+    /**
+     * @unauthenticated
+     */
     public function getHomeBanners()
     {
         try {
@@ -28,13 +36,17 @@ class HomeController extends Controller
             return ApiResponse::successResponse(
                 ['sliders' => $sliders],
                 __('home.sliders_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list sliders', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('home.sliders_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
     public function getHomeCategories()
     {
         try {
@@ -43,13 +55,17 @@ class HomeController extends Controller
             return ApiResponse::successResponse(
                 ['categories' => CategoryResource::collection($categories)],
                 __('home.categories_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('home.categories_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
     public function getLatestProducts()
     {
         try {
@@ -58,17 +74,23 @@ class HomeController extends Controller
             $products = ProductResource::collection($products)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['products' => $products['data'],
+                [
+                    'products' => $products['data'],
                     'meta' => $products['meta'],
-                    'links' => $products['links']],
+                    'links' => $products['links']
+                ],
                 __('home.products_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
     public function getCommonProducts()
     {
         try {
@@ -77,17 +99,23 @@ class HomeController extends Controller
             $products = ProductResource::collection($products)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['products' => $products['data'],
+                [
+                    'products' => $products['data'],
                     'meta' => $products['meta'],
-                    'links' => $products['links']],
+                    'links' => $products['links']
+                ],
                 __('home.products_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
     public function getMostOrderdProducts()
     {
         try {
@@ -96,17 +124,23 @@ class HomeController extends Controller
             $products = ProductResource::collection($products)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['products' => $products['data'],
+                [
+                    'products' => $products['data'],
                     'meta' => $products['meta'],
-                    'links' => $products['links']],
+                    'links' => $products['links']
+                ],
                 __('home.products_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
     public function getSuggestedProducts()
     {
         try {
@@ -115,17 +149,23 @@ class HomeController extends Controller
             $products = ProductResource::collection($products)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['products' => $products['data'],
+                [
+                    'products' => $products['data'],
                     'meta' => $products['meta'],
-                    'links' => $products['links']],
+                    'links' => $products['links']
+                ],
                 __('home.products_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('home.products_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
     public function getHomeReviews()
     {
         try {
@@ -134,17 +174,23 @@ class HomeController extends Controller
             $reviews = ReviewResource::collection($reviews)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['reviews' => $reviews['data'],
+                [
+                    'reviews' => $reviews['data'],
                     'meta' => $reviews['meta'],
-                    'links' => $reviews['links']],
+                    'links' => $reviews['links']
+                ],
                 __('home.reviews_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list reviews', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('home.reviews_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * @unauthenticated
+     */
     public function getCommonQuestions()
     {
         try {
@@ -153,11 +199,14 @@ class HomeController extends Controller
             $questions = CommonQuestionResource::collection($questions)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['questions' => $questions['data'],
+                [
+                    'questions' => $questions['data'],
                     'meta' => $questions['meta'],
-                    'links' => $questions['links']],
+                    'links' => $questions['links']
+                ],
                 __('home.questions_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to list questions', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
