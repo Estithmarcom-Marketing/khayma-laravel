@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\Admin\Setting\SettingController;
 use App\Http\Controllers\Api\V1\Admin\Size\SizeController;
 use App\Http\Controllers\Api\V1\Admin\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Admin\Reports\SalesReportController;
+use App\Http\Controllers\Api\V1\Admin\StaticPage\StaticPageController;
 use App\Http\Controllers\Api\V1\Admin\Stats\StatsController;
 use Illuminate\Support\Facades\Route;
 
@@ -292,5 +293,14 @@ Route::prefix('admin/v1')
             ->group(function () {
                 Route::post('/topic', [SendNotificationsWithFcmController::class, 'sendToTopic']);
                 Route::post('/users', [SendNotificationsWithFcmController::class, 'sendToMany']);
+            });
+        Route::middleware(['auth:admin', 'throttle:60,1'])
+            ->prefix('static-pages')
+            ->group(function () {
+                Route::get('', [StaticPageController::class, 'index']);
+                Route::post('', [StaticPageController::class, 'store']);
+                Route::get('{staticPage}', [StaticPageController::class, 'show']);
+                Route::patch('{staticPage}', [StaticPageController::class, 'update']);
+                Route::delete('{staticPage}', [StaticPageController::class, 'delete']);
             });
     });
