@@ -35,23 +35,7 @@ class StaticPageService
     }
     public function update(StaticPage $staticPage, array $data)
     {
-        $slug_ar = $data['slug_ar'] ?? $this->updateSlug(
-            $staticPage,
-            $data['title_ar'] ?? $staticPage->title_ar,
-            'ar'
-        );
-
-        $slug_en = $data['slug_en'] ?? $this->updateSlug(
-            $staticPage,
-            $data['title_en'] ?? $staticPage->title_en,
-            'en'
-        );
-
         $staticPage->update([
-            'title_ar' => $data['title_ar'] ?? $staticPage->title_ar,
-            'title_en' => $data['title_en'] ?? $staticPage->title_en,
-            'slug_ar' => $slug_ar,
-            'slug_en' => $slug_en,
             'content_ar' => $data['content_ar'] ?? $staticPage->content_ar,
             'content_en' => $data['content_en'] ?? $staticPage->content_en,
             'meta_title_ar' => $data['meta_title_ar'] ?? $staticPage->meta_title_ar,
@@ -64,13 +48,5 @@ class StaticPageService
     public function destroy(StaticPage $staticPage)
     {
         return $staticPage->delete();
-    }
-    private function updateSlug($staticPage, $new_title, $locale)
-    {
-        if (!$new_title || $new_title === $staticPage->{"title_$locale"}) {
-            return $staticPage->{"slug_$locale"};
-        }
-
-        return make_slug($new_title, $locale, StaticPage::class, "slug_$locale");
     }
 }
