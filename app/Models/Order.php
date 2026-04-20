@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Orders\OrderStatusEnum;
+use App\Enums\Payments\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Order extends Model implements HasMedia
 {
-    use HasUlids ,InteractsWithMedia , SoftDeletes;
+    use HasUlids, InteractsWithMedia, SoftDeletes;
 
     protected $keyType = 'string';
 
@@ -74,11 +75,49 @@ class Order extends Model implements HasMedia
     {
         return $this->hasMany(OrderProduct::class);
     }
+    private function canModifyPayment(): bool
+    {
+        $payment = $this->payments?->sortByDesc('id')->first();
 
-    // public function cart()
-    // {
-    //     return $this->belongsTo(Cart::class);
-    // }
+        if (! $payment) {
+            return true;
+        }
+
+        return in_array($payment->status, [
+            PaymentStatusEnum::PENDING,
+            PaymentStatusEnum::FAILED
+        ]);
+    }
+
+    public function getCanRepayAttribute(): bool
+    {
+        $user = auth('sanctum')->user();
+
+        if (! $user || $this->user_id !== $user->id) {
+            return false;
+        }
+
+        if ($this->status !== OrderStatusEnum::PENDING) {
+            return false;
+        }
+
+        return $this->canModifyPayment();
+    }
+    public function getCanCancelAttribute(): bool
+    {
+        $user = auth('sanctum')->user();
+
+        if (! $user || $this->user_id !== $user->id) {
+            return false;
+        }
+
+        if (! $this->canModifyPayment()) {
+            return false;
+        }
+
+        return $this->status === OrderStatusEnum::PENDING
+            && $this->created_at->diffInHours(now()) < 72;
+    }
 
     public function scopeSearch($query, $search)
     {
@@ -86,7 +125,7 @@ class Order extends Model implements HasMedia
             $query->whereHas('user', function ($q) use ($search) {
                 $q->search($search);
             })
-                ->orWhere('id', 'like', '%'.$search.'%');
+                ->orWhere('id', 'like', '%' . $search . '%');
         }
     }
 

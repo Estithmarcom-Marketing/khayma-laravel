@@ -38,9 +38,11 @@ class OrderResource extends JsonResource
                 return [
                     'amount' => (float) $payment->amount,
                     'status' => $payment->status->value,
-                    'gateway'=> $payment->gateway,
+                    'gateway' => $payment->gateway,
                 ];
             }) : null,
+            'can_cancel' => (bool) $this->can_cancel,
+            'can_repay' => (bool) $this->can_repay,
             'created_at' => $this->created_at,
             'delivered_at' => $this->delivered_at,
             'updated_at' => $this->updated_at,
