@@ -94,16 +94,18 @@ class OrderService
 
     public function cancel($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('payments')->findOrFail($id);
+        $user = auth('sanctum')->user();
 
-        if ($order->status == OrderStatusEnum::PENDING && $order->user_id == $this->user->id && $order->created_at->diffInHours() < 72) {
-            $order->update(['status' => OrderStatusEnum::CANCELED]);
-
-            // call refund
-            return $order;
-        } else {
+        if (! $order->canCancel($user->id)) {
             throw new \Exception(__('orders.error_cancel'));
         }
+
+        $order->update([
+            'status' => OrderStatusEnum::CANCELED
+        ]);
+
+        return $order;
     }
 
     public function reorder($id)
@@ -123,13 +125,8 @@ class OrderService
 
     public function repay(Order $order, array $data)
     {
-
-        if ($order->user_id !== $this->user->id) {
-            throw new \LogicException('Unauthorized');
-        }
-
-        if ($order->status !== OrderStatusEnum::PENDING) {
-            throw new \LogicException('Order is not pending, cannot repay');
+        if (! $order->canRepay($this->user->id)) {
+            throw new \LogicException(__('orders.error_repay_invalid'));
         }
 
         return DB::transaction(function () use ($order, $data) {

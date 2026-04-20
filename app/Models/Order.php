@@ -75,7 +75,7 @@ class Order extends Model implements HasMedia
     {
         return $this->hasMany(OrderProduct::class);
     }
-    private function canModifyPayment(): bool
+    public function canModifyPayment(): bool
     {
         $payment = $this->payments?->sortByDesc('id')->first();
 
@@ -89,11 +89,11 @@ class Order extends Model implements HasMedia
         ]);
     }
 
-    public function getCanRepayAttribute(): bool
+    public function canRepay(?int $userId = null): bool
     {
-        $user = auth('sanctum')->user();
+        $userId = $userId ?? auth('sanctum')->id();
 
-        if (! $user || $this->user_id !== $user->id) {
+        if (! $userId || $this->user_id !== $userId) {
             return false;
         }
 
@@ -103,11 +103,12 @@ class Order extends Model implements HasMedia
 
         return $this->canModifyPayment();
     }
-    public function getCanCancelAttribute(): bool
-    {
-        $user = auth('sanctum')->user();
 
-        if (! $user || $this->user_id !== $user->id) {
+    public function canCancel(?int $userId = null): bool
+    {
+        $userId = $userId ?? auth('sanctum')->id();
+
+        if (! $userId || $this->user_id !== $userId) {
             return false;
         }
 
@@ -119,6 +120,15 @@ class Order extends Model implements HasMedia
             && $this->created_at->diffInHours(now()) < 72;
     }
 
+    public function getCanRepayAttribute(): bool
+    {
+        return $this->canRepay();
+    }
+
+    public function getCanCancelAttribute(): bool
+    {
+        return $this->canCancel();
+    }
     public function scopeSearch($query, $search)
     {
         if ($search) {

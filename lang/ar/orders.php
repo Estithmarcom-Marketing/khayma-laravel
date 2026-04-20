@@ -22,6 +22,7 @@ return [
 
     'repaid' => 'تم اعادة دفع الطلب بنجاح',
     'error_repay' => 'فشل اعادة دفع الطلب',
+    'error_repay_invalid' => 'لا يمكن اعادة دفع هذا الطلب',
 
     // validations of store order request
     'address_id_required_with' => 'حقل العنوان مطلوب عندما لا تكون طريقة التوصيل "استلام في المتجر".',
