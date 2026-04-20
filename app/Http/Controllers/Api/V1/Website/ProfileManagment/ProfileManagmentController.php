@@ -10,7 +10,9 @@ use App\Services\V1\Website\ProfileManagement\ProfileManagementService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Website Profile Management')]
 class ProfileManagmentController extends Controller
 {
     public function __construct(protected ProfileManagementService $service) {}
@@ -20,10 +22,13 @@ class ProfileManagmentController extends Controller
         try {
             $user = auth('sanctum')->user();
 
-            return ApiResponse::successResponse([
-                'user' => new UserResource($user),
-            ], __('profile.fetch_success'),
-                Response::HTTP_OK);
+            return ApiResponse::successResponse(
+                [
+                    'user' => new UserResource($user),
+                ],
+                __('profile.fetch_success'),
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch user profile', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -63,7 +68,7 @@ class ProfileManagmentController extends Controller
     public function sendOtpToNewPhone(UpdatePhoneRequest $request)
     {
         try {
-          $this->service->sendOtpToNewPhone($request->validated());
+            $this->service->sendOtpToNewPhone($request->validated());
 
             return ApiResponse::successResponse(null, __('profile.otp_sent_success'), Response::HTTP_OK);
         } catch (\Exception $e) {

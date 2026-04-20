@@ -11,7 +11,8 @@ use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Website Product')]
 class ProductController extends Controller
 {
     public function __construct(protected ProductService $service) {}

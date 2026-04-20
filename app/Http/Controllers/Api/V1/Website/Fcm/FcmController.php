@@ -9,7 +9,9 @@ use App\Traits\Response\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Website Fcm')]
 class FcmController extends Controller
 {
     use ApiResponse;

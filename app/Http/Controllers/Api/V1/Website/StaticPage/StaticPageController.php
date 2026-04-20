@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\StaticPage\StaticPageResource;
 use App\Services\V1\Website\StaticPage\StaticPageService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Website Static Pages')]
 class StaticPageController extends Controller
 {
     public function __construct(public StaticPageService $service) {}

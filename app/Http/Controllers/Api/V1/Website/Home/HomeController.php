@@ -12,7 +12,9 @@ use App\Services\V1\Website\Home\HomeService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Website Home')]
 class HomeController extends Controller
 {
     public function __construct(protected HomeService $service) {}

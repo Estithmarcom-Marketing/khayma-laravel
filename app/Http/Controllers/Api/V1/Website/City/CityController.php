@@ -8,7 +8,8 @@ use App\Services\V1\Website\City\CityService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Website City')]
 class CityController extends Controller
 {
     public function __construct(protected CityService $service) {}

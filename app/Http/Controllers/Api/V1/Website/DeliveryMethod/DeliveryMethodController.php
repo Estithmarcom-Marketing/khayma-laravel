@@ -8,7 +8,8 @@ use App\Services\V1\Website\DeliveryMethod\DeliveryMethodService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Website Delivery Methods')]
 class DeliveryMethodController extends Controller
 {
     public function __construct(protected DeliveryMethodService $service) {}

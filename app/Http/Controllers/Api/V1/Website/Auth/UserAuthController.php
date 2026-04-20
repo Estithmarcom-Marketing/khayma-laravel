@@ -10,7 +10,8 @@ use App\Services\V1\Website\Auth\UserAuthService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Website Authentication')]
 class UserAuthController extends Controller
 {
     public function __construct(protected UserAuthService $service) {}
