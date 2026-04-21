@@ -9,9 +9,10 @@ use App\Http\Resources\Brand\BrandResource;
 use App\Models\Brand;
 use App\Services\V1\Admin\Brand\BrandService;
 use App\Traits\Response\ApiResponse;
-use Log;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+#[Group('Admin Brands')]
 class BrandController extends Controller
 {
     public function __construct(protected BrandService $service) {}

@@ -9,9 +9,11 @@ use App\Http\Resources\Size\SizeResource;
 use App\Models\Size;
 use App\Services\V1\Admin\Size\SizeService;
 use App\Traits\Response\ApiResponse;
-use Log;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Size')]
 class SizeController extends Controller
 {
     public function __construct(protected SizeService $service) {}
@@ -26,7 +28,6 @@ class SizeController extends Controller
             Log::error('Failed to fetch sizes', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch sizes', Response::HTTP_INTERNAL_SERVER_ERROR);
-
         }
     }
 

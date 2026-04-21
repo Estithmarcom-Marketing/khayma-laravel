@@ -11,9 +11,11 @@ use App\Http\Resources\Stats\RevenueStatsResource;
 use App\Http\Resources\Stats\SalesChartResource;
 use App\Services\V1\Admin\Stats\StatsService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Stats')]
 class StatsController extends Controller
 {
     public function __construct(protected StatsService $statsService) {}

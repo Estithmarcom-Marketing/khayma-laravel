@@ -8,9 +8,11 @@ use App\Http\Resources\Banner\BannerResource;
 use App\Models\Banner;
 use App\Services\V1\Admin\Banner\BannerService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Banners')]
 class BannerController extends Controller
 {
     public function __construct(protected BannerService $bannerService) {}
@@ -39,7 +41,7 @@ class BannerController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to update banner', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse( __('banners.update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('banners.update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

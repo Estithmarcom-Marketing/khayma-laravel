@@ -9,9 +9,11 @@ use App\Http\Resources\CommonQuestion\CommonQuestionResource;
 use App\Models\CommonQuestion;
 use App\Services\V1\Admin\CommonQuestion\CommonQuestionService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Common Question')]
 class CommonQuestionController extends Controller
 {
     public function __construct(protected CommonQuestionService $service) {}
@@ -22,13 +24,15 @@ class CommonQuestionController extends Controller
             $questions = $this->service->list();
             $questions = CommonQuestionResource::collection($questions)->response()->getData(true);
 
-            return ApiResponse::successResponse([
-                'questions' => $questions['data'],
-                'meta' => $questions['meta'],
-                'links' => $questions['links'],
-            ],
+            return ApiResponse::successResponse(
+                [
+                    'questions' => $questions['data'],
+                    'meta' => $questions['meta'],
+                    'links' => $questions['links'],
+                ],
                 'Common Question retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Common Questions not found', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

@@ -9,9 +9,11 @@ use App\Http\Resources\Payment\PaymentMethodResource;
 use App\Models\PaymentMethod;
 use App\Services\V1\Admin\Payment\PaymentMethodService;
 use App\Traits\Response\ApiResponse;
-use Log;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Payment Methods')]
 class PaymentMethodController extends Controller
 {
     public function __construct(protected PaymentMethodService $service) {}

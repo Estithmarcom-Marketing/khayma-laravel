@@ -11,12 +11,14 @@ use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Services\V1\Admin\RolesAndPermissions\RolePermissionService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Roles and Permissions')]
 class RolesPermissionsController extends Controller
 {
     public function __construct(protected RolePermissionService $service) {}
@@ -99,8 +101,10 @@ class RolesPermissionsController extends Controller
                 'method' => __METHOD__,
             ]);
 
-            return ApiResponse::errorResponse('Failed to assign role to user',
-                Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(
+                'Failed to assign role to user',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -124,9 +128,11 @@ class RolesPermissionsController extends Controller
             $roles = $this->service->getAllRoles();
             $roles = RoleResource::collection($roles)->response()->getData(true);
 
-            return ApiResponse::successResponse(['roles' => $roles['data'],
+            return ApiResponse::successResponse([
+                'roles' => $roles['data'],
                 'meta' => $roles['meta'],
-                'links' => $roles['links']], 'Roles fetched successfully', Response::HTTP_OK);
+                'links' => $roles['links']
+            ], 'Roles fetched successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch roles', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -140,10 +146,11 @@ class RolesPermissionsController extends Controller
             $permissions = $this->service->getAllPermissions();
             $permissions = PermissionResource::collection($permissions)->response()->getData(true);
 
-            return ApiResponse::successResponse(['permissions' => $permissions['data'],
+            return ApiResponse::successResponse([
+                'permissions' => $permissions['data'],
                 // 'meta' => $permissions['meta'],
                 // 'links' => $permissions['links']
-                ], 'Permissions fetched successfully', Response::HTTP_OK);
+            ], 'Permissions fetched successfully', Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Failed to fetch permissions', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

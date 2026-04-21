@@ -9,10 +9,12 @@ use App\Http\Resources\StaticPage\StaticPageResource;
 use App\Models\StaticPage;
 use App\Services\V1\Admin\StaticPage\StaticPageService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Static Page')]
 class StaticPageController extends Controller
 {
     public function __construct(protected StaticPageService $service) {}

@@ -13,9 +13,10 @@ use App\Models\Category;
 use App\Services\V1\Admin\Category\CategoryService;
 use App\Services\V1\Admin\SpreadsheetImportExport\SpreadsheetImportExportService;
 use App\Traits\Response\ApiResponse;
-use Log;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+#[Group('Admin Categories')]
 class CategoryController extends Controller
 {
     public function __construct(protected CategoryService $service, protected SpreadsheetImportExportService $spreadsheetService) {}
@@ -119,7 +120,7 @@ class CategoryController extends Controller
     public function updateSubCategory(UpdateCategoryRequest $request, Category $category, Category $subCategory)
     {
         try {
-            
+
             $subCategory = $this->service->updateSubCategory($category, $subCategory, $request->validated());
             return ApiResponse::successResponse(['sub_category' => CategoryResource::make($subCategory)],
                 'Sub-category updated successfully',

@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Notification\NotificationResource;
 use App\Services\V1\Admin\Notification\NotificationService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+#[Group('Admin Notification')]
 class NotificationController extends Controller
 {
     public function __construct(protected NotificationService $notificationService) {}

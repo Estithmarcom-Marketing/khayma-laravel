@@ -9,9 +9,11 @@ use App\Http\Resources\PromoCode\PromoCodeResource;
 use App\Models\PromoCode;
 use App\Services\V1\Admin\promoCode\PromoCodeService;
 use App\Traits\Response\ApiResponse;
-use Log;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Admin Promo Code')]
 class PromoCodeController extends Controller
 {
     public function __construct(protected PromoCodeService $service) {}
@@ -57,9 +59,11 @@ class PromoCodeController extends Controller
         try {
             $promoCode = $this->service->store($request->validated());
 
-            return ApiResponse::successResponse(['promo_code' => PromoCodeResource::make($promoCode)],
+            return ApiResponse::successResponse(
+                ['promo_code' => PromoCodeResource::make($promoCode)],
                 'Promo code created successfully.',
-                Response::HTTP_CREATED);
+                Response::HTTP_CREATED
+            );
         } catch (\Exception $e) {
             Log::error('Error creating promo code: ', [$e->getMessage(), 'method' => __METHOD__]);
 
@@ -72,9 +76,11 @@ class PromoCodeController extends Controller
         try {
             $promoCode = $this->service->update($promoCode, $request->validated());
 
-            return ApiResponse::successResponse(['promo_code' => PromoCodeResource::make($promoCode)],
+            return ApiResponse::successResponse(
+                ['promo_code' => PromoCodeResource::make($promoCode)],
                 'Promo code updated successfully.',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Error updating promo code: ', [$e->getMessage(), 'method' => __METHOD__]);
 
@@ -87,9 +93,11 @@ class PromoCodeController extends Controller
         try {
             $promoCode = $this->service->show($promoCode);
 
-            return ApiResponse::successResponse(['promo_code' => PromoCodeResource::make($promoCode)],
+            return ApiResponse::successResponse(
+                ['promo_code' => PromoCodeResource::make($promoCode)],
                 'Promo code retrieved successfully.',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Error retrieving promo code: ', [$e->getMessage(), 'method' => __METHOD__]);
 

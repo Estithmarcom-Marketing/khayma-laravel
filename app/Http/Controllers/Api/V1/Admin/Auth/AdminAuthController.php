@@ -7,15 +7,17 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\Admin\AdminResource;
 use App\Services\V1\Admin\Auth\AdminAuthService;
 use App\Traits\Response\ApiResponse;
-use Log;
 use Symfony\Component\HttpFoundation\Response;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Log;
 
+#[Group('Admin Authentication')]
 class AdminAuthController extends Controller
 {
     public function __construct(protected AdminAuthService $service) {}
-
-   
-
+    /**
+     * @unauthenticated
+     */
     public function login(LoginRequest $request)
     {
 
@@ -27,15 +29,16 @@ class AdminAuthController extends Controller
             }
             Log::info('Admin logged in successfully', ['admin_id' => $data['admin']->id]);
 
-            return ApiResponse::successResponse(['admin' => new AdminResource($data['admin']), 'token' => $data['token']],
+            return ApiResponse::successResponse(
+                ['admin' => new AdminResource($data['admin']), 'token' => $data['token']],
                 'Admin logged in successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Admin login failed', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Admin login failed', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public function logout()

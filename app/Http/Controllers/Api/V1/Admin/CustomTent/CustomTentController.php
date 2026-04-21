@@ -8,9 +8,10 @@ use App\Http\Resources\Dashboard\CustomTent\CustomTentResource;
 use App\Models\CustomTent;
 use App\Services\V1\Admin\CustomTent\CustomTentService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-
+#[Group('Admin Custom Tent')]
 class CustomTentController extends Controller
 {
     public function __construct(private CustomTentService $customTentService) {}

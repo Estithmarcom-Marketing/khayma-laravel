@@ -10,8 +10,10 @@ use App\Http\Resources\Dashboard\Order\OrderResource;
 use App\Services\V1\Admin\Order\OrderService;
 use App\Services\V1\Admin\SpreadsheetImportExport\SpreadsheetImportExportService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Orders')]
 class OrderController extends Controller
 {
     public function __construct(
@@ -23,13 +25,15 @@ class OrderController extends Controller
     {
         $orders = $this->orderService->getOrders($request);
         $data =  OrderResource::collection($orders)->response()->getData(true);
-        return ApiResponse::successResponse([
+        return ApiResponse::successResponse(
+            [
                 'orders' => $data['data'],
                 'meta' => $data['meta'],
                 'links' => $data['links'],
             ],
             __('orders.fetched'),
-            status: Response::HTTP_OK);
+            status: Response::HTTP_OK
+        );
     }
 
     public function show($id)
@@ -41,9 +45,9 @@ class OrderController extends Controller
         return ApiResponse::successResponse(new OrderResource($order), __('orders.fetched'), status: Response::HTTP_OK);
     }
 
-    public function updateOrder($id , UpdateOrderRequest $request)
+    public function updateOrder($id, UpdateOrderRequest $request)
     {
-        $order = $this->orderService->updateOrder($id , $request->validated());
+        $order = $this->orderService->updateOrder($id, $request->validated());
         if (!$order) {
             return ApiResponse::errorResponse(__('orders.not_found'), Response::HTTP_NOT_FOUND);
         }

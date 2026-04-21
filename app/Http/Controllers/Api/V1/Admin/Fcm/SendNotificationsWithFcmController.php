@@ -7,10 +7,12 @@ use App\Http\Requests\Fcm\SendNotificationToManyRequest;
 use App\Http\Requests\Fcm\SendNotificationToTopicRequest;
 use App\Services\V1\Admin\Firebase\SendNotificationsService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin FCM')]
 class SendNotificationsWithFcmController extends Controller
 {
     use ApiResponse;

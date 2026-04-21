@@ -9,9 +9,11 @@ use App\Http\Resources\Color\ColorResource;
 use App\Models\Color;
 use App\Services\V1\Admin\Color\ColorService;
 use App\Traits\Response\ApiResponse;
-use Log;
+use Dedoc\Scramble\Attributes\Group;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
+#[Group('Admin Color')]
 class ColorController extends Controller
 {
     public function __construct(protected ColorService $service) {}
@@ -22,18 +24,19 @@ class ColorController extends Controller
             $colors = $this->service->list();
             $colors = ColorResource::collection($colors)->response()->getData(true);
 
-            return ApiResponse::successResponse([
-                'colors' => $colors['data'],
-                'meta' => $colors['meta'],
-                'links' => $colors['links'],
-            ],
+            return ApiResponse::successResponse(
+                [
+                    'colors' => $colors['data'],
+                    'meta' => $colors['meta'],
+                    'links' => $colors['links'],
+                ],
                 'Colors retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch colors', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch colors', Response::HTTP_INTERNAL_SERVER_ERROR);
-
         }
     }
 
@@ -43,9 +46,11 @@ class ColorController extends Controller
             $validated = $request->validated();
             $color = $this->service->store($validated);
 
-            return ApiResponse::successResponse(['color' => ColorResource::make($color)],
+            return ApiResponse::successResponse(
+                ['color' => ColorResource::make($color)],
                 'Color created successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to create color', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -59,9 +64,11 @@ class ColorController extends Controller
             $validated = $request->validated();
             $color = $this->service->update($color, $validated);
 
-            return ApiResponse::successResponse(['color' => ColorResource::make($color)],
+            return ApiResponse::successResponse(
+                ['color' => ColorResource::make($color)],
                 'Color updated successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to update color', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -74,9 +81,11 @@ class ColorController extends Controller
         try {
             $this->service->destroy($color);
 
-            return ApiResponse::successResponse(null,
+            return ApiResponse::successResponse(
+                null,
                 'Color deleted successfully',
-                Response::HTTP_NO_CONTENT);
+                Response::HTTP_NO_CONTENT
+            );
         } catch (\Exception $e) {
             Log::error('Failed to delete color', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -89,9 +98,11 @@ class ColorController extends Controller
         try {
             $color = $this->service->show($color);
 
-            return ApiResponse::successResponse(['color' => ColorResource::make($color)],
+            return ApiResponse::successResponse(
+                ['color' => ColorResource::make($color)],
                 'Color retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch color', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 

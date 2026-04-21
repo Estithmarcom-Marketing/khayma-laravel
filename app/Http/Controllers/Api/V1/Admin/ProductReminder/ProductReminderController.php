@@ -6,13 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\ProductReminder\ProductVariationResource;
 use App\Services\V1\Admin\ProductReminder\ProductReminderService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Product Reminder')]
 class ProductReminderController extends Controller
 {
-    public function __construct(protected ProductReminderService $productReminderService){}
-    
+    public function __construct(protected ProductReminderService $productReminderService) {}
+
 
     public function index()
     {
@@ -24,7 +26,7 @@ class ProductReminderController extends Controller
                 Response::HTTP_OK
             );
         } catch (\Throwable $th) {
-            Log::error( __('reminders.fetch_fail'), ['error' => $th->getMessage(), 'method' => __METHOD__]);
+            Log::error(__('reminders.fetch_fail'), ['error' => $th->getMessage(), 'method' => __METHOD__]);
             return ApiResponse::errorResponse('Failed to update product', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

@@ -9,8 +9,10 @@ use App\Http\Resources\DeliveryMethod\DeliveryMethodResource;
 use App\Models\DeliveryMethod;
 use App\Services\V1\Admin\DeliveryMethod\DeliveryMethodService;
 use App\Traits\Response\ApiResponse;
-use Log;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
+use Dedoc\Scramble\Attributes\Group;
+#[Group('Admin Delivery Method')]
 
 class DeliveryMethodController extends Controller
 {

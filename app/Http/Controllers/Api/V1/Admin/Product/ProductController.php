@@ -20,37 +20,43 @@ use App\Services\V1\Admin\Product\ProductVariantService;
 use App\Services\V1\Admin\Product\VariantPropertyService;
 use App\Services\V1\Admin\SpreadsheetImportExport\SpreadsheetImportExportService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Product')]
 class ProductController extends Controller
 {
-    public function __construct(protected ProductService $service,
+    public function __construct(
+        protected ProductService $service,
         protected ProductVariantService $productVariantService,
         protected VariantPropertyService $variantPropertyService,
-        protected SpreadsheetImportExportService $spreadsheetService) {}
+        protected SpreadsheetImportExportService $spreadsheetService
+    ) {}
 
     public function index()
     {
         try {
             $products = $this->service->list();
 
-            return ApiResponse::successResponse([
-                'products' => ProductResource::collection($products),
-                'meta' => [
-                    'per_page' => $products->perPage(),
-                    'next_cursor' => optional($products->nextCursor())->encode(),
-                    'prev_cursor' => optional($products->previousCursor())->encode(),
+            return ApiResponse::successResponse(
+                [
+                    'products' => ProductResource::collection($products),
+                    'meta' => [
+                        'per_page' => $products->perPage(),
+                        'next_cursor' => optional($products->nextCursor())->encode(),
+                        'prev_cursor' => optional($products->previousCursor())->encode(),
+                    ],
+                    'links' => [
+                        'next' => $products->nextPageUrl(),
+                        'prev' => $products->previousPageUrl(),
+                    ],
                 ],
-                'links' => [
-                    'next' => $products->nextPageUrl(),
-                    'prev' => $products->previousPageUrl(),
-                ],
-            ],
                 'Products retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch products', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -61,13 +67,15 @@ class ProductController extends Controller
         try {
             $product = $this->service->show($product);
 
-            return ApiResponse::successResponse([
-                'product' => ProductResource::make($product),
-            ],
+            return ApiResponse::successResponse(
+                [
+                    'product' => ProductResource::make($product),
+                ],
                 'Product retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch product', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -79,11 +87,13 @@ class ProductController extends Controller
             $validated = $request->validated();
             $product = $this->service->store($validated);
 
-            return ApiResponse::successResponse(['product' => ProductResource::make($product)],
+            return ApiResponse::successResponse(
+                ['product' => ProductResource::make($product)],
                 'Product created successfully',
-                Response::HTTP_CREATED);
+                Response::HTTP_CREATED
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to create product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to create product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to create product', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -94,11 +104,13 @@ class ProductController extends Controller
         try {
             $product = $this->service->update($product, $request->validated());
 
-            return ApiResponse::successResponse(['product' => ProductResource::make($product)],
+            return ApiResponse::successResponse(
+                ['product' => ProductResource::make($product)],
                 'Product updated successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to update product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to update product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to update product', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -111,7 +123,7 @@ class ProductController extends Controller
 
             return ApiResponse::successResponse([], 'Product deleted successfully', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
-            \Log::error('Failed to delete product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to delete product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to delete product', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -120,13 +132,15 @@ class ProductController extends Controller
     public function storeProductVariation(Product $product, StoreProductVaritionsRequest $request)
     {
         try {
-            $varation = $this->productVariantService->storeVariations($product, $request->validated());
+            $variation = $this->productVariantService->storeVariations($product, $request->validated());
 
-            return ApiResponse::successResponse(['product_variation' => ProductVariationResource::make($varation)],
+            return ApiResponse::successResponse(
+                ['product_variation' => ProductVariationResource::make($variation)],
                 'product Variation stored successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to store product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to store product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to store product variation', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -137,11 +151,13 @@ class ProductController extends Controller
         try {
             $variation = $this->productVariantService->updateVariation($productVariation, $request->validated());
 
-            return ApiResponse::successResponse(['product_variation' => ProductVariationResource::make($variation)],
+            return ApiResponse::successResponse(
+                ['product_variation' => ProductVariationResource::make($variation)],
                 'Product variation updated successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to update product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to update product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to update product variation', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -154,7 +170,7 @@ class ProductController extends Controller
 
             return ApiResponse::successResponse([], 'Product variation deleted successfully', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
-            \Log::error('Failed to delete product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to delete product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to delete product variation', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -165,11 +181,13 @@ class ProductController extends Controller
         try {
             $productVariation = $this->productVariantService->showVariation($product, $productVariation);
 
-            return ApiResponse::successResponse(['product_variation' => ProductVariationResource::make($productVariation)],
+            return ApiResponse::successResponse(
+                ['product_variation' => ProductVariationResource::make($productVariation)],
                 'Product variation retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch product variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch product variation', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -181,15 +199,17 @@ class ProductController extends Controller
             $productVariations = $this->productVariantService->listProductVariations($product);
             $productVariations = ProductVariationResource::collection($productVariations)->response()->getData(true);
 
-            return ApiResponse::successResponse([
-                'product_variations' => $productVariations['data'],
-                'meta' => $productVariations['meta'],
-                'links' => $productVariations['links'],
-            ],
+            return ApiResponse::successResponse(
+                [
+                    'product_variations' => $productVariations['data'],
+                    'meta' => $productVariations['meta'],
+                    'links' => $productVariations['links'],
+                ],
                 'Product variations retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch product variations', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch product variations', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch product variations', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -201,15 +221,17 @@ class ProductController extends Controller
             $productVariationProperties = $this->variantPropertyService->listVariationProperties($productVariation);
             $productVariationProperties = PropertyResource::collection($productVariationProperties)->response()->getData(true);
 
-            return ApiResponse::successResponse([
-                'product_variation_properties' => $productVariationProperties['data'],
-                'meta' => $productVariationProperties['meta'],
-                'links' => $productVariationProperties['links'],
-            ],
+            return ApiResponse::successResponse(
+                [
+                    'product_variation_properties' => $productVariationProperties['data'],
+                    'meta' => $productVariationProperties['meta'],
+                    'links' => $productVariationProperties['links'],
+                ],
                 'Product variation properties retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch product variation properties', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch product variation properties', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch product variation properties', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -220,11 +242,13 @@ class ProductController extends Controller
         try {
             $property = $this->variantPropertyService->storeVariationProperty($productVariation, $request->validated());
 
-            return ApiResponse::successResponse(['property' => PropertyResource::make($property)],
+            return ApiResponse::successResponse(
+                ['property' => PropertyResource::make($property)],
                 'Property stored successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to store property', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to store property', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to store property', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -235,11 +259,13 @@ class ProductController extends Controller
         try {
             $property = $this->variantPropertyService->showVariationProperty($productVariation, $property);
 
-            return ApiResponse::successResponse(['property' => PropertyResource::make($property)],
+            return ApiResponse::successResponse(
+                ['property' => PropertyResource::make($property)],
                 'Property retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch property', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to fetch property', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch property', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -252,12 +278,12 @@ class ProductController extends Controller
 
             return ApiResponse::successResponse([], 'Property deleted successfully', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
-            \Log::error('Failed to delete property', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to delete property', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to delete property', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-      public function exportCsv()
+    public function exportCsv()
     {
         try {
             return $this->spreadsheetService->exportCsv(new ProductExport, 'products');
@@ -267,7 +293,7 @@ class ProductController extends Controller
             return ApiResponse::errorResponse('Failed to export products', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-       public function exportExcel()
+    public function exportExcel()
     {
         try {
             return $this->spreadsheetService->exportExcel(new ProductExport, 'products');
@@ -277,5 +303,4 @@ class ProductController extends Controller
             return ApiResponse::errorResponse('Failed to export products', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
 }

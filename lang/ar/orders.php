@@ -17,6 +17,7 @@ return [
     'error_address' => 'العنوان مطلوب لطريقة التوصيل هذه',
     'error_show' => 'فشل جلب الطلب',
     'error_fetch' => 'فشل جلب الطلبات',
+    'not_found' => 'الطلب غير موجود',
     'notification_title' => 'طلب جديد',
     'notification_body' => 'لديك طلب جديد',
 

@@ -8,9 +8,11 @@ use App\Http\Resources\Reports\SalesByDateResource;
 use App\Http\Resources\Reports\SalesByPaymentMethodResource;
 use App\Services\V1\Admin\Reports\SalesReportService;
 use App\Traits\Response\ApiResponse;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Admin Sales Report')]
 class SalesReportController extends Controller
 {
     public function __construct(protected SalesReportService $salesReportService) {}
