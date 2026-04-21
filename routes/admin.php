@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\City\CityController;
 use App\Http\Controllers\Api\V1\Admin\Color\ColorController;
 use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
+use App\Http\Controllers\Api\V1\Admin\ContactUs\ContactUsController;
 use App\Http\Controllers\Api\V1\Admin\Customer\CustomerController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Fcm\SendNotificationsWithFcmController;
@@ -311,5 +312,13 @@ Route::prefix('admin/v1')
                 Route::get('', [NotificationController::class, 'index']);
                 Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
+            });
+        Route::middleware(['auth:admin', 'throttle:120,1'])
+            ->prefix('contact-us')
+            ->group(function () {
+                Route::get('', [ContactUsController::class, 'index']);
+                Route::get('{contact_us}', [ContactUsController::class, 'show']);
+                Route::patch('{contact_us}', [ContactUsController::class, 'update']);
+                Route::delete('{contact_us}', [ContactUsController::class, 'destroy']);
             });
     });

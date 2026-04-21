@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Application\Cart\CartController;
 use App\Http\Controllers\Api\V1\Application\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Application\City\CityController;
 use App\Http\Controllers\Api\V1\Application\Color\ColorController;
+use App\Http\Controllers\Api\V1\Application\ContactUs\ContactUsController;
 use App\Http\Controllers\Api\V1\Application\CustomTent\CustomTentController;
 use App\Http\Controllers\Api\V1\Application\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Application\Favourite\FavouriteController;
@@ -193,4 +194,5 @@ Route::middleware(['locale', 'json'])
                 Route::get('', [StaticPageController::class, 'index']);
                 Route::get('{identifier}', [StaticPageController::class, 'show']);
             });
+        Route::post('contact-us', ContactUsController::class);
     });
