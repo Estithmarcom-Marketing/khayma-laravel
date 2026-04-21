@@ -45,5 +45,6 @@ class DatabaseSeeder extends Seeder
         // Brand::factory()->count(10)->create();
         // Product::factory()->count(500)->create();
         $this->call(ProductVariationSeeder::class);
+        $this->call(SettingSeeder::class);
     }
 }

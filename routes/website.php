@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\Website\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\ProductReminder\ProductReminderController;
 use App\Http\Controllers\Api\V1\Website\ProfileManagment\ProfileManagmentController;
 use App\Http\Controllers\Api\V1\Website\Review\ReviewController;
+use App\Http\Controllers\Api\V1\Website\Setting\SettingController;
 use App\Http\Controllers\Api\V1\Website\Size\SizeController;
 use App\Http\Controllers\Api\V1\Website\StaticPage\StaticPageController;
 use Illuminate\Support\Facades\Route;
@@ -194,4 +195,5 @@ Route::middleware(['tokenfromcookie', 'locale', 'json'])
                 Route::get('{identifier}', [StaticPageController::class, 'show']);
             });
         Route::post('contact-us', ContactUsController::class);
+        Route::get('settings', SettingController::class);
     });
