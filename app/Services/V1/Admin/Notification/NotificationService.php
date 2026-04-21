@@ -3,32 +3,34 @@
 namespace App\Services\V1\Admin\Notification;
 
 use App\Models\Admin;
+use App\Models\AdminNotification;
 use App\Models\Notification;
 
 class NotificationService
 {
-    public function getAll(Admin $admin)
+    public function getAll()
     {
-        return Notification::query()
-            ->where('user_id', $admin->id)
+        return AdminNotification::query()
             ->latest()
             ->paginate(6);
     }
 
-    public function getUnread(Admin $admin)
+    public function getUnread()
     {
-        return Notification::query()
-            ->where('user_id', $admin->id)
-            ->unread()
+        return AdminNotification::query()
+            ->where('is_read', false)
             ->latest()
             ->paginate(6);
     }
 
-    public function markAllAsRead(Admin $admin): void
+    public function markAllAsRead()
     {
-        Notification::query()
-            ->where('user_id', $admin->id)
+        return  AdminNotification::query()
             ->where('is_read', false)
             ->update(['is_read' => true]);
+    }
+    public function markAsRead(AdminNotification $notification)
+    {
+        return $notification->update(['is_read' => true]);
     }
 }

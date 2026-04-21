@@ -312,6 +312,7 @@ Route::prefix('admin/v1')
                 Route::get('', [NotificationController::class, 'index']);
                 Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
+                Route::post('{admin-notification}/read', [NotificationController::class, 'markAsRead']);
             });
         Route::middleware(['auth:admin', 'throttle:120,1'])
             ->prefix('contact-us')
