@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Admin\CommonQuestion\CommonQuestionController;
 use App\Http\Controllers\Api\V1\Admin\Customer\CustomerController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryMethod\DeliveryMethodController;
 use App\Http\Controllers\Api\V1\Admin\Fcm\SendNotificationsWithFcmController;
+use App\Http\Controllers\Api\V1\Admin\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Admin\Order\OrderController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\Admin\Payment\PaymentMethodController;
@@ -289,7 +290,7 @@ Route::prefix('admin/v1')
                 Route::delete('{customTent}', [CustomTentController::class, 'destroy']);
             });
         Route::middleware(['auth:admin', 'throttle:60,1'])
-            ->prefix('notifications')
+            ->prefix('fcm-notifications')
             ->group(function () {
                 Route::post('/topic', [SendNotificationsWithFcmController::class, 'sendToTopic']);
                 Route::post('/users', [SendNotificationsWithFcmController::class, 'sendToMany']);
@@ -302,5 +303,13 @@ Route::prefix('admin/v1')
                 Route::get('{staticPage}', [StaticPageController::class, 'show']);
                 Route::patch('{staticPage}', [StaticPageController::class, 'update']);
                 Route::delete('{staticPage}', [StaticPageController::class, 'delete']);
+            });
+
+        Route::middleware(['auth:admin', 'throttle:120,1'])
+            ->prefix('notifications')
+            ->group(function () {
+                Route::get('', [NotificationController::class, 'index']);
+                Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
+                Route::post('', [NotificationController::class, 'markAllAsRead']);
             });
     });
