@@ -25,6 +25,10 @@ return [
     'error_repay' => 'فشل اعادة دفع الطلب',
     'error_repay_invalid' => 'لا يمكن اعادة دفع هذا الطلب',
 
+    'error_stock' => 'الكمية المطلوبة من المنتج ":product" غير متوفرة في المخزون.',
+    'error_product_not_found' => 'المنتج المطلوب غير موجود.',
+    'cart_is_empty' => 'سلة التسوق فارغة.',
+
     // validations of store order request
     'address_id_required_with' => 'حقل العنوان مطلوب عندما لا تكون طريقة التوصيل "استلام في المتجر".',
     'address_id_exists' => 'العنوان المحدد غير صالح.',

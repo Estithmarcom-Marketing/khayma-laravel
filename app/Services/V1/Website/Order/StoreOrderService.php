@@ -103,8 +103,10 @@ class StoreOrderService
     private function updateUserInfo($user, array $data)
     {
         if ((isset($data['name']) && $data['name'] != null) || (isset($data['email']) && $data['email'] != null)) {
-            $user->update(['name' => $data['name'] ?? $user->name,
-                'email' => $data['email'] ?? $user->email]);
+            $user->update([
+                'name' => $data['name'] ?? $user->name,
+                'email' => $data['email'] ?? $user->email
+            ]);
         }
     }
 
@@ -131,11 +133,11 @@ class StoreOrderService
             $variation = $variations->get($item->product_variation_id);
 
             if (! $variation) {
-                throw new \LogicException('Product variation not found');
+                throw new \LogicException(__('orders.error_product_not_found'));
             }
 
             if (($variation->stock_quantity < $item->quantity) && $decrementStock) {
-                throw new \LogicException('Insufficient stock');
+                throw new \LogicException(__('orders.error_stock', ['product' => $variation->product->name_ar]));
             }
 
             $price = $variation->price;
@@ -143,10 +145,12 @@ class StoreOrderService
 
             $activeOffer = 0;
 
-            if ($variation->offer > 0 &&
+            if (
+                $variation->offer > 0 &&
                 $variation->offer < $variation->price &&
                 $variation->offer_started_date <= now() &&
-                $variation->offer_expired_date >= now()) {
+                $variation->offer_expired_date >= now()
+            ) {
 
                 $activeOffer = $variation->offer;
                 $price -= $variation->offer;
@@ -189,11 +193,9 @@ class StoreOrderService
             $cost = CityShipment::select('cost')->where('city_id', $address->city_id)->first();
 
             return $cost?->cost ?? 0;
-
         }
 
         return 0;
-
     }
 
     private function getPromoCode($promoCode)
@@ -203,7 +205,7 @@ class StoreOrderService
                 ->where('code', $promoCode)
                 ->first();
             if (! $promo) {
-                throw new \LogicException('Invalid promo code or promo code expired');
+                throw new \LogicException(__('orders.promo_code_exists'));
             }
 
             return $promo;
@@ -252,7 +254,7 @@ class StoreOrderService
         $data['items'] = $this->getCartItems($user);
 
         if ($data['items']->isEmpty()) {
-            throw new \LogicException('Cart is empty');
+            throw new \LogicException(__('orders.cart_is_empty'));
         }
         $validatedItems = $this->validateCartItems($data, false);
         $subtotal = $validatedItems['subtotal'];
