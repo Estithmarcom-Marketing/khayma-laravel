@@ -32,11 +32,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'verify_myfatoorah_signature' => \App\Http\Middleware\VerifyMyFatoorahSignature::class,
 
         ]);
+        $middleware->prepend(\App\Http\Middleware\SetJsonHeader::class);
         $middleware->priority([
             \App\Http\Middleware\TokenFromCookie::class,
+            \App\Http\Middleware\SetJsonHeader::class,
             \Illuminate\Auth\Middleware\Authenticate::class,
             \App\Http\Middleware\SetLocale::class,
-            \App\Http\Middleware\SetJsonHeader::class,
             \App\Http\Middleware\VerifyTabbyIp::class,
             \App\Http\Middleware\VerifyTamaraToken::class,
             \App\Http\Middleware\VerifyMyFatoorahSignature::class
