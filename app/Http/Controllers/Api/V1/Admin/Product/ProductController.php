@@ -52,13 +52,13 @@ class ProductController extends Controller
                         'prev' => $products->previousPageUrl(),
                     ],
                 ],
-                'Products retrieved successfully',
+                __('product.list_success'),
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
             Log::error('Failed to fetch products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.list_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -71,13 +71,13 @@ class ProductController extends Controller
                 [
                     'product' => ProductResource::make($product),
                 ],
-                'Product retrieved successfully',
+                __('product.show_success'),
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
             Log::error('Failed to fetch product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to fetch product', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -89,13 +89,13 @@ class ProductController extends Controller
 
             return ApiResponse::successResponse(
                 ['product' => ProductResource::make($product)],
-                'Product created successfully',
+                __('product.create_success'),
                 Response::HTTP_CREATED
             );
         } catch (\Exception $e) {
             Log::error('Failed to create product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to create product', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.create_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -106,13 +106,13 @@ class ProductController extends Controller
 
             return ApiResponse::successResponse(
                 ['product' => ProductResource::make($product)],
-                'Product updated successfully',
+                __('product.update_success'),
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
             Log::error('Failed to update product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to update product', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -121,11 +121,11 @@ class ProductController extends Controller
         try {
             $this->service->delete($product);
 
-            return ApiResponse::successResponse([], 'Product deleted successfully', Response::HTTP_NO_CONTENT);
+            return ApiResponse::successResponse([], __('product.delete_success'), Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             Log::error('Failed to delete product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to delete product', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.delete_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -290,7 +290,7 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to export products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to export products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.export_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
     public function exportExcel()
@@ -300,7 +300,28 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to export products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse('Failed to export products', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('product.export_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function listLowStock()
+    {
+        try {
+            $variations = $this->productVariantService->listLowStock();
+            $variations = ProductVariationResource::collection($variations)->response()->getData(true);
+
+            return ApiResponse::successResponse(
+                [
+                    'variations' => $variations['data'],
+                    'meta' => $variations['meta'],
+                    'links' => $variations['links'],
+                ],
+                __('product.low_stock_success'),
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch low stock products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse(__('product.low_stock_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -112,4 +112,8 @@ class ProductVariation extends Model
             ->withPivot('value_ar', 'value_en')
             ->withTimestamps();
     }
+    public function scopeLowStock($query, $limit = 5)
+    {
+        return $query->where('stock_quantity', '<', $limit);
+    }
 }

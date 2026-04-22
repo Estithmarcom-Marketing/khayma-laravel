@@ -62,4 +62,17 @@ class ProductVariantService
     {
         return $product->productVariations()->with(['color', 'size'])->paginate(10);
     }
+    public function listLowStock()
+    {
+        return ProductVariation::query()
+            ->lowStock(5)
+            ->with([
+                'product:id,name_ar,name_en',
+                'color:id,name_ar,name_en',
+                'size:id,name_ar,name_en'
+            ])
+            ->orderByRaw('stock_quantity = 0 DESC')
+            ->orderBy('stock_quantity')
+            ->paginate(10);
+    }
 }

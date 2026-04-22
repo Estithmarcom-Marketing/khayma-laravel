@@ -30,7 +30,6 @@ class ProductService
         ]);
 
         return $product;
-
     }
 
     public function store(array $data)

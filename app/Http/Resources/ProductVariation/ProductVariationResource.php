@@ -18,6 +18,13 @@ class ProductVariationResource extends JsonResource
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
+            'product' => $this->whenLoaded('product', function () {
+                return [
+                    'id' => $this->product->id,
+                    'name_en' => $this->product->name_en,
+                    'name_ar' => $this->product->name_ar
+                ];
+            }, []),
             'sku' => $this->sku,
             'stock_quantity' => $this->stock_quantity,
             'is_active' => $this->is_active,

@@ -202,6 +202,7 @@ Route::prefix('admin/v1')
             ->prefix('products')
             ->group(function () {
                 Route::get('', [ProductController::class, 'index'])->middleware('permission:read-products');
+                Route::get('low-stock', [ProductController::class, 'listLowStock'])->middleware('permission:read-products');
                 Route::get('export-csv', [ProductController::class, 'exportCsv'])->middleware('permission:read-products');
                 Route::get('export-excel', [ProductController::class, 'exportExcel'])->middleware('permission:read-products');
                 Route::get('{product}', [ProductController::class, 'show'])->middleware('permission:read-products');
