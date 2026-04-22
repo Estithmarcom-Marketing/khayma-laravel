@@ -9,21 +9,25 @@ class CustomerService
 
     public function getCustomers($filters)
     {
-        $query = User::query();
-        if (isset($filters['search'])) {
-            $query->search($filters['search']);
-        }
-        $query->withCount('orders')
-        ->latest();
-        return $query->paginate($filters['per_page'] ?? 10);
+        $per_page = (int) ($filters['per_page'] ?? 10);
+        return User::query()
+            ->when(
+                $filters['search'] ?? null,
+                fn($query, $search) =>
+                $query->search($search)
+            )
+            ->withCount('orders')
+            ->orderByDesc('orders_count')
+            ->latest('id')
+            ->paginate($per_page);
     }
 
     public function getCustomerById($customerId)
     {
         return User::with('orders')
-        ->withCount('orders')
-        ->withSum('orders', 'total_price')
-        ->findOrFail($customerId);
+            ->withCount('orders')
+            ->withSum('orders', 'total_price')
+            ->findOrFail($customerId);
     }
 
     public function deleteCustomer($customerId)
