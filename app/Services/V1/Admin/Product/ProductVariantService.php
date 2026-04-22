@@ -27,9 +27,7 @@ class ProductVariantService
     {
         $oldStock = $productVariation->stock_quantity;
 
-        $newStock = isset($data['stock_quantity'])
-        ? $oldStock + $data['stock_quantity']
-        : $oldStock;
+        $newStock = $data['stock_quantity'] ?? $oldStock;
 
         $productVariation->update([
             'color_id' => $data['color_id'] ?? $productVariation->color_id,
@@ -53,7 +51,6 @@ class ProductVariantService
     public function deleteVariation(Product $product, ProductVariation $productVariation)
     {
         return $productVariation->delete();
-
     }
 
     public function showVariation(Product $product, ProductVariation $productVariation)
