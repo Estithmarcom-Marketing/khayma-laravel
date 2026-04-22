@@ -26,7 +26,7 @@ class FcmService
         $message = CloudMessage::new()
             ->withToken($token)
             ->withNotification(Notification::create($title, $body))
-            ->withData($data);
+            ->withData(array_map('strval', $data));
 
         return $this->messaging->send($message);
     }
@@ -39,7 +39,7 @@ class FcmService
     ) {
         $message = CloudMessage::new()
             ->withNotification(Notification::create($title, $body))
-            ->withData($data);
+            ->withData(array_map('strval', $data));
 
         return $this->messaging->sendMulticast($message, $tokens);
     }
@@ -51,7 +51,7 @@ class FcmService
     ) {
         $message = CloudMessage::new()
             ->withNotification(Notification::create($title, $body))
-            ->withData($data)
+            ->withData(array_map('strval', $data))
             ->withTopic($topic);
 
         return $this->messaging->send($message);
