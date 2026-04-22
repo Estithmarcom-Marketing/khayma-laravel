@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin\Notification;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Notification\AdminNotificationResource;
+use App\Http\Resources\Notifications\AdminNotificationResource;
 use App\Models\AdminNotification;
 use App\Services\V1\Admin\Notification\NotificationService;
 use App\Traits\Response\ApiResponse;
