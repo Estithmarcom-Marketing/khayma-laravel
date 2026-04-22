@@ -28,7 +28,7 @@ class StoreOrderService
     {
         $result = DB::transaction(function () use ($data) {
 
-            $user = $this->user;
+            $user = auth('sanctum')->user();
             $this->updateUserInfo($user, $data);
             $data['items'] = $this->getCartItems($user);
             if ($data['items']->isEmpty()) {
@@ -112,6 +112,9 @@ class StoreOrderService
 
     private function getCartItems($user)
     {
+        if (! $user->cart) {
+            throw new \LogicException(__('cart.cart_fetch_failed'));
+        }
         return $user->cart->items()->get();
     }
 

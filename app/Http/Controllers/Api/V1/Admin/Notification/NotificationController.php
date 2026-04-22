@@ -58,11 +58,11 @@ class NotificationController extends Controller
 
             $this->notificationService->markAllAsRead();
 
-            return ApiResponse::successResponse(null, __('notification.mark_read_success'), Response::HTTP_OK);
+            return ApiResponse::successResponse(null, __('notification.mark_all_read_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error(__('notification.mark_read_failed'), ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
-            return ApiResponse::errorResponse(__('notification.mark_read_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorResponse(__('notification.mark_all_read_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
