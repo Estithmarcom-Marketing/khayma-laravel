@@ -11,8 +11,14 @@ class ContactUsService
         $per_page = $data['per_page'] ?? 10;
 
         return ContactUs::query()
-            ->when(isset($data['contacted']), fn($q, $v) => $q->contacted($v))
-            ->when($data['search'] ?? null, fn($q, $v) => $q->search($v))
+            ->when(
+                array_key_exists('contacted', $data),
+                fn($q) => $q->contacted($data['contacted'])
+            )
+            ->when(
+                $data['search'] ?? null,
+                fn($q, $v) => $q->search($v)
+            )
             ->latest()
             ->paginate($per_page);
     }
