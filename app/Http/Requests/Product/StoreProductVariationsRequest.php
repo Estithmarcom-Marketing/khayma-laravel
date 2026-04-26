@@ -24,7 +24,7 @@ class StoreProductVariationsRequest extends FormRequest
         return [
             'color_id' => 'required|exists:colors,id',
             'size_id' => 'required|exists:sizes,id',
-            'sku' => 'required|string|max:255',
+            'sku' => 'required|string|max:255|unique:product_variations,sku',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|numeric|min:0',
             'is_active' => 'required|boolean',

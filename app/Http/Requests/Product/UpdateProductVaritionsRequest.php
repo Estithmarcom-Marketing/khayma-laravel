@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductVaritionsRequest extends FormRequest
@@ -17,14 +18,14 @@ class UpdateProductVaritionsRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'color_id' => 'sometimes|exists:colors,id',
             'size_id' => 'sometimes|exists:sizes,id',
-            'sku' => 'sometimes|string|max:255',
+            'sku' => 'sometimes|string|max:255| unique:product_variations,sku,'.$this->route('variation')->id,
             'price' => 'sometimes|numeric|min:0',
             'stock_quantity' => 'sometimes|numeric|min:0',
             'is_active' => 'sometimes|boolean',
