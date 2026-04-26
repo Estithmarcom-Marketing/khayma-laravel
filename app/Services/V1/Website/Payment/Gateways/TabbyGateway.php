@@ -5,6 +5,8 @@ namespace App\Services\V1\Website\Payment\Gateways;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Payments\TabbyStatusEnum;
+use App\Events\Order\OrderPaid;
+use App\Events\Order\OrderStatusUpdated;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\V1\Website\Payment\Contracts\PaymentGatewayInterface;
@@ -28,11 +30,15 @@ class TabbyGateway implements PaymentGatewayInterface
 
         $response = $this->createCheckoutSession($payload);
 
-        Log::info('Tabby payment response',
-            ['order' => $order,
+        Log::info(
+            'Tabby payment response',
+            [
+                'order' => $order,
                 'user' => $user,
                 'response' => $response,
-                'method' => __METHOD__]);
+                'method' => __METHOD__
+            ]
+        );
         $redirectUrl = data_get(
             $response,
             'configuration.available_products.installments.0.web_url'
@@ -122,7 +128,6 @@ class TabbyGateway implements PaymentGatewayInterface
             ->json();
 
         return $response;
-
     }
 
     public function handleWebhook(array $payload): void
@@ -150,10 +155,9 @@ class TabbyGateway implements PaymentGatewayInterface
 
     private function findPayment(string $transactionId, string $orderId): ?Payment
     {
-        return Payment::when($transactionId, fn ($q) => $q->where('transaction_id', $transactionId))
-            ->when($orderId, fn ($q) => $q->orWhere('order_id', $orderId))
+        return Payment::when($transactionId, fn($q) => $q->where('transaction_id', $transactionId))
+            ->when($orderId, fn($q) => $q->orWhere('order_id', $orderId))
             ->first();
-
     }
 
     private function markAsPaid(Payment $payment, array $payload): void
@@ -174,6 +178,9 @@ class TabbyGateway implements PaymentGatewayInterface
                 ]);
             }
         });
+        $order = $payment->order;
+        event(new OrderPaid($order));
+        event(new OrderStatusUpdated($order));
     }
 
     private function markAsFailed(Payment $payment, array $payload): void

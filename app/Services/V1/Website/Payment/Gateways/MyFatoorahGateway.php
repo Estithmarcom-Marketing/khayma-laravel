@@ -5,6 +5,8 @@ namespace App\Services\V1\Website\Payment\Gateways;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\MyFatoorahStatusEnum;
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Events\Order\OrderPaid;
+use App\Events\Order\OrderStatusUpdated;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\V1\Website\Payment\Contracts\PaymentGatewayInterface;
@@ -79,14 +81,16 @@ class MyFatoorahGateway implements PaymentGatewayInterface
         //     ->json();
 
         $response = Http::withHeaders(
-            ['Content-Type' => 'application/json',
-                'Authorization' => 'Bearer '.config('services.myfatoorah.api_key')])
+            [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . config('services.myfatoorah.api_key')
+            ]
+        )
             ->post(config('services.myfatoorah.api_url'), $payload)
             ->throw()
             ->json();
 
         return $response;
-
     }
 
     public function handleWebhook(array $payload): void
@@ -113,7 +117,7 @@ class MyFatoorahGateway implements PaymentGatewayInterface
 
         match ($status) {
             MyFatoorahStatusEnum::SUCCESS->value => $this->markAsPaid($payment, $payload),
-            MyFatoorahStatusEnum::FAILED->value , MyFatoorahStatusEnum::CANCELED->value => $this->markAsFailed($payment, $payload),
+            MyFatoorahStatusEnum::FAILED->value, MyFatoorahStatusEnum::CANCELED->value => $this->markAsFailed($payment, $payload),
             default => Log::info('Unhandled MyFatoorah status', compact('status')),
         };
     }
@@ -121,11 +125,10 @@ class MyFatoorahGateway implements PaymentGatewayInterface
     private function findPayment(?string $transactionId, ?string $paymentId, ?string $orderId): ?Payment
     {
         return Payment::query()
-            ->when($transactionId, fn ($q) => $q->where('transaction_id', $transactionId))
-            ->when(! $transactionId && $paymentId, fn ($q) => $q->where('id', $paymentId))
-            ->when(! $transactionId && ! $paymentId && $orderId, fn ($q) => $q->where('order_id', $orderId))
+            ->when($transactionId, fn($q) => $q->where('transaction_id', $transactionId))
+            ->when(! $transactionId && $paymentId, fn($q) => $q->where('id', $paymentId))
+            ->when(! $transactionId && ! $paymentId && $orderId, fn($q) => $q->where('order_id', $orderId))
             ->first();
-
     }
 
     private function markAsPaid(Payment $payment, array $payload): void
@@ -148,6 +151,9 @@ class MyFatoorahGateway implements PaymentGatewayInterface
                 ]);
             }
         });
+        $order = $payment->order;
+        event(new OrderPaid($order));
+        event(new OrderStatusUpdated($order));
     }
 
     private function markAsFailed(Payment $payment, array $payload): void

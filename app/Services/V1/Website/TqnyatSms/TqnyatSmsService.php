@@ -21,8 +21,6 @@ class TqnyatSmsService
             ])
             ->throw()
             ->json();
-        Log::info('Tqnyat SMS response', $response);
-
         return $response;
     }
 }

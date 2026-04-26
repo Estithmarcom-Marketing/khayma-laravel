@@ -5,6 +5,8 @@ namespace App\Services\V1\Admin\Product;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
+use function App\Helpers\make_slug;
+
 class ProductService
 {
     public function list()
@@ -34,6 +36,8 @@ class ProductService
 
     public function store(array $data): Product
     {
+        $data['slug_ar'] = $data['slug_ar'] ?? make_slug($data['name_ar'], 'ar', Product::class, 'slug_ar');
+        $data['slug_en'] = $data['slug_en'] ?? make_slug($data['name_en'], 'en', Product::class, 'slug_en');
         return DB::transaction(function () use ($data) {
             $product = $this->createProduct($data);
             $this->createVariations($product, $data['variations']);
@@ -48,30 +52,40 @@ class ProductService
             ]);
         });
     }
-    public function update(Product $product, array $data)
+    public function update(Product $product, array $data): Product
     {
-        $product->update([
-            'name_ar' => $data['name_ar'] ?? $product->name_ar,
-            'name_en' => $data['name_en'] ?? $product->name_en,
-            'description_ar' => $data['description_ar'] ?? $product->description_ar,
-            'description_en' => $data['description_en'] ?? $product->description_en,
-            'category_id' => $data['category_id'] ?? $product->category_id,
-            'brand_id' => $data['brand_id'] ?? $product->brand_id,
-            'is_published' => $data['is_published'] ?? $product->is_published,
-            'slug_ar' => $data['slug_ar'] ?? $product->slug_ar,
-            'slug_en' => $data['slug_en'] ?? $product->slug_en,
-            'meta_title_ar' => $data['meta_title_ar'] ?? $product->meta_title_ar,
-            'meta_title_en' => $data['meta_title_en'] ?? $product->meta_title_en,
-            'meta_description_ar' => $data['meta_description_ar'] ?? $product->meta_description_ar,
-            'meta_description_en' => $data['meta_description_en'] ?? $product->meta_description_en,
-        ]);
-        if (isset($data['images']) && is_array($data['images'])) {
-            $product->clearMediaCollection('products');
-            foreach ($data['images'] as $image) {
-                $product->addMedia($image)->toMediaCollection('products');
+        $data['slug_ar'] = $data['slug_ar'] ?? $this->updateSlug($product, $data['name_ar'] ?? $product->name_ar, 'ar');
+        $data['slug_en'] = $data['slug_en'] ?? $this->updateSlug($product, $data['name_en'] ?? $product->name_en, 'en');
+        return DB::transaction(function () use ($product, $data) {
+
+            $product->update([
+                'name_ar'             => $data['name_ar']             ?? $product->name_ar,
+                'name_en'             => $data['name_en']             ?? $product->name_en,
+                'description_ar'      => $data['description_ar']      ?? $product->description_ar,
+                'description_en'      => $data['description_en']      ?? $product->description_en,
+                'category_id'         => $data['category_id']         ?? $product->category_id,
+                'brand_id'            => $data['brand_id']            ?? $product->brand_id,
+                'is_published'        => $data['is_published']        ?? $product->is_published,
+                'slug_ar'             => $data['slug_ar']             ?? $product->slug_ar,
+                'slug_en'             => $data['slug_en']             ?? $product->slug_en,
+                'meta_title_ar'       => $data['meta_title_ar']       ?? $product->meta_title_ar,
+                'meta_title_en'       => $data['meta_title_en']       ?? $product->meta_title_en,
+                'meta_description_ar' => $data['meta_description_ar'] ?? $product->meta_description_ar,
+                'meta_description_en' => $data['meta_description_en'] ?? $product->meta_description_en,
+            ]);
+            if (isset($data['images']) && is_array($data['images'])) {
+                $product->clearMediaCollection('products');
+                $this->uploadImages($product, $data['images']);
             }
-        }
-        return $product->load(['category:id,parent_id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])->refresh();
+
+            return $product->refresh()->load([
+                'category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'productVariations.color:id,name_ar,name_en,code',
+                'productVariations.size:id,name_ar,name_en',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ]);
+        });
     }
 
     public function delete(Product $product)
@@ -126,5 +140,13 @@ class ProductService
         foreach ($images as $image) {
             $product->addMedia($image)->toMediaCollection('products');
         }
+    }
+    private function updateSlug($service, $new_title, $locale)
+    {
+        if ($new_title === $service->{"title_$locale"}) {
+            return $service->{"slug_$locale"};
+        }
+
+        return make_slug($new_title, $locale, Product::class, "slug_$locale");
     }
 }

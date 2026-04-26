@@ -21,13 +21,13 @@ class StoreProductRequest extends FormRequest
             'description_en'        => 'nullable|string|max:500',
 
             'slug_ar' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:255',
                 Rule::unique('products', 'slug_ar')->whereNull('deleted_at'),
             ],
             'slug_en' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:255',
                 Rule::unique('products', 'slug_en')->whereNull('deleted_at'),

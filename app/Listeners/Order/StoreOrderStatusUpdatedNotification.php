@@ -7,11 +7,15 @@ use App\Events\Order\OrderStatusUpdated;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Services\V1\Admin\Firebase\FcmService;
+use App\Services\V1\Website\TqnyatSms\TqnyatSmsService;
 use Illuminate\Support\Facades\Log;
 
 class StoreOrderStatusUpdatedNotification
 {
-    public function __construct(protected FcmService $fcm) {}
+    public function __construct(
+        protected FcmService $fcm,
+        protected TqnyatSmsService $tqnyat
+    ) {}
 
     public function handle(OrderStatusUpdated $event): void
     {
@@ -20,14 +24,13 @@ class StoreOrderStatusUpdatedNotification
         try {
             $notification = $this->createNotification($order);
 
-            $this->sendNotification($order, $notification);
+            $this->dispatchChannels($order, $notification);
 
-            Log::info("Order #{$order->id} status changed", [
-                'order_id'        => $order->id,
-                'status'          => $order->status->value,
-                'notification_id' => $notification->id,
+            Log::info("Order status updated", [
+                'order_id' => $order->id,
+                'status'   => $order->status->value,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Order Status Notification Error', [
                 'order_id' => $order->id,
                 'status'   => $order->status->value ?? null,
@@ -41,30 +44,41 @@ class StoreOrderStatusUpdatedNotification
         $label = $order->status->label();
 
         return Notification::create([
-            'user_id'        => $order->user_id,
-            'notifiable_id'  => $order->id,
+            'user_id'         => $order->user_id,
+            'notifiable_id'   => $order->id,
             'notifiable_type' => Order::class,
-            'type'           => NotificationTypeEnum::ORDER_STATUS_UPDATED,
-            'is_read'        => false,
-            'title_ar'       => 'تحديث حالة الطلب',
-            'title_en'       => 'Order Status Updated',
-            'body_ar'        => "طلبك الآن {$label['ar']}",
-            'body_en'        => "Your order is now {$label['en']}",
+            'type'            => NotificationTypeEnum::ORDER_STATUS_UPDATED,
+            'is_read'         => false,
+            'title_ar'        => 'تحديث حالة الطلب',
+            'title_en'        => 'Order Status Updated',
+            'body_ar'         => "طلبك الآن {$label['ar']}",
+            'body_en'         => "Your order is now {$label['en']}",
         ]);
     }
 
-    private function sendNotification(Order $order, Notification $notification): void
+    private function dispatchChannels(Order $order, Notification $notification): void
     {
-        $tokens = $this->getUserTokens($order);
-
-        if (empty($tokens)) {
-            Log::info("No FCM tokens found for {$order->user->phone}");
-            return;
-        }
-
         [$title, $body] = $this->resolveMessage($notification);
 
-        Log::info("Sending Order Status FCM to {$order->user->phone}");
+        $this->sendFcm($order, $title, $body);
+        $this->sendSms($order, $body);
+    }
+
+    private function sendFcm(Order $order, string $title, string $body): void
+    {
+        $tokens = $order->user->fcmTokens()
+            ->pluck('token')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if (!$tokens) {
+            Log::info("No FCM tokens found", [
+                'user_id' => $order->user_id,
+            ]);
+            return;
+        }
 
         $this->fcm->sendToMany(
             $tokens,
@@ -78,18 +92,29 @@ class StoreOrderStatusUpdatedNotification
         );
     }
 
-    private function getUserTokens(Order $order): array
+    private function sendSms(Order $order, string $message): void
     {
-        return $order->user->fcmTokens()->pluck('token')->toArray();
+        try {
+            $phone = $order->user->phone;
+
+            if (!$phone) {
+                return;
+            }
+
+            $this->tqnyat->send($phone, $message);
+        } catch (\Throwable $e) {
+            Log::error('Order Status SMS Error', [
+                'order_id' => $order->id,
+                'phone'    => $order->user->phone,
+                'error'    => $e->getMessage(),
+            ]);
+        }
     }
 
     private function resolveMessage(Notification $notification): array
     {
-        $isAr = app()->getLocale() === 'ar';
-
-        return [
-            $isAr ? $notification->title_ar : $notification->title_en,
-            $isAr ? $notification->body_ar  : $notification->body_en,
-        ];
+        return app()->getLocale() === 'ar'
+            ? [$notification->title_ar, $notification->body_ar]
+            : [$notification->title_en, $notification->body_en];
     }
 }
