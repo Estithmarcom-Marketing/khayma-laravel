@@ -6,9 +6,13 @@ use App\Models\CustomTent;
 
 class CustomTentService
 {
-    public function list()
+    public function list(array $data)
     {
-        return CustomTent::with(['user', 'media'])->latest()->paginate(15);
+        $per_page = $data['per_page'] ?? 10;
+        return CustomTent::when($data['status'] ?? null, fn($q, $status) => $q->status($status))
+            ->with(['user', 'media'])
+            ->latest()
+            ->paginate($per_page);
     }
 
     public function show(CustomTent $customTent): CustomTent

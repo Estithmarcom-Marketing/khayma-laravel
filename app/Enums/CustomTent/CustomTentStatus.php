@@ -7,7 +7,7 @@ enum CustomTentStatus: string
     case PENDING = 'pending';
     case INPROGRESS = 'inprogress';
     case COMPLETED = 'completed';
- public static function all(): array
+    public static function all(): array
     {
         return [
             self::PENDING->value,
