@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Admin\Product;
 use App\Exports\ProductExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\StoreProductVariationsRequest;
 use App\Http\Requests\Product\StoreProductVaritionsRequest;
 use App\Http\Requests\Product\StoreVariantPropertyRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -129,7 +130,7 @@ class ProductController extends Controller
         }
     }
 
-    public function storeProductVariation(Product $product, StoreProductVaritionsRequest $request)
+    public function storeProductVariation(Product $product, StoreProductVariationsRequest $request)
     {
         try {
             $variation = $this->productVariantService->storeVariations($product, $request->validated());

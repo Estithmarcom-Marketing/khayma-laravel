@@ -15,4 +15,22 @@ return [
 
     'related_success' => 'Related products fetched successfully',
     'related_failed' => 'Failed to fetch related products',
+
+    'low_stock_success' => 'Low stock products fetched successfully',
+    'low_stock_failed' => 'Failed to fetch low stock products',
+
+    'export_failed' => 'Failed to export products',
+    'list_success' => 'Products fetched successfully',
+    'list_failed' => 'Failed to fetch products',
+    'update_success' => 'Product updated successfully',
+    'update_failed' => 'Failed to update product',
+    'delete_success' => 'Product deleted successfully',
+    'delete_failed' => 'Failed to delete product',
+    'create_success' => 'Product created successfully',
+    'create_failed' => 'Failed to create product',
+
+    'offer_expired_date_required'       => 'Offer expiry date is required when offer value is set',
+    'offer_started_date_required'       => 'Offer start date is required when offer value is set',
+    'offer_started_date_before_expired' => 'Offer start date must be before offer expiry date',
+    'offer_required_with_dates'         => 'Offer value is required when offer dates are set',
 ];

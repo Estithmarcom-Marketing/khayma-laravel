@@ -5,6 +5,7 @@ namespace App\Services\V1\Admin\Notification;
 use App\Models\Admin;
 use App\Models\AdminNotification;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Log;
 
 class NotificationService
 {
@@ -29,8 +30,12 @@ class NotificationService
             ->where('is_read', false)
             ->update(['is_read' => true]);
     }
-    public function markAsRead(AdminNotification $notification)
+    public function markAsRead($id)
     {
-        return $notification->update(['is_read' => true]);
+        $notification = AdminNotification::findOrFail($id);
+        $notification->is_read = true;
+        $notification->save();
+
+        return $notification;
     }
 }

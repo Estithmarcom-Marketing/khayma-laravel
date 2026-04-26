@@ -3,6 +3,7 @@
 namespace App\Services\V1\Admin\Product;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class ProductService
 {
@@ -32,34 +33,22 @@ class ProductService
         return $product;
     }
 
-    public function store(array $data)
+    public function store(array $data): Product
     {
-        $produxt = Product::create([
-            'name_ar' => $data['name_ar'],
-            'name_en' => $data['name_en'],
-            'description_ar' => $data['description_ar'],
-            'description_en' => $data['description_en'],
-            'category_id' => $data['category_id'],
-            'brand_id' => $data['brand_id'],
-            'is_published' => (bool) $data['is_published'],
-            'slug_ar' => $data['slug_ar'],
-            'slug_en' => $data['slug_en'],
-            'meta_title_ar' => $data['meta_title_ar'],
-            'meta_title_en' => $data['meta_title_en'],
-            'meta_description_ar' => $data['meta_description_ar'],
-            'meta_description_en' => $data['meta_description_en'],
+        return DB::transaction(function () use ($data) {
+            $product = $this->createProduct($data);
+            $this->createVariations($product, $data['variations']);
+            $this->uploadImages($product, $data['images'] ?? []);
 
-        ]);
-
-        if (isset($data['images']) && is_array($data['images'])) {
-            foreach ($data['images'] as $image) {
-                $produxt->addMedia($image)->toMediaCollection('products');
-            }
-        }
-
-        return $produxt->load(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])->refresh();
+            return $product->refresh()->load([
+                'category:id,name_ar,name_en',
+                'brand:id,name_ar,name_en',
+                'variations.color:id,name_ar,name_en',
+                'variations.size:id,name_ar,name_en',
+                'media:id,model_id,name,file_name,collection_name,disk',
+            ]);
+        });
     }
-
     public function update(Product $product, array $data)
     {
         $product->update([
@@ -89,5 +78,54 @@ class ProductService
     public function delete(Product $product)
     {
         return $product->delete();
+    }
+
+    private function createProduct(array $data): Product
+    {
+        return Product::create([
+            'name_ar'             => $data['name_ar'],
+            'name_en'             => $data['name_en'],
+            'description_ar'      => $data['description_ar'] ?? null,
+            'description_en'      => $data['description_en'] ?? null,
+            'category_id'         => $data['category_id'],
+            'brand_id'            => $data['brand_id'],
+            'is_published'        => (bool) $data['is_published'],
+            'slug_ar'             => $data['slug_ar'],
+            'slug_en'             => $data['slug_en'],
+            'meta_title_ar'       => $data['meta_title_ar'] ?? null,
+            'meta_title_en'       => $data['meta_title_en'] ?? null,
+            'meta_description_ar' => $data['meta_description_ar'] ?? null,
+            'meta_description_en' => $data['meta_description_en'] ?? null,
+        ]);
+    }
+    private function createVariations(Product $product, array $variations): void
+    {
+        $product->variations()->createMany(
+            array_map(fn($variation) => $this->prepareVariation($variation), $variations)
+        );
+    }
+    private function prepareVariation(array $variation): array
+    {
+        return [
+            'color_id'           => $variation['color_id'],
+            'size_id'            => $variation['size_id'],
+            'sku'                => $variation['sku'],
+            'price'              => $variation['price'],
+            'stock_quantity'     => $variation['stock_quantity'],
+            'is_active'          => (bool) $variation['is_active'],
+            'offer'              => $variation['offer'] ?? null,
+            'offer_started_date' => $variation['offer_started_date'] ?? null,
+            'offer_expired_date' => $variation['offer_expired_date'] ?? null,
+        ];
+    }
+    private function uploadImages(Product $product, array $images): void
+    {
+        if (empty($images)) {
+            return;
+        }
+
+        foreach ($images as $image) {
+            $product->addMedia($image)->toMediaCollection('products');
+        }
     }
 }

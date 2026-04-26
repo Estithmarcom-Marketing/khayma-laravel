@@ -311,7 +311,7 @@ Route::prefix('admin/v1')
             ->prefix('notifications')
             ->group(function () {
                 Route::get('', [NotificationController::class, 'index']);
-                Route::post('{adminNotification}/read', [NotificationController::class, 'markAsRead']);
+                Route::post('{id}/read', [NotificationController::class, 'markAsRead']);
                 Route::get('unread', [NotificationController::class, 'getUnReadNotifications']);
                 Route::post('', [NotificationController::class, 'markAllAsRead']);
             });

@@ -66,11 +66,14 @@ class NotificationController extends Controller
         }
     }
 
-    public function markAsRead(AdminNotification $notification)
+    public function markAsRead($id)
     {
         try {
-            $this->notificationService->markAsRead($notification);
-            return ApiResponse::successResponse(null, __('notification.mark_read_success'), Response::HTTP_OK);
+            $notification = $this->notificationService->markAsRead($id);
+            $notification = AdminNotificationResource::make($notification);
+            return ApiResponse::successResponse([
+                'notification' => $notification
+            ], __('notification.mark_read_success'), Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error(__('notification.mark_read_failed'), ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
