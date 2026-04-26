@@ -100,7 +100,7 @@ class ProductService
     }
     private function createVariations(Product $product, array $variations): void
     {
-        $product->variations()->createMany(
+        $product->productVariations()->createMany(
             array_map(fn($variation) => $this->prepareVariation($variation), $variations)
         );
     }
