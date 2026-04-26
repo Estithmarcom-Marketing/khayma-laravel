@@ -25,7 +25,7 @@ class UpdateProductVaritionsRequest extends FormRequest
         return [
             'color_id' => 'sometimes|exists:colors,id',
             'size_id' => 'sometimes|exists:sizes,id',
-            'sku' => 'sometimes|string|max:255| unique:product_variations,sku,'.$this->route('variation')->id,
+            'sku' => 'sometimes|string|max:255| unique:product_variations,sku,'.$this->route('productVariation')->id,
             'price' => 'sometimes|numeric|min:0',
             'stock_quantity' => 'sometimes|numeric|min:0',
             'is_active' => 'sometimes|boolean',
