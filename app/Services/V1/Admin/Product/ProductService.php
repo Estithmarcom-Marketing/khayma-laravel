@@ -10,7 +10,6 @@ class ProductService
     public function list()
     {
         return Product::query()
-            ->published()
             ->with(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])
             ->orderBy('created_at', 'desc')
             ->cursorPaginate(10);
@@ -43,8 +42,8 @@ class ProductService
             return $product->refresh()->load([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
-                'variations.color:id,name_ar,name_en',
-                'variations.size:id,name_ar,name_en',
+                'productVariations.color:id,name_ar,name_en',
+                'productVariations.size:id,name_ar,name_en',
                 'media:id,model_id,name,file_name,collection_name,disk',
             ]);
         });
