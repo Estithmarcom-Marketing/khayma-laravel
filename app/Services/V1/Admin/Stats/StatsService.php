@@ -5,6 +5,7 @@ namespace App\Services\V1\Admin\Stats;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariation;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -91,22 +92,35 @@ class StatsService
     public function getSalesChart()
     {
         $arabicMonths = [
-            1 => 'يناير',  2 => 'فبراير', 3  => 'مارس',    4  => 'أبريل',
-            5 => 'مايو',   6 => 'يونيو',  7  => 'يوليو',   8  => 'أغسطس',
-            9 => 'سبتمبر', 10 => 'أكتوبر', 11 => 'نوفمبر', 12 => 'ديسمبر',
+            1 => 'يناير',
+            2 => 'فبراير',
+            3  => 'مارس',
+            4  => 'أبريل',
+            5 => 'مايو',
+            6 => 'يونيو',
+            7  => 'يوليو',
+            8  => 'أغسطس',
+            9 => 'سبتمبر',
+            10 => 'أكتوبر',
+            11 => 'نوفمبر',
+            12 => 'ديسمبر',
         ];
 
         return Order::select([
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('SUM(total_price) as sales'),
-            ])
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('SUM(total_price) as sales'),
+        ])
             ->whereYear('created_at', now()->year)
             ->groupBy('month')
             ->orderBy('month')
             ->get()
-            ->map(fn ($row) => (object) [
+            ->map(fn($row) => (object) [
                 'month' => $arabicMonths[$row->month],
                 'sales' => (float) $row->sales,
             ]);
+    }
+    public function getOutOfStockVariationsCount()
+    {
+        return ProductVariation::lowStock(1)->count();
     }
 }

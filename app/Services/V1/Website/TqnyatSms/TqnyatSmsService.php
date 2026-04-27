@@ -9,7 +9,7 @@ class TqnyatSmsService
 {
     public function send(string $phone, string $message)
     {
-        $phone = str_replace(['+', ' ', '-'], '', $phone);
+        $phone = str_replace(['+', ' ', '-', '_', '/'], '', $phone);
         $response = Http::withToken(config('services.tqnyat.api_token'))
             ->withHeaders(['Content-Type' => 'application/json'])
             ->retry(3, 100)
@@ -21,6 +21,7 @@ class TqnyatSmsService
             ])
             ->throw()
             ->json();
+        Log::info('Tqnyat SMS sent', ['phone' => $phone, 'message' => $message, 'response' => $response]);
         return $response;
     }
 }

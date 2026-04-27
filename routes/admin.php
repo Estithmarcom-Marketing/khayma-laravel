@@ -265,6 +265,7 @@ Route::prefix('admin/v1')
                 Route::get('orders', [StatsController::class, 'ordersStats']);
                 Route::get('revenue', [StatsController::class, 'revenueStats']);
                 Route::get('products', [StatsController::class, 'productsStats']);
+                Route::get('variations/out-of-stock', [StatsController::class, 'getOutOfStockVariationsCount']);
                 Route::get('customers', [StatsController::class, 'customersStats']);
                 Route::get('pending-orders', [StatsController::class, 'pendingOrdersStats']);
                 Route::get('sales-chart', [StatsController::class, 'salesChart']);

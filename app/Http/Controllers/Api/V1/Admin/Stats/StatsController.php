@@ -85,4 +85,14 @@ class StatsController extends Controller
             return ApiResponse::errorResponse(__('stats.error_retrieved'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    public function getOutOfStockVariationsCount()
+    {
+        try {
+            $count = $this->statsService->getOutOfStockVariationsCount();
+            return ApiResponse::successResponse(['count' => $count], __('stats.retrieved'), Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error(__('stats.error_retrieved'), [$e->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('stats.error_retrieved'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
