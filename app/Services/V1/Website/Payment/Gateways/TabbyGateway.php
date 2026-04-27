@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class TabbyGateway implements PaymentGatewayInterface
 {
-    public function __construct()
-    {
-        logger(config('services.tabby'));
-    }
+   
 
     public function createPayment(Order $order): PaymentResponseDTO
     {

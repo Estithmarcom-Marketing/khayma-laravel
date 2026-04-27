@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class MyFatoorahGateway implements PaymentGatewayInterface
 {
-    public function __construct()
-    {
-        logger(config('services.myfatoorah'));
-    }
+   
 
     public function createPayment(Order $order): PaymentResponseDTO
     {

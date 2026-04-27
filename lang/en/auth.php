@@ -22,7 +22,7 @@ return [
     'otp_sent_success' => 'OTP code sent successfully',
     'otp_sent_failed' => 'Failed to send OTP code. Please try again later.',
 
-    'otp_message' => 'Your OTP Code is: :otp',
+    'otp_message' => 'ALkhaimah: Your verification code is :otp for login. If you did not request this code, please ignore this message. Do not share it with anyone.',
     'invalid_otp' => 'Invalid OTP code or expired.',
 
     'logged_in_successfully' => 'You are logged in successfully',

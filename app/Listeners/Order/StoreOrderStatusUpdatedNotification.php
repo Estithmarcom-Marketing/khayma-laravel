@@ -61,7 +61,7 @@ class StoreOrderStatusUpdatedNotification
         [$title, $body] = $this->resolveMessage($notification);
 
         $this->sendFcm($order, $title, $body);
-        $this->sendSms($order, $body);
+        $this->sendSms($order, $this->formatSmsMessage($order));
     }
 
     private function sendFcm(Order $order, string $title, string $body): void
@@ -117,4 +117,12 @@ class StoreOrderStatusUpdatedNotification
             ? [$notification->title_ar, $notification->body_ar]
             : [$notification->title_en, $notification->body_en];
     }
+    private function formatSmsMessage(Order $order): string
+     {
+         $label = $order->status->label();
+
+         return app()->getLocale() === 'ar'
+             ? "الخيمة | Alkhimah: تم تحديث حالة طلبك رقم #{$order->id} إلى {$label['ar']}."
+             : "Alkhimah: Your order #{$order->id} status has been updated to {$label['en']}.";
+     }
 }

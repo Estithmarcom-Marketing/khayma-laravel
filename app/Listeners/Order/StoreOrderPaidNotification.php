@@ -57,7 +57,7 @@ class StoreOrderPaidNotification
         [$title, $body] = $this->resolveMessage($notification);
 
         $this->sendFcm($order, $title, $body);
-        $this->sendSms($order, $body);
+        $this->sendSms($order, $this->formatSmsMessage($order));
     }
 
     private function sendFcm(Order $order, string $title, string $body): void
@@ -111,5 +111,11 @@ class StoreOrderPaidNotification
         return app()->getLocale() === 'ar'
             ? [$notification->title_ar, $notification->body_ar]
             : [$notification->title_en, $notification->body_en];
+    }
+    private function formatSmsMessage(Order $order): string
+    {
+        return app()->getLocale() === 'ar'
+            ? 'الخيمة | Alkhimah: تم استلام الدفع لطلبك رقم #' . $order->id . '. شكرًا لتسوقك معنا.'
+            : 'Alkhimah: Payment received for your order #' . $order->id . '. Thank you for shopping with us.';
     }
 }

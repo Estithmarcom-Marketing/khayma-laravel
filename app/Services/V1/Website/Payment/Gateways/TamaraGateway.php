@@ -17,10 +17,6 @@ use Illuminate\Support\Facades\Log;
 
 class TamaraGateway implements PaymentGatewayInterface
 {
-    public function __construct()
-    {
-        logger(config('services.tamara'));
-    }
 
     public function createPayment(Order $order): PaymentResponseDTO
     {
