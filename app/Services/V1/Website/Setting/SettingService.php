@@ -8,6 +8,6 @@ class SettingService
 {
     public function getSettings()
     {
-        return Setting::firstOrFail();
+        return Setting::with('media')->firstOrFail();
     }
 }

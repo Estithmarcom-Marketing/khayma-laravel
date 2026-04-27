@@ -27,7 +27,7 @@ class SettingSeeder extends Seeder
                 'address' => '123 Main Street, City, Country',
                 'phone' => '966123456789',
                 'telegram' => 'https://t.me/',
-                'whatsapp' => 'https://wa.me/966123456789',
+                'whatsapp' => '966123456789',
                 'email' => 'info@alkhimah.com',
             ]
         );

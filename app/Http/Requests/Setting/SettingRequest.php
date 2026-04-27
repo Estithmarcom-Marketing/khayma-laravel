@@ -29,10 +29,11 @@ class SettingRequest extends FormRequest
             'tiktok'    => 'nullable|string|url|max:255',
             'linkedin'  => 'nullable|string|url|max:255',
             'address'   => 'nullable|string|max:500',
-            'phone'     => 'nullable|string|max:20',
+            'phone'     => 'nullable|phone:SA',
             'email'     => 'nullable|email|max:255',
             'whatsapp'  => 'nullable|string|max:20',
             'telegram'  => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ];
     }
 }

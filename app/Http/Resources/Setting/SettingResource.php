@@ -27,6 +27,7 @@ class SettingResource extends JsonResource
             'email'     => $this->email,
             'whatsapp'  => $this->whatsapp,
             'telegram'  => $this->telegram,
+            'image'     => $this->whenLoaded('media', fn() => $this->getFirstMediaUrl('settings'), null),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

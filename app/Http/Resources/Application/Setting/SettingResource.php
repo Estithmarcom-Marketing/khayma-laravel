@@ -26,7 +26,8 @@ class SettingResource extends JsonResource
             'phone'     => $this->phone,
             'email'     => $this->email,
             'whatsapp'  => $this->whatsapp,
-            'telegram'  => $this->telegram
+            'telegram'  => $this->telegram,
+            'image' => $this->whenLoaded('media', fn() => $this->getFirstMediaUrl('settings'), null)
         ];
     }
 }
