@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\Log;
 
 class MyFatoorahGateway implements PaymentGatewayInterface
 {
-   
-
     public function createPayment(Order $order): PaymentResponseDTO
     {
         $payload = $this->createPayload($order);
@@ -51,7 +49,7 @@ class MyFatoorahGateway implements PaymentGatewayInterface
             'Order' => [
                 'Amount' => (float) $order->total_price,
                 'Currency' => 'SAR',
-                'Reference' => (string) $order->id,
+                'ExternalIdentifier' => (string) $order->id,
             ],
             'Customer' => [
                 'Name' => $user->name ?? 'Customer',
@@ -59,30 +57,20 @@ class MyFatoorahGateway implements PaymentGatewayInterface
                     'CountryCode' => '966',
                     'Number' => substr($order->phone, 3),
                 ],
+                'Reference' => (string) $order->id
             ],
             'IntegrationUrls' => [
                 'Redirection' => config('services.payments_urls.success'),
                 'Webhook' => config('services.myfatoorah.webhook_url'),
             ],
-            'CustomerReference' => (string) $order->id,
             'Language' => app()->isLocale('ar') ? 'AR' : 'EN',
         ];
     }
 
     private function createCheckoutSession($payload)
     {
-        // $response = Http::withToken(config('services.myfatoorah.api_key'))
-        //     ->withHeaders(['Content-Type' => 'application/json'])
-        //     ->post(config('services.myfatoorah.api_url'), $payload)
-        //     ->throw()
-        //     ->json();
-
-        $response = Http::withHeaders(
-            [
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . config('services.myfatoorah.api_key')
-            ]
-        )
+        $response = Http::withToken(config('services.myfatoorah.api_key'))
+            ->withHeaders(['Content-Type' => 'application/json'])
             ->post(config('services.myfatoorah.api_url'), $payload)
             ->throw()
             ->json();
@@ -98,9 +86,9 @@ class MyFatoorahGateway implements PaymentGatewayInterface
             return;
         }
 
-        $transactionId = data_get($payload, 'Data.Transaction.Id');
+        $transactionId = data_get($payload, 'Data.Invoice.Id');
         $paymentId = data_get($payload, 'Data.Transaction.PaymentId');
-        $orderId = data_get($payload, 'Data.Invoice.ExternalIdentifier');
+        $orderId = data_get($payload, 'Customer.Reference');
 
         $payment = $this->findPayment($transactionId, $paymentId, $orderId);
 
