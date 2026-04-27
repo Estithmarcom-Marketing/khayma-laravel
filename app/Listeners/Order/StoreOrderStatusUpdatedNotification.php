@@ -118,11 +118,11 @@ class StoreOrderStatusUpdatedNotification
             : [$notification->title_en, $notification->body_en];
     }
     private function formatSmsMessage(Order $order): string
-     {
-         $label = $order->status->label();
+    {
+        $label = $order->status->label();
 
-         return app()->getLocale() === 'ar'
-             ? "الخيمة | Alkhimah: تم تحديث حالة طلبك رقم #{$order->id} إلى {$label['ar']}."
-             : "Alkhimah: Your order #{$order->id} status has been updated to {$label['en']}.";
-     }
+        return app()->getLocale() === 'ar'
+            ? "الخيمة | Alkhimah: تم تحديث حالة طلبك إلى {$label['ar']}."
+            : "Alkhimah: Your order status has been updated to {$label['en']}.";
+    }
 }

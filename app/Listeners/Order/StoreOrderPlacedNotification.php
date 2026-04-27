@@ -58,7 +58,7 @@ class StoreOrderPlacedNotification
 
         $this->sendFcm($order, $title, $body);
         $this->sendSms($order, $this->formatSmsMessage($order));
-        }
+    }
 
     private function sendFcm(Order $order, string $title, string $body): void
     {
@@ -115,7 +115,7 @@ class StoreOrderPlacedNotification
     private function formatSmsMessage(Order $order): string
     {
         return app()->getLocale() === 'ar'
-            ? 'الخيمة | Alkhimah: تم إنشاء طلبك رقم #' . $order->id . '. سنقوم بمعالجته قريبًا. شكرًا لتسوقك معنا.'
-            : 'Alkhimah: Your order #' . $order->id . ' has been placed successfully. We will process it shortly. Thank you for shopping with us.';
+            ? 'الخيمة | Alkhimah: تم إنشاء طلبك بنجاح. سنقوم بمعالجته قريبًا. شكرًا لتسوقك معنا.'
+            : 'Alkhimah: Your order has been placed successfully. We will process it shortly. Thank you for shopping with us.';
     }
 }

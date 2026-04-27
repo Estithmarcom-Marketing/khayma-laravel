@@ -36,8 +36,8 @@ class UserAuthService
             try {
 
                 $message = __('auth.otp_message', ['otp' => $otp]);
-                $this->service->send($phoneNumber, $message);
                 Log::info('OTP sent via sms', ['phone' => $data['phone'], 'message' => $message, 'otp' => $otp, 'method' => __METHOD__]);  // temporarily for testing
+                $this->service->send($phoneNumber, $message);
             } catch (\Exception $e) {
                 Log::error('Failed to send OTP via sms', ['phone' => $data['phone'], 'error' => $e->getMessage(), 'method' => __METHOD__]);
                 throw $e;

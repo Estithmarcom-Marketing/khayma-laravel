@@ -115,7 +115,7 @@ class StoreOrderPaidNotification
     private function formatSmsMessage(Order $order): string
     {
         return app()->getLocale() === 'ar'
-            ? 'الخيمة | Alkhimah: تم استلام الدفع لطلبك رقم #' . $order->id . '. شكرًا لتسوقك معنا.'
-            : 'Alkhimah: Payment received for your order #' . $order->id . '. Thank you for shopping with us.';
+            ? 'الخيمة | Alkhimah: تم استلام الدفع لطلبك. شكرًا لتسوقك معنا.'
+            : 'Alkhimah: Payment received for your order. Thank you for shopping with us.';
     }
 }
