@@ -20,7 +20,8 @@ class SubscribeUserToOffers
 
         if (! $isFirstOrder) {
             Log::info('SubscribeUserToOffers: skipping, not first order', [
-                'user_id' => $user->phone,
+                'user_phone' => $user->phone,
+                'user_id'    => $user->id
             ]);
             return;
         }

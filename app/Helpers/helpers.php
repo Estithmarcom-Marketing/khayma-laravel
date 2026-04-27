@@ -34,15 +34,13 @@ if (! function_exists('make_slug')) {
                 $phone = substr($phone, 2);
             }
 
-            if (preg_match('/^966\d{9}$/', $phone)) {
-                return $phone;
+            if (str_starts_with($phone, '966')) {
+                $phone = substr($phone, 3);
             }
 
-            if (preg_match('/^0(\d{9})$/', $phone, $matches)) {
-                return '966' . $matches[1];
-            }
+            $phone = ltrim($phone, '0');
 
-            if (preg_match('/^5\d{8}$/', $phone)) {
+            if (preg_match('/^\d{9}$/', $phone)) {
                 return '966' . $phone;
             }
 
