@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class VerifyTamaraToken
@@ -17,7 +18,8 @@ class VerifyTamaraToken
     {
         $token = $request->header('Authorization');
 
-        if ($token !== 'Bearer '.config('services.tamara.notification_token')) {
+        if ($token !== 'Bearer ' . config('services.tamara.notification_token')) {
+            Log::warning('Invalid Tamara token received for webhook verification', ['token' => $token]);
             abort(403, 'Invalid token');
         }
 

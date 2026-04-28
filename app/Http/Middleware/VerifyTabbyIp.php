@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class VerifyTabbyIp
@@ -19,6 +20,7 @@ class VerifyTabbyIp
         $allowedIps = config('services.tabby.allowed_ips');
 
         if (! in_array($request->ip(), $allowedIps)) {
+            Log::warning('Unauthorized IP address attempted to access Tabby webhook', ['ip' => $request->ip()]);
             abort(403, 'Unauthorized IP');
         }
 
