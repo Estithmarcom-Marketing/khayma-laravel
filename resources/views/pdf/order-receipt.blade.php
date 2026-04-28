@@ -1,4 +1,6 @@
 @php
+    use App\Models\Setting;
+    $settings = Setting::first();
     $isAr = app()->getLocale() === 'ar';
     $payment = $order->payments->first();
     $isPaid = $payment && $payment->status->value == 'completed';
@@ -469,11 +471,15 @@
                 <div class="footer-title">{{ $isAr ? 'شكرًا لتسوقك معنا' : 'Thank you for your order!' }}</div>
                 <table class="footer-contacts">
                     <tr>
-                        <td> 92000XXXX</td>
-                        <td> support@alkhimah.com</td>
+                        <td>{{ optional($settings)->phone }}</td>
+                        <td>{{ optional($settings)->email }}</td>
                         <td> www.alkhimah.com</td>
                     </tr>
                 </table>
+                <div class="footer-copy">
+                    {{ $isAr ? 'رقم التسجيل الضريبي' : 'Tax Registration Number' }}: 312700988800003
+                </div>
+
                 <div class="footer-copy">
                     {{ $isAr ? 'جميع الحقوق محفوظة' : 'All rights reserved' }} &copy; {{ date('Y') }}
                 </div>
