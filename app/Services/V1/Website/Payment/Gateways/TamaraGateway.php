@@ -28,11 +28,15 @@ class TamaraGateway implements PaymentGatewayInterface
 
         $response = $this->createCheckoutSession($payload);
 
-        Log::info('Tamara payment response',
-            ['order' => $order,
+        Log::info(
+            'Tamara payment response',
+            [
+                'order' => $order,
                 'user' => $user,
                 'response' => $response,
-                'method' => __METHOD__]);
+                'method' => __METHOD__
+            ]
+        );
 
         return new PaymentResponseDTO(
             referenceId: $response['checkout_id'] ?? null,
@@ -54,7 +58,7 @@ class TamaraGateway implements PaymentGatewayInterface
 
             'order_reference_id' => (string) $order->id,
 
-            'items' => $order->items->map(fn ($item) => $this->mapItem($item))->toArray(),
+            'items' => $order->items->map(fn($item) => $this->mapItem($item))->toArray(),
 
             'consumer' => [
                 'first_name' => $user->name,
@@ -145,17 +149,17 @@ class TamaraGateway implements PaymentGatewayInterface
 
         match ($status) {
             TamaraStatusEnum::CAPTURED->value => $this->markAsPaid($payment, $payload),
-            TamaraStatusEnum::DECLINED->value ,TamaraStatusEnum::EXPIRED->value,TamaraStatusEnum::CANCELED->value => $this->markAsFailed($payment, $payload),
+            TamaraStatusEnum::DECLINED->value, TamaraStatusEnum::EXPIRED->value, TamaraStatusEnum::CANCELED->value => $this->markAsFailed($payment, $payload),
             default => Log::info('Unhandled Tamara status', compact('status')),
         };
     }
 
     private function findPayment(string $transactionId, string $orderId): ?Payment
     {
-        return Payment::when($transactionId, fn ($q) => $q->where('transaction_id', $transactionId))
-            ->when($orderId, fn ($q) => $q->orWhere('order_id', $orderId))
+        return Payment::query()
+            ->when($transactionId, fn($q) => $q->where('transaction_id', $transactionId))
+            ->when(! $transactionId && $orderId, fn($q) => $q->where('order_id', $orderId))
             ->first();
-
     }
 
     private function markAsPaid(Payment $payment, array $payload): void

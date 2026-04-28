@@ -39,8 +39,11 @@ class PaymentService
 
     public function initiate(Order $order, PaymentGatewayEnum $gatewayEnum): PaymentResponseDTO
     {
+        $dto = null;
+        $payment = null;
+        $gateway = null;
+
         try {
-            $dto = null;
             $payment = $this->getOrderPayment($order);
 
             $gateway = $this->resolveGateway($gatewayEnum);
@@ -51,16 +54,15 @@ class PaymentService
 
             return $dto;
         } catch (\Exception $e) {
-            Log::error(
-                'Failed to create payment',
-                [
-                    'error' => $e->getMessage(),
-                    'payment' => $payment,
-                    'gateway' => $gateway,
-                    'dto' => $dto,
-                    'method' => __METHOD__,
-                ]
-            );
+            Log::error('Failed to create payment', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id,
+                'payment_id' => $payment?->id,
+                'gateway' => $gatewayEnum->value,
+                'dto' => $dto,
+                'method' => __METHOD__,
+            ]);
+
             throw $e;
         }
     }

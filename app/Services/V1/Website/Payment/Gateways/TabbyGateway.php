@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class TabbyGateway implements PaymentGatewayInterface
 {
-   
+
 
     public function createPayment(Order $order): PaymentResponseDTO
     {
@@ -152,8 +152,9 @@ class TabbyGateway implements PaymentGatewayInterface
 
     private function findPayment(string $transactionId, string $orderId): ?Payment
     {
-        return Payment::when($transactionId, fn($q) => $q->where('transaction_id', $transactionId))
-            ->when($orderId, fn($q) => $q->orWhere('order_id', $orderId))
+        return Payment::query()
+            ->when($transactionId, fn($q) => $q->where('transaction_id', $transactionId))
+            ->when(! $transactionId && $orderId, fn($q) => $q->where('order_id', $orderId))
             ->first();
     }
 
