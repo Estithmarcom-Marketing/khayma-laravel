@@ -19,7 +19,7 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-         return [
+        return [
             'id' => $this->id,
             'status' => $this->status->value,
             'subtotal' => $this->subtotal_price,

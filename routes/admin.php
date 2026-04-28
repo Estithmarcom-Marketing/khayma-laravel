@@ -193,6 +193,7 @@ Route::prefix('admin/v1')
             ->prefix('orders')
             ->group(function () {
                 Route::get('', [OrderController::class, 'index'])->middleware('permission:read-orders');
+                Route::get('{order}/receipt', [OrderController::class, 'receipt']);
                 Route::get('export/excel', [OrderController::class, 'exportExcel'])->middleware('permission:read-orders');
                 Route::get('{order}', [OrderController::class, 'show'])->middleware('permission:read-orders');
                 Route::patch('{order}', [OrderController::class, 'updateOrder'])->middleware('permission:store-orders');

@@ -17,7 +17,7 @@ class OrderService
         $is_delivered = $filters['is_delivered'] ?? null;
         $limit = $filters['per_page'] ?? 10;
 
-        $orders = Order::with(['user', 'items.productVariation.product', 'paymentMethod', 'deliveryMethod'])
+        $orders = Order::with(['user', 'items.productVariation.product', 'paymentMethod', 'payments', 'deliveryMethod'])
             ->when($search, function ($query) use ($search) {
                 $query->search($search);
             })

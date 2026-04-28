@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\V1\Website\Order;
+namespace App\Services\V1\Admin\Order;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\Storage;
@@ -10,11 +10,6 @@ class OrderReceiptPdfService
 {
     public function generate(Order $order): string
     {
-        $user = auth('sanctum')->user();
-        if (! $user || $order->user_id !== $user->id) {
-            throw new \LogicException(__('auth.unauthorized'));
-        }
-
         $order->loadMissing([
             'items.productVariation.product:id,name_ar,name_en',
             'user',
