@@ -3,6 +3,7 @@
 namespace App\Listeners\Admin\ProductReminder;
 
 use App\Enums\Enums\Notification\NotificationTypeEnum;
+use App\Events\AdminNotification\AdminNotificationCreated;
 use App\Events\ProductReminder\ProductReminderPlaced;
 use App\Models\AdminNotification;
 use App\Models\ContactUs;
@@ -23,6 +24,7 @@ class StoreProductReminderNotification
                 'notification_id' => $notification->id,
                 'product_reminder_id' => $productReminder->id,
             ]);
+            AdminNotificationCreated::dispatch($notification);
         } catch (\Throwable $th) {
             Log::error('Product Reminder Notification Error', [
                 'product_reminder_id' => $productReminder->id,

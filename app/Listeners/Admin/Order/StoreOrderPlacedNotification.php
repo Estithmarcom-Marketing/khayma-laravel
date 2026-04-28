@@ -3,6 +3,7 @@
 namespace App\Listeners\Admin\Order;
 
 use App\Enums\Enums\Notification\NotificationTypeEnum;
+use App\Events\AdminNotification\AdminNotificationCreated;
 use App\Events\Order\OrderPlacement;
 use App\Models\AdminNotification;
 use App\Models\Order;
@@ -22,6 +23,7 @@ class StoreOrderPlacedNotification
                 'order_id' => $order->id,
                 'notification_id' => $notification->id,
             ]);
+            AdminNotificationCreated::dispatch($notification);
         } catch (\Throwable $th) {
             Log::error('Order Placed Notification Error', [
                 'order_id' => $order->id,

@@ -34,6 +34,4 @@ class Admin extends Authenticatable
             'is_active' => 'boolean',
         ];
     }
-
-    
 }

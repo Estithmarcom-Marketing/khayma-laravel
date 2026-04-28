@@ -3,6 +3,7 @@
 namespace App\Listeners\Admin\ContactUs;
 
 use App\Enums\Enums\Notification\NotificationTypeEnum;
+use App\Events\AdminNotification\AdminNotificationCreated;
 use App\Events\ContactUs\ContactUsMessagePlaced;
 use App\Models\AdminNotification;
 use App\Models\ContactUs;
@@ -23,6 +24,7 @@ class StoreContactUsNotification
                 'contact_us_id' => $contactUs->id,
                 'notification_id' => $notification->id,
             ]);
+            AdminNotificationCreated::dispatch($notification);
         } catch (\Throwable $th) {
             Log::error('Contact Us Notification Error', [
                 'contact_us_id' => $contactUs->id,
