@@ -38,7 +38,6 @@ class VerifyMyFatoorahSignature
         if (! hash_equals($generatedSignature, $signature)) {
 
             Log::warning('Invalid MyFatoorah signature', [
-                'expected' => $generatedSignature,
                 'received' => $signature,
                 'string' => $dataString,
             ]);

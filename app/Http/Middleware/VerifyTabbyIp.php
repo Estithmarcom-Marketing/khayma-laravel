@@ -20,7 +20,10 @@ class VerifyTabbyIp
         $allowedIps = config('services.tabby.allowed_ips');
 
         if (! in_array($request->ip(), $allowedIps)) {
-            Log::warning('Unauthorized IP address attempted to access Tabby webhook', ['ip' => $request->ip()]);
+            Log::warning('Unauthorized IP address attempted to access Tabby webhook', [
+                'ip' => $request->ip(),
+                'request' => $request->all()
+            ]);
             abort(403, 'Unauthorized IP');
         }
 

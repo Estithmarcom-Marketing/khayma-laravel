@@ -19,7 +19,10 @@ class VerifyTamaraToken
         $token = $request->header('Authorization');
 
         if ($token !== 'Bearer ' . config('services.tamara.notification_token')) {
-            Log::warning('Invalid Tamara token received for webhook verification', ['token' => $token]);
+            Log::warning('Invalid Tamara token received for webhook verification', [
+                'token' => $token,
+                'request' => $request->all()
+            ]);
             abort(403, 'Invalid token');
         }
 
