@@ -13,6 +13,9 @@ class VerifyMyFatoorahSignature
         $signature = $request->header('myfatoorah-signature');
 
         if (! $signature) {
+            Log::warning('Missing MyFatoorah signature in webhook request', [
+                'request' => $request->all()
+            ]);
             return response()->json([
                 'message' => 'Missing MyFatoorah signature',
             ], 401);
