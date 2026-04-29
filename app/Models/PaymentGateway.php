@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Enums\Payments\PaymentGatewayEnum;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class PaymentGateway extends Model
+class PaymentGateway extends Model implements HasMedia
 {
+    use InteractsWithMedia;
     protected $fillable = [
         'name_ar',
         'name_en',

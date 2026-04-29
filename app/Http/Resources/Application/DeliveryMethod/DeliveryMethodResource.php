@@ -15,7 +15,6 @@ class DeliveryMethodResource extends JsonResource
     public function toArray(Request $request): array
     {
         return app()->isLocale('ar') ? $this->arabicResource() : $this->englishResource();
-
     }
 
     private function arabicResource()
@@ -24,6 +23,7 @@ class DeliveryMethodResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name_ar,
             'has_shipping_cost' => $this->has_shipping_cost,
+            'image' => $this->whenLoaded('media', fn() => $this->getFirstMediaUrl('delivery_methods'), null),
         ];
     }
 
@@ -33,6 +33,7 @@ class DeliveryMethodResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name_en,
             'has_shipping_cost' => $this->has_shipping_cost,
+            'image' => $this->whenLoaded('media', fn() => $this->getFirstMediaUrl('delivery_methods'), null),
         ];
     }
 }

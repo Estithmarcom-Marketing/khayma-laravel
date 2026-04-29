@@ -24,6 +24,7 @@ class PaymentGatewayResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name_ar,
             'gateway' => $this->gateway,
+            'image' => $this->whenLoaded('media', fn() => $this->getFirstMediaUrl('payment_gateways'), null),
         ];
     }
 
@@ -33,6 +34,7 @@ class PaymentGatewayResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name_en,
             'gateway' => $this->gateway,
+            'image' => $this->whenLoaded('media', fn() => $this->getFirstMediaUrl('payment_gateways'), null),
         ];
     }
 }

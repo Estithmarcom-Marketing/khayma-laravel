@@ -20,11 +20,12 @@ class UpdatePaymentGatewayRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_ar' => 'sometimes|string|max:255|unique:payment_gateways,name_ar,'.$this->paymentGateway->id,
-            'name_en' => 'sometimes|string|max:255|unique:payment_gateways,name_en,'.$this->paymentGateway->id,
-            'gateway' => 'sometimes|string|max:255|unique:payment_gateways,gateway,'.$this->paymentGateway->id,
+            'name_ar' => 'sometimes|string|max:255|unique:payment_gateways,name_ar,' . $this->paymentGateway->id,
+            'name_en' => 'sometimes|string|max:255|unique:payment_gateways,name_en,' . $this->paymentGateway->id,
+            'gateway' => 'sometimes|string|max:255|unique:payment_gateways,gateway,' . $this->paymentGateway->id,
             'is_active' => 'sometimes|boolean',
             'payment_method_id' => 'sometimes|exists:payment_methods,id',
+            'image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240']
         ];
     }
 }

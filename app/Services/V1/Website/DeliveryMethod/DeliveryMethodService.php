@@ -8,7 +8,8 @@ class DeliveryMethodService
 {
     public function list()
     {
-        return DeliveryMethod::select('id', 'name_ar', 'name_en','has_shipping_cost')
+        return DeliveryMethod::select('id', 'name_ar', 'name_en', 'has_shipping_cost')
+            ->with('media')
             ->active()
             ->get();
     }

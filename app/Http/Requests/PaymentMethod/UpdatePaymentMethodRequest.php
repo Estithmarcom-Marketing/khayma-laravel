@@ -25,6 +25,7 @@ class UpdatePaymentMethodRequest extends FormRequest
             'name_ar' => 'sometimes|string|max:255',
             'name_en' => 'sometimes|string|max:255',
             'is_active' => 'sometimes|boolean',
+            'image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240']
         ];
     }
 }

@@ -20,6 +20,7 @@ class PaymentGatewayResource extends JsonResource
             'name_en' => $this->name_en,
             'gateway' => $this->gateway,
             'is_active' => $this->is_active,
+            'image' => $this->whenLoaded('media', fn() => $this->getFirstMediaUrl('payment_gateways'), null),
             'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
             'created_at' => $this->whenNotNull($this->created_at),
             'updated_at' => $this->whenNotNull($this->updated_at),

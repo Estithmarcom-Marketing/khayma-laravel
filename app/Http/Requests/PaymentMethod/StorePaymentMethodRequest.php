@@ -25,6 +25,7 @@ class StorePaymentMethodRequest extends FormRequest
             'name_ar' => 'required|string|max:255|unique:payment_methods,name_ar',
             'name_en' => 'required|string|max:255|unique:payment_methods,name_en',
             'is_active' => 'sometimes|boolean',
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240']
         ];
     }
 }

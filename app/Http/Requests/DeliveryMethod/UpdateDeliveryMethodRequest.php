@@ -28,6 +28,8 @@ class UpdateDeliveryMethodRequest extends FormRequest
             'name_en' => ['sometimes', 'string', 'max:255'],
             'is_active' => ['sometimes', 'boolean'],
             'has_shipping_cost' => ['sometimes', 'boolean'],
+            'image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240']
+
         ];
     }
 }

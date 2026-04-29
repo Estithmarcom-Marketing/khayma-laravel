@@ -27,6 +27,7 @@ class StorePaymentGatewayRequest extends FormRequest
             'gateway' => 'required|string|max:255|unique:payment_gateways,gateway',
             'is_active' => 'required|boolean',
             'payment_method_id' => 'required|exists:payment_methods,id',
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240']
         ];
     }
 }
