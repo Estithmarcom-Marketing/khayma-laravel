@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,29 +19,35 @@ class VerifyTamaraToken
     public function handle(Request $request, Closure $next): Response
     {
         $secret = config('services.tamara.notification_token');
-        Log::info('Tamara Headers', $request->headers->all());
-        $payload = $request->getContent();
-        $incomingSignature = $request->header('X-Tamara-Signature');
 
-        if (!$incomingSignature) {
-            Log::warning('Tamara webhook missing signature');
-            abort(403, 'Missing signature');
+        $token = $request->bearerToken();
+
+        if (!$token) {
+            $token = $request->input('tamaraToken');
         }
 
-        $generatedSignature = hash_hmac(
-            'sha256',
-            $payload,
-            $secret
-        );
+        if (!$token) {
+            Log::warning('Tamara webhook missing token');
+            abort(403, 'Missing Tamara token');
+        }
 
-        if (!hash_equals($generatedSignature, $incomingSignature)) {
-            Log::warning('Invalid Tamara signature', [
-                'payload' => $payload,
-                'generated_signature' => $generatedSignature,
-                'incoming_signature' => $incomingSignature,
+        try {
+            $decoded = JWT::decode(
+                $token,
+                new Key($secret, 'HS256')
+            );
+
+            if (($decoded->iss ?? null) !== 'Tamara') {
+                throw new \Exception('Invalid issuer');
+            }
+            Log::info('Tamara webhook verified', ['iss' => $decoded->iss]);
+        } catch (\Throwable $e) {
+
+            Log::warning('Invalid Tamara JWT', [
+                'error' => $e->getMessage(),
             ]);
 
-            abort(403, 'Invalid signature');
+            abort(403, 'Invalid Tamara token');
         }
 
         return $next($request);
