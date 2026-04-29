@@ -8,7 +8,7 @@ class DeliveryMethodService
 {
     public function list()
     {
-        return DeliveryMethod::with('media')->all();
+        return DeliveryMethod::with('media')->get();
     }
 
     public function getActive()

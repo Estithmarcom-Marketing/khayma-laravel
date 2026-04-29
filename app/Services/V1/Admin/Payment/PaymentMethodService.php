@@ -8,7 +8,7 @@ class PaymentMethodService
 {
     public function list()
     {
-        return PaymentMethod::with('media')->all();
+        return PaymentMethod::with('media')->get();
     }
 
     public function getActive()
