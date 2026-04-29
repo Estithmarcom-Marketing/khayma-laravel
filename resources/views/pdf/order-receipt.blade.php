@@ -273,6 +273,41 @@
             font-size: 18px;
         }
 
+        /* == TOTALS TWO COLUMN == */
+
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .totals-left {
+            width: 55%;
+            vertical-align: top;
+        }
+
+        .totals-right {
+            width: 45%;
+            vertical-align: top;
+            padding: 10px 20px;
+            font-size: 11px;
+            color: #4a6070;
+            line-height: 1.7;
+        }
+
+        .policy-title {
+            font-weight: bold;
+            color: #3a94cc;
+            margin-bottom: 6px;
+        }
+
+        .policy-box {
+            background: #f5fafd;
+            border: 1px solid #b3d9f0;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+
         /* == FOOTER == */
         .footer {
             background: #1a2e3b;
@@ -399,72 +434,129 @@
 
             {{-- == TOTALS == --}}
             <div class="totals-wrap">
-                <div class="totals-inner">
-                    <table class="total-line">
-                        <tr>
-                            <td>{{ $isAr ? 'المجموع الفرعي' : 'Subtotal' }}</td>
-                            <td class="tl-amount">{{ number_format($order->subtotal_price, 2) }}</td>
-                        </tr>
-                    </table>
-                    <table class="total-line">
-                        <tr>
-                            <td>{{ $isAr ? 'الشحن' : 'Shipping' }}</td>
-                            <td class="tl-amount">{{ number_format($order->shipping_cost, 2) }}</td>
-                        </tr>
-                    </table>
-                    <table class="total-line">
-                        <tr>
-                            <td>{{ $isAr ? 'الضريبة' : 'Tax' }}</td>
-                            <td class="tl-amount">{{ number_format($order->tax_amount, 2) }}</td>
-                        </tr>
-                    </table>
-                    @if ($order->discount_of_offer > 0 || $order->discount_of_promo_code > 0)
-                        @if ($order->discount_of_offer > 0)
-                            <table class="total-line">
-                                <tr>
-                                    <td>{{ $isAr ? 'خصم العروض' : 'Offers Discount' }}</td>
-                                    <td class="tl-discount">
-                                        {{ number_format($order->discount_of_offer, 2) }}
-                                    </td>
-                                </tr>
-                            </table>
-                        @endif
-                        @if ($order->discount_of_promo_code > 0)
-                            <table class="total-line">
-                                <tr>
-                                    <td>{{ $isAr ? ' كود الخصم' : 'Promo Code ' }}</td>
-                                    <td class="tl-discount">
-                                        {{ $order->promo_code }}
-                                    </td>
-                                </tr>
-                            </table>
-                            <table class="total-line">
-                                <tr>
-                                    <td>{{ $isAr ? 'خصم كود الخصم' : 'Promo Code Discount' }}</td>
-                                    <td class="tl-discount">
-                                        {{ number_format($order->discount_of_promo_code, 2) }}
-                                    </td>
-                                </tr>
-                            </table>
-                        @endif
 
-                        <table class="total-line">
-                            <tr>
-                                <td>{{ $isAr ? 'الخصم الكلي' : 'Total Discount' }}</td>
-                                <td class="tl-discount">
-                                    {{ number_format($order->discount_of_offer + $order->discount_of_promo_code, 2) }}
-                                </td>
-                            </tr>
-                        </table>
-                    @endif
-                    <table class="grand-row">
-                        <tr>
-                            <td>{{ $isAr ? 'الإجمالي الكلي' : 'Grand Total' }}</td>
-                            <td class="grand-amount">{{ number_format($order->total_price, 2) }}</td>
-                        </tr>
-                    </table>
-                </div>
+                <table class="totals-table">
+                    <tr>
+
+                        {{-- LEFT SIDE : TOTALS --}}
+                        <td class="totals-left">
+
+                            <div class="totals-inner">
+
+                                <table class="total-line">
+                                    <tr>
+                                        <td>{{ $isAr ? 'المجموع الفرعي' : 'Subtotal' }}</td>
+                                        <td class="tl-amount">{{ number_format($order->subtotal_price, 2) }}</td>
+                                    </tr>
+                                </table>
+
+                                <table class="total-line">
+                                    <tr>
+                                        <td>{{ $isAr ? 'الشحن' : 'Shipping' }}</td>
+                                        <td class="tl-amount">{{ number_format($order->shipping_cost, 2) }}</td>
+                                    </tr>
+                                </table>
+
+                                <table class="total-line">
+                                    <tr>
+                                        <td>{{ $isAr ? 'الضريبة' : 'Tax' }}</td>
+                                        <td class="tl-amount">{{ number_format($order->tax_amount, 2) }}</td>
+                                    </tr>
+                                </table>
+
+                                @if ($order->discount_of_offer > 0 || $order->discount_of_promo_code > 0)
+
+                                    @if ($order->discount_of_offer > 0)
+                                        <table class="total-line">
+                                            <tr>
+                                                <td>{{ $isAr ? 'خصم العروض' : 'Offers Discount' }}</td>
+                                                <td class="tl-discount">
+                                                    {{ number_format($order->discount_of_offer, 2) }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    @endif
+
+                                    @if ($order->discount_of_promo_code > 0)
+                                        <table class="total-line">
+                                            <tr>
+                                                <td>{{ $isAr ? 'كود الخصم' : 'Promo Code' }}</td>
+                                                <td class="tl-discount">
+                                                    {{ $order->promo_code }}
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <table class="total-line">
+                                            <tr>
+                                                <td>{{ $isAr ? 'خصم كود الخصم' : 'Promo Code Discount' }}</td>
+                                                <td class="tl-discount">
+                                                    {{ number_format($order->discount_of_promo_code, 2) }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    @endif
+
+                                    <table class="total-line">
+                                        <tr>
+                                            <td>{{ $isAr ? 'الخصم الكلي' : 'Total Discount' }}</td>
+                                            <td class="tl-discount">
+                                                {{ number_format($order->discount_of_offer + $order->discount_of_promo_code, 2) }}
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                @endif
+
+                                <table class="grand-row">
+                                    <tr>
+                                        <td>{{ $isAr ? 'الإجمالي الكلي' : 'Grand Total' }}</td>
+                                        <td class="grand-amount">
+                                            {{ number_format($order->total_price, 2) }}
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </td>
+
+                        {{-- RIGHT SIDE : VAT + RETURN POLICY --}}
+                        <td class="totals-right">
+
+                            <div class="policy-box">
+
+                                <div class="policy-title">
+                                    {{ $isAr ? 'ملاحظات الفاتورة' : 'Invoice Notes' }}
+                                </div>
+
+                                <p>
+                                    {{ $isAr
+                                        ? 'جميع الأسعار المذكورة في هذه الفاتورة شاملة ضريبة القيمة المضافة.'
+                                        : 'All prices listed in this invoice are inclusive of VAT.' }}
+                                </p>
+
+                                <br>
+
+                                <div class="policy-title">
+                                    {{ $isAr ? 'سياسة الاسترجاع' : 'Return Policy' }}
+                                </div>
+
+                                <p>
+                                    {{ $isAr
+                                        ? 'يمكن استرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام بشرط أن تكون بحالتها الأصلية وغير مستخدمة وإرفاق الفاتورة.'
+                                        : 'Products can be returned within 14 days from the delivery date provided they are unused, in original condition, and accompanied by the invoice.' }}
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                </table>
+
             </div>
+
 
             {{-- == FOOTER == --}}
             <div class="footer">

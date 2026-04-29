@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 // });
 Broadcast::routes([
     'middleware' => ['auth:admin'],
-
     'guards' => ['admin'],
 ]);
 
