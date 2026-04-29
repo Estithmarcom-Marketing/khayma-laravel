@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Log;
 //     return (int) $user->id === (int) $id;
 // });
 Broadcast::routes([
-    'middleware' => ['auth:sanctum'],
+    'middleware' => ['auth:admin'],
 
-    'guards' => ['sanctum', 'api', 'admin'],
+    'guards' => ['admin'],
 ]);
 
 Broadcast::channel('admins.notifications', function ($admin) {
