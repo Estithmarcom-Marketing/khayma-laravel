@@ -61,7 +61,7 @@ class StoreOrderStatusUpdatedNotification
         [$title, $body] = $this->resolveMessage($notification);
 
         $this->sendFcm($order, $title, $body);
-        $this->sendSms($order, $this->formatSmsMessage($order));
+        // $this->sendSms($order, $this->formatSmsMessage($order));
     }
 
     private function sendFcm(Order $order, string $title, string $body): void
