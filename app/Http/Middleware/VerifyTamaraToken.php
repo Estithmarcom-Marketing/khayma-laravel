@@ -18,24 +18,21 @@ class VerifyTamaraToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $secret = config('services.tamara.notification_token');
-        $token = $request->bearerToken();
+        $notificationToken = config('services.tamara.notification_token');
 
-        Log::debug('Tamara incoming request', [
-            'token'   => $token,
-            'payload' => $request->all(),
+        if (!$notificationToken) {
+            Log::critical('Tamara notification token missing');
+            abort(500);
+        }
+        $token =
+            $request->bearerToken()
+            ?? $request->input('tamaraToken')
+            ?? $request->query('tamaraToken');
+        Log::debug('Tamara webhook token', [
+            'token' => $token,
+            'request' => $request->all(),
             'headers' => $request->headers->all(),
         ]);
-
-        Log::debug('Tamara debug', [
-            'secret_length' => strlen($secret ?? ''),
-            'secret_null'   => is_null($secret),
-            'token_present' => !empty($token),
-        ]);
-
-        if (!$token) {
-            $token = $request->input('tamaraToken');
-        }
 
         if (!$token) {
             Log::warning('Tamara webhook missing token');
@@ -45,20 +42,24 @@ class VerifyTamaraToken
         try {
             $decoded = JWT::decode(
                 $token,
-                new Key($secret, 'HS256')
+                new Key($notificationToken, 'HS256')
             );
 
             if (($decoded->iss ?? null) !== 'Tamara') {
                 throw new \Exception('Invalid issuer');
             }
-            Log::info('Tamara webhook verified', ['iss' => $decoded->iss]);
+
+            Log::info('Tamara webhook verified', [
+                'iss' => $decoded->iss,
+                'exp' => $decoded->exp ?? null,
+            ]);
         } catch (\Throwable $e) {
 
-            Log::warning('Invalid Tamara JWT', [
+            Log::warning('Invalid Tamara webhook', [
                 'error' => $e->getMessage(),
             ]);
 
-            abort(403, 'Invalid Tamara token');
+            abort(403, 'Invalid Tamara webhook');
         }
 
         return $next($request);
