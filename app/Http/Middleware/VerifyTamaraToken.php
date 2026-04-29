@@ -19,8 +19,14 @@ class VerifyTamaraToken
     public function handle(Request $request, Closure $next): Response
     {
         $secret = config('services.tamara.notification_token');
-
         $token = $request->bearerToken();
+
+        Log::debug('Tamara incoming request', [
+            'token'   => $token,
+            'payload' => $request->all(),
+            'headers' => $request->headers->all(),
+        ]);
+
         Log::debug('Tamara debug', [
             'secret_length' => strlen($secret ?? ''),
             'secret_null'   => is_null($secret),
