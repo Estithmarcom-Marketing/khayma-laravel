@@ -18,7 +18,7 @@ class VerifyTamaraToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $notificationToken = config('services.tamara.notification_token');
+        $notificationToken = trim(config('services.tamara.notification_token'));
 
         if (!$notificationToken) {
             Log::critical('Tamara notification token missing');
@@ -28,11 +28,6 @@ class VerifyTamaraToken
             $request->bearerToken()
             ?? $request->input('tamaraToken')
             ?? $request->query('tamaraToken');
-        Log::debug('Tamara webhook token', [
-            'token' => $token,
-            'request' => $request->all(),
-            'headers' => $request->headers->all(),
-        ]);
 
         if (!$token) {
             Log::warning('Tamara webhook missing token');

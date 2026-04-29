@@ -154,13 +154,20 @@ class TamaraGateway implements PaymentGatewayInterface
         };
     }
 
-    private function findPayment(string $transactionId, string $orderId): ?Payment
+
+    private function findPayment(?string $transactionId, ?string $orderId): ?Payment
     {
         return Payment::query()
-            ->when($transactionId, fn($q) => $q->where('transaction_id', $transactionId))
-            ->when(! $transactionId && $orderId, fn($q) => $q->where('order_id', $orderId))
+            ->when($transactionId, function ($q) use ($transactionId) {
+                $q->where('transaction_id', $transactionId);
+            })
+            ->when(!$transactionId && $orderId, function ($q) use ($orderId) {
+                $q->where('order_id', $orderId);
+            })
+            ->latest()
             ->first();
     }
+
 
     private function markAsPaid(Payment $payment, array $payload): void
     {
