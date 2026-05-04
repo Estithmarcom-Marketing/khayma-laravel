@@ -105,7 +105,7 @@ class StoreOrderService
         if ((isset($data['name']) && $data['name'] != null) || (isset($data['email']) && $data['email'] != null)) {
             $user->update([
                 'name' => $data['name'] ?? $user->name,
-                'email' => $data['email'] ?? $user->email
+                'email' => $data['email'] ?? $user->email,
             ]);
         }
     }
@@ -115,6 +115,7 @@ class StoreOrderService
         if (! $user->cart) {
             throw new \LogicException(__('cart.cart_fetch_failed'));
         }
+
         return $user->cart->items()->get();
     }
 
@@ -124,6 +125,7 @@ class StoreOrderService
         $discountOfOffer = 0;
         $priceBeforeOffer = 0;
         $enrichedItems = collect();
+        $locale = app()->getLocale();
 
         $variationIds = $data['items']->pluck('product_variation_id');
 
@@ -140,7 +142,7 @@ class StoreOrderService
             }
 
             if (($variation->stock_quantity < $item->quantity) && $decrementStock) {
-                throw new \LogicException(__('orders.error_stock', ['product' => $variation->product->name_ar]));
+                throw new \LogicException(__('orders.error_stock', ['product' => $variation->product->{'name_'.$locale}]));
             }
 
             $price = $variation->price;

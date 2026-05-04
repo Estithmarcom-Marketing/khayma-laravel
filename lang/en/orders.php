@@ -25,7 +25,7 @@ return [
     'error_repay' => 'Failed to repay order',
     'error_repay_invalid' => 'You can not repay this order',
 
-    'error_stock' => 'The requested quantity for product ":product" is not available in stock.',
+    'error_stock' => 'The requested quantity for product :product is not available in stock.',
     'error_product_not_found' => 'The requested product is not found.',
 
     'cart_is_empty' => 'Cart is empty.',

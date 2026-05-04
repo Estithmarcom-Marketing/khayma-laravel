@@ -3,22 +3,20 @@
 namespace App\Services\V1\Website\ProfileManagement;
 
 use App\Models\OtpCode;
+use App\Services\V1\Website\TqnyatSms\TqnyatSmsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
+use function App\Helpers\normalize_saudi_phone_number;
+
 class ProfileManagementService
 {
-    private $user;
-
-    public function __construct()
-    {
-        $this->user = auth('sanctum')->user();
-    }
+    public function __construct(protected TqnyatSmsService $service) {}
 
     public function updateProfile(array $data)
     {
-        $user = $this->user;
+        $user = auth('sanctum')->user();
 
         return DB::transaction(function () use ($user, $data) {
             $user->update([
@@ -35,12 +33,12 @@ class ProfileManagementService
 
     public function sendOtpForPhoneUpdate()
     {
-        $user = $this->user;
-        $phoneNumber = str_replace(['+', ' ', '-'], '', $user->phone);
+        $user = auth('sanctum')->user();
+        $phoneNumber = normalize_saudi_phone_number($user->phone);
 
         return DB::transaction(function () use ($phoneNumber) {
-            // $otp = random_int(1000, 9999);
-            $otp = 1234;
+            $otp = random_int(1000, 9999);
+            // $otp = 1234;
             OtpCode::create([
                 'phone' => $phoneNumber,
                 'otp_code' => Hash::make($otp),
@@ -49,8 +47,10 @@ class ProfileManagementService
             ]);
 
             try {
-                // send sms
+                $message = __('auth.update_phone_otp', ['otp' => $otp]);
+
                 Log::info('OTP sent for phone update via WhatsApp', ['phone' => $phoneNumber, 'otp' => $otp, 'method' => __METHOD__]);  // temporarily for testing
+                $this->service->send($phoneNumber, $message);
             } catch (\Exception $e) {
                 Log::error('Failed to send OTP for phone update via WhatsApp', ['phone' => $phoneNumber, 'error' => $e->getMessage(), 'method' => __METHOD__]);
             }
@@ -59,8 +59,8 @@ class ProfileManagementService
 
     public function sendOtpToNewPhone(array $data)
     {
-
-        $phone = str_replace(['+', ' ', '-'], '', $this->user->phone);
+        $user = auth('sanctum')->user();
+        $phone = normalize_saudi_phone_number($user->phone);
         $otpCode = $data['otp_code'];
 
         return DB::transaction(function () use ($phone, $data, $otpCode) {
@@ -76,9 +76,9 @@ class ProfileManagementService
             $otp->is_used = true;
             $otp->save();
 
-            $newPhoneNumber = str_replace(['+', ' ', '-'], '', $data['new_phone']);
-            // $newOtp = random_int(1000, 9999);
-            $newOtp = 1234;
+            $newPhoneNumber = normalize_saudi_phone_number($data['new_phone']);
+            $newOtp = random_int(1000, 9999);
+            // $newOtp = 1234;
             OtpCode::create([
                 'phone' => $newPhoneNumber,
                 'otp_code' => Hash::make($newOtp),
@@ -86,8 +86,9 @@ class ProfileManagementService
                 'is_used' => false,
             ]);
             try {
-                // send sms
+                $message = __('auth.update_phone_otp', ['otp' => $otp]);
                 Log::info('OTP sent for new phone verification via WhatsApp', ['phone' => $newPhoneNumber, 'otp' => $newOtp, 'method' => __METHOD__]);  // temporarily for testing
+                $this->service->send($newPhoneNumber, $message);
             } catch (\Exception $e) {
                 Log::error('Failed to send OTP for new phone verification via WhatsApp', ['phone' => $newPhoneNumber, 'error' => $e->getMessage(), 'method' => __METHOD__]);
             }
@@ -98,8 +99,8 @@ class ProfileManagementService
 
     public function updatePhoneNumber(array $data)
     {
-        $user = $this->user;
-        $newPhone = str_replace(['+', ' ', '-'], '', $data['new_phone']);
+        $user = auth('sanctum')->user();
+        $newPhone = normalize_saudi_phone_number($data['new_phone']);
         $otpCode = $data['otp_code'];
 
         return DB::transaction(function () use ($user, $newPhone, $otpCode) {
