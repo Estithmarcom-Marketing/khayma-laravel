@@ -22,6 +22,7 @@ class OrderItemResource extends JsonResource
             'quantity' => $this->quantity,
             'price' => (float) $this->productVariation->price,
             'offer' => (float) $this->productVariation->offer,
+            'tax' => (float) $this->productVariation->tax,
             'total' => (float) (($this->productVariation->price - $this->productVariation->offer) * $this->quantity),
             'product_variation_id' => $this->productVariation->id,
             'color' => $this->productVariation->relationLoaded('color') ? new ColorResource($this->productVariation->color) : null,

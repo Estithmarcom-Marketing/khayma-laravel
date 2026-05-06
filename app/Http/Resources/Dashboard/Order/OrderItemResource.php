@@ -16,15 +16,16 @@ class OrderItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
- 
+
         return [
 
             'quantity' => $this->quantity,
             'price' => (float) $this->productVariation->price,
             'offer' => (float) $this->productVariation->offer,
-            'total' =>   (float) (($this->productVariation->price - $this->productVariation->offer) * $this->quantity),     
+            'tax' => (float) $this->productVariation->tax,
+            'total' =>   (float) ((($this->productVariation->price + $this->productVariation->tax) - $this->productVariation->offer) * $this->quantity),
             'product_variation_id' => $this->productVariation->id,
-            'color' =>$this->productVariation->relationLoaded('color') ? new ColorResource($this->productVariation->color) : null,
+            'color' => $this->productVariation->relationLoaded('color') ? new ColorResource($this->productVariation->color) : null,
             'size' => $this->productVariation->relationLoaded('size') ? new SizeResource($this->productVariation->size) : null,
             'product' => [
                 'name_en' => $this->productVariation->product->name_en,
@@ -36,7 +37,7 @@ class OrderItemResource extends JsonResource
                         'name' => $media->name,
                         'url' => $media->original_url,
                     ];
-                })->whenNotEmpty(fn ($collection) => $collection->values()),
+                })->whenNotEmpty(fn($collection) => $collection->values()),
             ],
         ];
     }

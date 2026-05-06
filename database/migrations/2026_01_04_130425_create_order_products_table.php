@@ -21,6 +21,9 @@ return new class extends Migration
                 ->restrictOnDelete();
 
             $table->unsignedBigInteger('quantity')->default(1);
+            $table->decimal('price', 8, 2);
+            $table->decimal('offer', 8, 2)->nullable();
+            $table->decimal('tax', 8, 2);
             $table->timestamps();
         });
     }

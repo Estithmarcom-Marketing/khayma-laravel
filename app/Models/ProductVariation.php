@@ -13,6 +13,7 @@ class ProductVariation extends Model
         'size_id',
         'stock_quantity',
         'price',
+        'tax',
         'sku',
         'is_active',
         'offer',
@@ -23,6 +24,8 @@ class ProductVariation extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'price' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'offer' => 'decimal:2',
         'offer_started_date' => 'datetime',
         'offer_expired_date' => 'datetime',
     ];

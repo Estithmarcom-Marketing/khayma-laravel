@@ -30,6 +30,7 @@ class ProductVariationResource extends JsonResource
             'is_active' => $this->is_active,
             'is_in_reminder' => (bool) $this->is_in_reminder,
             'price' => (float) $this->price,
+            'tax' => (float) $this->tax,
             'offer' => (float) $this->offer,
             'offer_started_date' => $this->offer_started_date,
             'offer_expired_date' => $this->offer_expired_date,

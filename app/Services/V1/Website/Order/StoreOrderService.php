@@ -12,17 +12,14 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\ProductVariation;
 use App\Models\PromoCode;
+use App\Models\User;
 use App\Services\V1\Website\Cart\CartService;
 use Illuminate\Support\Facades\DB;
 
 class StoreOrderService
 {
-    public $user;
 
-    public function __construct(public CartService $cartService)
-    {
-        $this->user = auth('sanctum')->user();
-    }
+    public function __construct(public CartService $cartService) {}
 
     public function store(array $data)
     {
@@ -36,12 +33,13 @@ class StoreOrderService
             }
             $validatedItems = $this->validateCartItems($data, true);
             $subtotal = $validatedItems['subtotal'];
+            $tax = $validatedItems['taxTotal'];
             $discountOfOffer = $validatedItems['discountOfOffer'];
             $enrichedItems = $validatedItems['enrichedItems'];
-            $address = $this->getAddress($data);
+            $address = $this->getAddress($data, $user);
             $shipping_cost = $this->getShippingCost($data['delivery_method_id'] ?? null, $address);
             $promo_code = $this->getPromoCode($data['promo_code'] ?? null);
-            $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code ?? null, true);
+            $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code, true, $tax);
 
             $order = Order::create([
                 'user_id' => $user->id,
@@ -51,6 +49,7 @@ class StoreOrderService
                 'payment_method_id' => $data['payment_method_id'] ?? null,
                 'delivery_method_id' => $data['delivery_method_id'],
                 'subtotal_price' => $subtotal,
+                'tax_amount' => $tax,
                 'shipping_cost' => $shipping_cost,
                 'discount_of_offer' => $discountOfOffer,
                 'discount_of_promo_code' => $total['discount_of_promo_code'],
@@ -65,6 +64,7 @@ class StoreOrderService
                     'quantity' => $item->quantity,
                     'price' => $item->price,
                     'offer' => $item->offer,
+                    'tax' => $item->tax,
                 ];
             })->toArray());
 
@@ -100,7 +100,7 @@ class StoreOrderService
         return $result;
     }
 
-    private function updateUserInfo($user, array $data)
+    private function updateUserInfo(User $user, array $data)
     {
         if ((isset($data['name']) && $data['name'] != null) || (isset($data['email']) && $data['email'] != null)) {
             $user->update([
@@ -110,78 +110,40 @@ class StoreOrderService
         }
     }
 
-    private function getCartItems($user)
+    private function getCartItems(User $user)
     {
         if (! $user->cart) {
             throw new \LogicException(__('cart.cart_fetch_failed'));
         }
 
-        return $user->cart->items()->get();
+        return $user->cart
+            ->items()
+            ->lockForUpdate()
+            ->get();
     }
 
     private function validateCartItems(array $data, bool $decrementStock): array
     {
-        $subtotal = 0;
-        $discountOfOffer = 0;
-        $priceBeforeOffer = 0;
-        $enrichedItems = collect();
-        $locale = app()->getLocale();
+        $calculator = $this->initializeCalculator();
 
-        $variationIds = $data['items']->pluck('product_variation_id');
-
-        $variations = ProductVariation::lockForUpdate()
-            ->whereIn('id', $variationIds)
-            ->get()
-            ->keyBy('id');
+        $variations = $this->loadVariations($data['items']);
 
         foreach ($data['items'] as $item) {
-            $variation = $variations->get($item->product_variation_id);
 
-            if (! $variation) {
-                throw new \LogicException(__('orders.error_product_not_found'));
-            }
+            $variation = $this->resolveVariation($variations, $item);
 
-            if (($variation->stock_quantity < $item->quantity) && $decrementStock) {
-                throw new \LogicException(__('orders.error_stock', ['product' => $variation->product->{'name_'.$locale}]));
-            }
+            $this->validateStock($variation, $item, $decrementStock);
 
-            $price = $variation->price;
-            $priceBeforeOffer += $price * $item->quantity;
+            $pricing = $this->calculateItemPricing($variation, $item);
 
-            $activeOffer = 0;
+            $this->accumulateTotals($calculator, $pricing);
 
-            if (
-                $variation->offer > 0 &&
-                $variation->offer < $variation->price &&
-                $variation->offer_started_date <= now() &&
-                $variation->offer_expired_date >= now()
-            ) {
+            $this->appendEnrichedItem($calculator, $variation, $item, $pricing);
 
-                $activeOffer = $variation->offer;
-                $price -= $variation->offer;
-                $discountOfOffer += $variation->offer * $item->quantity;
-            }
-
-            $subtotal += $price * $item->quantity;
-
-            $enrichedItems->push((object) [
-                'product_variation_id' => $item->product_variation_id,
-                'quantity' => $item->quantity,
-                'price' => $variation->price,
-                'offer' => $activeOffer,
-            ]);
-
-            if ($decrementStock) {
-                $variation->decrement('stock_quantity', $item->quantity);
-            }
+            $this->decrementStockIfNeeded($variation, $item, $decrementStock);
         }
 
-        return [
-            'subtotal' => $subtotal,
-            'discountOfOffer' => $discountOfOffer,
-            'priceBeforeOffer' => $priceBeforeOffer,
-            'enrichedItems' => $enrichedItems,
-        ];
+        return $this->buildResult($calculator);
     }
 
     private function getShippingCost($deliveryMethodId, $address)
@@ -208,6 +170,7 @@ class StoreOrderService
         if ($promoCode) {
             $promo = PromoCode::active()
                 ->where('code', $promoCode)
+                ->lockForUpdate()
                 ->first();
             if (! $promo) {
                 throw new \LogicException(__('orders.promo_code_exists'));
@@ -219,11 +182,11 @@ class StoreOrderService
         return null;
     }
 
-    private function getAddress(array $data)
+    private function getAddress(array $data, User $user)
     {
         if (isset($data['address_id']) && $data['address_id'] != null) {
             $address = Address::findOrFail($data['address_id']);
-            if ($address->user_id != $this->user->id) {
+            if ($address->user_id != $user->id) {
                 throw new \LogicException(message: 'Invalid address');
             }
 
@@ -233,28 +196,44 @@ class StoreOrderService
         return null;
     }
 
-    private function calculateTotal($subtotal, $shipping_cost, $promo_code, bool $promoCodeIncrement)
-    {
+    private function calculateTotal(
+        $subtotal,
+        $shipping_cost,
+        $promo_code,
+        bool $promoCodeIncrement,
+        $tax = 0
+    ) {
         $discount_of_promo_code = 0;
+
         if ($promo_code) {
+
             if ($promoCodeIncrement) {
                 $promo_code->increment('times_used');
             }
+
             if ($promo_code->is_percentage) {
                 $discount_of_promo_code = ($subtotal) * ($promo_code->value / 100);
             } else {
                 $discount_of_promo_code = $promo_code->value;
             }
         }
-        $total = max(0, ($subtotal + $shipping_cost) - $discount_of_promo_code);
 
-        return ['total' => $total, 'discount_of_promo_code' => $discount_of_promo_code];
+        $total = max(
+            0,
+            ($subtotal + $tax + $shipping_cost) - $discount_of_promo_code
+        );
+
+        return [
+            'total' => $total,
+            'discount_of_promo_code' => $discount_of_promo_code,
+            'tax' => $tax,
+        ];
     }
 
     public function calculateTotalAmountOfOrder(array $data): array
     {
 
-        $user = $this->user;
+        $user = auth('sanctum')->user();
 
         $data['items'] = $this->getCartItems($user);
 
@@ -264,12 +243,13 @@ class StoreOrderService
         $validatedItems = $this->validateCartItems($data, false);
         $subtotal = $validatedItems['subtotal'];
         $discountOfOffer = $validatedItems['discountOfOffer'];
+        $tax = $validatedItems['taxTotal'];
 
-        $address = $this->getAddress($data);
+        $address = $this->getAddress($data, $user);
         $shipping_cost = $this->getShippingCost($data['delivery_method_id'] ?? null, $address);
         $promo_code = $this->getPromoCode($data['promo_code'] ?? null);
 
-        $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code, false);
+        $total = $this->calculateTotal($subtotal, $shipping_cost, $promo_code, false, $tax);
 
         return [
             'price_before_offer' => (float) $validatedItems['priceBeforeOffer'],
@@ -278,14 +258,14 @@ class StoreOrderService
             'discount_total' => (float) ($discountOfOffer + $total['discount_of_promo_code']),
             'subtotal' => (float) $subtotal,
             'shipping' => (float) $shipping_cost,
-            'tax' => 0.00, // Tax calculation can be added here if needed
+            'tax' => (float) $tax,
             'total' => (float) $total['total'],
         ];
     }
 
     public function rollbackOrder(Order $order): void
     {
-        $user = $this->user;
+        $user = auth('sanctum')->user();
         foreach ($order->items as $item) {
             $item->productVariation->increment('stock_quantity', $item->quantity);
 
@@ -301,5 +281,120 @@ class StoreOrderService
             }
         }
         $order->delete();
+    }
+    private function initializeCalculator(): object
+    {
+        return (object)[
+            'subtotal' => 0,
+            'discountOfOffer' => 0,
+            'priceBeforeOffer' => 0,
+            'taxTotal' => 0,
+            'enrichedItems' => collect(),
+        ];
+    }
+    private function loadVariations($items)
+    {
+        return ProductVariation::lockForUpdate()
+            ->whereIn('id', $items->pluck('product_variation_id'))
+            ->get()
+            ->keyBy('id');
+    }
+    private function resolveVariation($variations, $item)
+    {
+        $variation = $variations->get($item->product_variation_id);
+
+        if (!$variation) {
+            throw new \LogicException(__('orders.error_product_not_found'));
+        }
+
+        return $variation;
+    }
+    private function validateStock($variation, $item, bool $decrementStock): void
+    {
+        if (!$decrementStock) {
+            return;
+        }
+
+        if ($variation->stock_quantity < $item->quantity) {
+
+            $locale = app()->getLocale();
+
+            throw new \LogicException(
+                __('orders.error_stock', [
+                    'product' => $variation->product->{'name_' . $locale}
+                ])
+            );
+        }
+    }
+    private function calculateItemPricing($variation, $item): object
+    {
+        $basePrice = $variation->price;
+
+        $activeOffer = $this->resolveActiveOffer($variation);
+
+        $finalPrice = $basePrice - $activeOffer;
+
+        $taxPerItem = $variation->tax ?? 0;
+
+        return (object)[
+            'basePrice' => $basePrice,
+            'activeOffer' => $activeOffer,
+            'finalPrice' => $finalPrice,
+            'taxPerItem' => $taxPerItem,
+            'quantity' => $item->quantity,
+        ];
+    }
+    private function resolveActiveOffer($variation): float
+    {
+        if (
+            $variation->offer > 0 &&
+            $variation->offer < $variation->price &&
+            $variation->offer_started_date <= now() &&
+            $variation->offer_expired_date >= now()
+        ) {
+            return $variation->offer;
+        }
+
+        return 0;
+    }
+    private function accumulateTotals($calc, $pricing): void
+    {
+        $calc->priceBeforeOffer +=
+            $pricing->basePrice * $pricing->quantity;
+
+        $calc->discountOfOffer +=
+            $pricing->activeOffer * $pricing->quantity;
+
+        $calc->taxTotal +=
+            $pricing->taxPerItem * $pricing->quantity;
+
+        $calc->subtotal +=
+            $pricing->finalPrice * $pricing->quantity;
+    }
+    private function appendEnrichedItem($calc, $variation, $item, $pricing): void
+    {
+        $calc->enrichedItems->push((object)[
+            'product_variation_id' => $variation->id,
+            'quantity' => $item->quantity,
+            'price' => $pricing->basePrice,
+            'offer' => $pricing->activeOffer,
+            'tax' => $pricing->taxPerItem,
+        ]);
+    }
+    private function decrementStockIfNeeded($variation, $item, bool $decrementStock)
+    {
+        if ($decrementStock) {
+            $variation->decrement('stock_quantity', $item->quantity);
+        }
+    }
+    private function buildResult($calc): array
+    {
+        return [
+            'subtotal' => $calc->subtotal,
+            'discountOfOffer' => $calc->discountOfOffer,
+            'priceBeforeOffer' => $calc->priceBeforeOffer,
+            'taxTotal' => $calc->taxTotal,
+            'enrichedItems' => $calc->enrichedItems,
+        ];
     }
 }

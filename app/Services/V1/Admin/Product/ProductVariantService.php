@@ -15,6 +15,7 @@ class ProductVariantService
             'size_id' => $data['size_id'],
             'sku' => $data['sku'],
             'price' => $data['price'],
+            'tax' => $data['tax'] ?? 0,
             'stock_quantity' => $data['stock_quantity'],
             'is_active' => $data['is_active'],
             'offer' => $data['offer'] ?? null,
@@ -27,22 +28,10 @@ class ProductVariantService
     {
         $oldStock = $productVariation->stock_quantity;
 
-        $newStock = $data['stock_quantity'] ?? $oldStock;
+        $productVariation->fill($data)->save();
 
-        $productVariation->update([
-            'color_id' => $data['color_id'] ?? $productVariation->color_id,
-            'size_id' => $data['size_id'] ?? $productVariation->size_id,
-            'sku' => $data['sku'] ?? $productVariation->sku,
-            'price' => $data['price'] ?? $productVariation->price,
-            'stock_quantity' => $newStock,
-            'is_active' => $data['is_active'] ?? $productVariation->is_active,
-            'offer' => $data['offer'] ?? $productVariation->offer,
-            'offer_expired_date' => $data['offer_expired_date'] ?? $productVariation->offer_expired_date,
-            'offer_started_date' => $data['offer_started_date'] ?? $productVariation->offer_started_date,
-        ]);
-
-        if ($oldStock == 0 && $newStock > 0) {
-            event(new ProductStockUpdated($productVariation->refresh()));
+        if ($oldStock == 0 && $productVariation->stock_quantity > 0) {
+            event(new ProductStockUpdated($productVariation->fresh()));
         }
 
         return $productVariation->load('color', 'size');

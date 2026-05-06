@@ -12,6 +12,12 @@ class OrderProduct extends Model
         'quantity',
         'price',
         'offer',
+        'tax',
+    ];
+    protected $casts = [
+        'price' => 'decimal:2',
+        'offer' => 'decimal:2',
+        'tax' => 'decimal:2',
     ];
 
     public function order()
