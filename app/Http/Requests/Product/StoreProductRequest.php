@@ -59,6 +59,7 @@ class StoreProductRequest extends FormRequest
             ],
 
             'variations.*.price'          => 'required|numeric|min:0',
+            'variations.*.tax'            => 'required|numeric|min:0',
             'variations.*.stock_quantity' => 'required|integer|min:0',
             'variations.*.is_active'      => 'required|boolean',
 

@@ -124,6 +124,7 @@ class ProductService
             'size_id'            => $variation['size_id'],
             'sku'                => $variation['sku'],
             'price'              => $variation['price'],
+            'tax'                => $variation['tax'] ?? 0,
             'stock_quantity'     => $variation['stock_quantity'],
             'is_active'          => (bool) $variation['is_active'],
             'offer'              => $variation['offer'] ?? null,
