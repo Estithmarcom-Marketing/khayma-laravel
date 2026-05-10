@@ -5,15 +5,15 @@
     $payment = $order->payments->first();
     $isPaid = $payment && $payment->status->value == 'completed';
     $logoPath = public_path('Images/alkhimah-logo-1.png');
-
 @endphp
 
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="{{ $isAr ? 'rtl' : 'ltr' }}">
+<!doctype html>
+<html lang="ar" dir="rtl">
 
 <head>
-    <meta charset="UTF-8">
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>فاتورة ضريبية - Tax Invoice</title>
     <style>
         * {
             margin: 0;
@@ -22,562 +22,493 @@
         }
 
         body {
-            font-family: cairo, sans-serif;
-            font-size: 12px;
-            color: #1a2a35;
-            background: #eaf3f8;
-        }
-
-        .page-wrap {
-            padding: 20px;
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #b3d9f0;
-            overflow: hidden;
-        }
-
-        /* == HEADER == */
-        .header-inner {
-            width: 100%;
-            border-collapse: collapse;
-            border-bottom: 2px solid #b3d9f0;
-        }
-
-        .header-logo-cell {
-            padding: 18px 20px;
-            vertical-align: middle;
-            width: 50%;
-        }
-
-        .header-meta-cell {
-            padding: 18px 20px;
-            vertical-align: middle;
-            width: 50%;
-            text-align: {{ $isAr ? 'left' : 'right' }};
-        }
-
-        .logo-box {
-            width: 80px;
-            height: 80px;
-            border: 2px dashed #aac8dc;
-            border-radius: 8px;
-            background: #f5fafd;
-            display: inline-block;
-            vertical-align: middle;
-            text-align: center;
-            line-height: 76px;
-            font-size: 10px;
-            color: #aac8dc;
-            overflow: hidden;
-        }
-
-        .logo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-            line-height: 1;
-        }
-
-        .meta-label {
-            font-size: 10px;
-            color: #7a95a5;
-        }
-
-        .meta-value {
-            font-size: 12px;
-            /* font-weight: bold; */
-
-            color: #1a2a35;
-            margin-bottom: 4px;
-        }
-
-        .paid-badge {
-            display: inline-block;
-            padding: 2px 10px;
-            background: #e6faf1;
-            color: #27ae60;
-            border: 1px solid #a8e6c8;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .unpaid-badge {
-            display: inline-block;
-            padding: 2px 10px;
+            font-family: Arial, sans-serif;
             background: #f0f0f0;
-            color: #6b6b6b;
-            border: 1px solid #c0c0c0;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        /* == INFO STRIP == */
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            border-bottom: 2px solid #b3d9f0;
-        }
-
-        .info-cell {
-            padding: 14px 20px;
-            vertical-align: top;
-            width: 33.33%;
-            border-{{ $isAr ? 'left' : 'right' }}: 1px solid #b3d9f0;
-        }
-
-        .info-cell-last {
-            padding: 14px 20px;
-            vertical-align: top;
-            width: 33.33%;
-        }
-
-        .info-title {
-            font-weight: bold;
-            color: #3a94cc;
-            font-size: 11px;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #d6ecf8;
-        }
-
-        .info-row {
-            color: #4a6070;
-            font-size: 11px;
-            margin-bottom: 3px;
-            line-height: 1.5;
-        }
-
-        .info-row strong {
-            color: #1a2a35;
-        }
-
-        /* == ITEMS TABLE == */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .items-table thead tr {
-            background: #1a2e3b;
-            color: #ffffff;
-        }
-
-        .items-table th {
-            padding: 10px 14px;
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .items-table th.th-product {
-            text-align: {{ $isAr ? 'right' : 'left' }};
-
-        }
-
-        .items-table th.th-product {
-            color: white !important;
-
-        }
-
-        .items-table td {
-            padding: 11px 14px;
-            font-size: 11px;
-            color: #1a2a35;
-            text-align: center;
-            border-bottom: 1px solid #ddeef8;
-            vertical-align: middle;
-        }
-
-        .items-table td.td-product {
-            text-align: {{ $isAr ? 'right' : 'left' }};
-            font-weight: bold;
-        }
-
-        .items-table td small {
-            display: block;
-            color: #7a95a5;
-            font-size: 10px;
-            font-weight: normal;
-            margin-top: 2px;
-        }
-
-        .items-table td.td-total {
-            font-weight: bold;
-            color: #3a94cc;
-        }
-
-        .row-alt {
-            background: #f5fafd;
-        }
-
-        /* == TOTALS == */
-        .totals-wrap {
-            border-top: 2px solid #b3d9f0;
-            padding: 16px 20px;
-            text-align: {{ $isAr ? 'left' : 'right' }};
-        }
-
-        .totals-inner {
-            display: inline-block;
-            width: 260px;
-            text-align: {{ $isAr ? 'right' : 'left' }};
-        }
-
-        .total-line {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 4px;
-        }
-
-        .total-line td {
-            padding: 3px 0;
+            color: #111;
             font-size: 12px;
-            color: #4a6070;
         }
 
-        .tl-amount {
-            text-align: {{ $isAr ? 'left' : 'right' }};
-            font-weight: bold;
-            color: #1a2a35;
+        .invoice-wrapper {
+            width: 595px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 20px 24px;
+            font-size: 12px;
         }
 
-        .tl-discount {
-            text-align: {{ $isAr ? 'left' : 'right' }};
-            font-weight: bold;
-            color: #27ae60;
+        .header {
+            margin-bottom: 14px;
         }
 
-        .grand-row {
-            width: 100%;
-            border-collapse: collapse;
-            border-top: 2px solid #3a94cc;
-            margin-top: 8px;
-        }
-
-        .grand-row td {
-            padding-top: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            color: #1a2a35;
-        }
-
-        .grand-amount {
-            text-align: {{ $isAr ? 'left' : 'right' }};
-            color: #3a94cc;
-            font-size: 18px;
-        }
-
-        /* == TOTALS TWO COLUMN == */
-
-        .totals-table {
+        .header table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .totals-left {
-            width: 55%;
+        .header td {
             vertical-align: top;
+            padding: 4px 0;
         }
 
-        .totals-right {
-            width: 45%;
-            vertical-align: top;
-            padding: 10px 20px;
-            font-size: 11px;
-            color: #4a6070;
+        .header-left,
+        .header-right {
+            font-size: 11.5px;
             line-height: 1.7;
         }
 
-        .policy-title {
-            font-weight: bold;
-            color: #3a94cc;
-            margin-bottom: 6px;
+        .header-left {
+            text-align: left;
+            direction: ltr;
         }
 
-        .policy-box {
-            background: #f5fafd;
-            border: 1px solid #b3d9f0;
-            border-radius: 8px;
-            padding: 12px;
+        .header-right {
+            text-align: right;
+            direction: rtl;
         }
 
-
-        /* == FOOTER == */
-        .footer {
-            background: #1a2e3b;
-            color: #ffffff;
+        .logo-container {
             text-align: center;
-            padding: 16px 20px;
+            padding: 6px 0;
         }
 
-        .footer-title {
-            font-size: 13px;
+        .logo-placeholder {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            background: #fff;
+            text-align: center;
+            line-height: 20px;
+        }
+
+        .logo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-placeholder .placeholder-text {
+            font-size: 10px;
+            color: #aaa;
+        }
+
+        .invoice-title {
+            text-align: center;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+            padding: 10px 0;
+            /* border-bottom: 2px solid #3a94cc; */
+            color: #000;
         }
 
-        .footer-contacts {
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 11.5px;
+        }
+
+        .meta-table td {
+            padding: 3px 6px;
+            border-top: 1px solid white;
+            border-bottom: 1px solid white;
+        }
+
+        .meta-table .label {
+            font-weight: 600;
+            background: #eaf4fb;
+            white-space: nowrap;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .meta-table .value {
+            text-align: right;
+            background: #eaf4fb;
+            direction: rtl;
+        }
+
+        .special-td {
+            width: 5px;
+            background-color: white;
+        }
+
+        .meta-table .label-ltr {
+            font-weight: 600;
+            background: #eaf4fb;
+            white-space: nowrap;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .meta-table .value-ltr {
+            text-align: center;
+            background: #eaf4fb;
+            direction: ltr;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11.5px;
+            margin-bottom: 8px;
+        }
+
+        .items-table th,
+        .items-table td {
+            border: 1px solid #bbb;
+            padding: 5px 6px;
+            text-align: center;
+        }
+
+        .items-table thead tr {
+            background: #3a94cc;
+            color: #fff;
+        }
+
+        .items-table thead th {
+            font-weight: 600;
+            font-size: 11px;
+            color: #fff;
+        }
+
+        .items-table .col-desc {
+            text-align: right;
+            direction: rtl;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .footer-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #3a94cc;
+        }
+
+        .footer-section table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .footer-contacts td {
-            text-align: center;
+        .notes-box {
+            padding: 12px;
             font-size: 11px;
-            color: #a0c8e0;
-            padding: 0 10px;
+            direction: rtl;
+            text-align: right;
+            background: #fbfcff;
+            /* border: 1px solid #e1e9f5; */
+            /* border-radius: 8px; */
         }
 
-        .footer-copy {
-            font-size: 10px;
-            color: #a0c8e0;
-            margin-top: 10px;
-            border-top: 1px solid #2e4557;
-            padding-top: 8px;
+        .notes-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #020303;
+            padding-bottom: 4px;
+            display: block;
+            /* border-bottom: 1px solid #e1e9f5; */
+        }
+
+        .note-item {
+            padding: 8px;
+            margin: 0;
+            font-size: 10.5px;
+            /* line-height: 1.6; */
+            color: #222;
+        }
+
+        .note-item:first-child {
+            padding-top: 0;
+        }
+
+        .qr-box {
+            width: 80px;
+            height: 80px;
+            text-align: center;
+            background: #fff;
+            margin-top: 6px;
+        }
+
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-placeholder {
+            font-size: 9px;
+            color: #aaa;
+            text-align: center;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            background: #fff;
+        }
+
+        .totals-table {
+            width: 220px;
+            border-collapse: collapse;
+            font-size: 11.5px;
+        }
+
+        .totals-table td {
+            padding: 5px 8px;
+            border-top: 1px solid white;
+            border-bottom: 4px solid white;
+        }
+
+        .totals-table .tot-label {
+            text-align: center;
+            direction: rtl;
+            font-weight: 600;
+            background: #eaf4fb;
+            font-size: 10.5px;
+        }
+
+        .totals-table .tot-value {
+            text-align: center;
+            direction: ltr;
+            font-weight: 600;
+            background: #eaf4fb;
+            min-width: 70px;
+        }
+
+        .totals-table .tot-final-label {
+            text-align: center;
+            font-size: 10.5px;
+            font-weight: bold;
+            background: #eaf4fb;
+            color: #0f0f0f;
+        }
+
+        .totals-table .tot-final {
+            text-align: center;
+            direction: ltr;
+            font-weight: bold;
+            background: #eaf4fb;
+            color: #060606;
         }
     </style>
 </head>
 
-
 <body>
-    <div class="page-wrap">
-        <div class="card">
-
-            {{-- == HEADER == --}}
-            <table class="header-inner">
+    <div class="invoice-wrapper">
+        <!-- HEADER -->
+        <div class="header">
+            <table>
                 <tr>
-                    <td class="header-logo-cell">
-                        <div class="logo-box">
-                            @if (!empty($logoPath))
-                                <img width="120px" src="{{ $logoPath }}" alt="Logo">
-                            @else
-                                Logo
-                            @endif
-                        </div>
-                    </td>
-                    <td class="header-meta-cell">
-                        <div class="meta-label">{{ $isAr ? 'رقم الطلب' : 'Order ID' }}</div>
-                        <div class="meta-value">{{ $order->id }}</div>
-                        <div class="meta-label">{{ $isAr ? 'تاريخ الطلب' : 'Order Date' }}</div>
-                        <div class="meta-value">{{ $order->created_at->format('Y-m-d H:i') }}</div>
-                        @if ($isPaid)
-                            <span class="paid-badge">{{ $isAr ? 'مدفوعة' : 'Paid' }}</span>
+                    <td width="30%" class="header-right">
+                        <strong>شركة الخيمة المتكاملة التجارية</strong><br />
+                        س.ت 4030273318<br />
+                        الرقم الضريبي : 312700988800003<br />
+                        جدة - حي البلد
+                    <td width="40%"
+                        style="
+            text-align: center;
+            vertical-align: middle;
+            padding: 6px 0;
+          ">
+                        @if (!empty($logoPath))
+                            <img src="{{ $logoPath }}" alt="Logo" width="100"
+                                style="display: block; margin: 0 auto;" />
                         @else
-                            <span class="unpaid-badge">{{ $isAr ? 'غير مدفوع' : 'Unpaid' }}</span>
+                            <span style="font-size: 10px; color: #aaa;">Logo</span>
                         @endif
+                    </td>
+
+                    <td width="30%" class="header-left">
+                        <strong style="font-size: 10px; display: block;">Al-Khaima Complete Trading
+                            Company</strong><br />
+                        C.T 4030273318<br />
+                        Tax number: 312700988800003<br />
+                        Jeddah - Albalad district
                     </td>
                 </tr>
             </table>
+        </div>
 
-            {{-- == INFO STRIP == --}}
-            <table class="info-table">
-                <tr>
-                    <td class="info-cell">
-                        <div class="info-title">{{ $isAr ? 'بيانات العميل' : 'Customer' }}</div>
-                        <div class="info-row"><strong>{{ $isAr ? 'الاسم' : 'Name' }}:</strong>
-                            {{ $order->user->name }}</div>
-                        @if ($order->user->phone)
-                            <div class="info-row"><strong>{{ $isAr ? 'الجوال' : 'Phone' }}:</strong>
-                                {{ $order->user->phone }}</div>
-                        @endif
-                    </td>
-                    <td class="info-cell">
-                        <div class="info-title">{{ $isAr ? 'عنوان التوصيل' : 'Delivery Address' }}</div>
-                        <div class="info-row">{{ $order->address_details }}</div>
-                    </td>
-                    <td class="info-cell-last">
-                        <div class="info-title">{{ $isAr ? 'طريقة التوصيل' : 'Delivery Method' }}</div>
-                        <div class="info-row">{{ optional($order->deliveryMethod)->{'name_' . app()->getLocale()} }}
-                        </div>
-                    </td>
-                </tr>
-            </table>
+        <!-- TITLE -->
+        <h2 class="invoice-title">فاتورة ضريبية &nbsp; TAX INVOICE</h2>
 
-            {{-- == ITEMS == --}}
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th class="th-product">{{ $isAr ? 'المنتج' : 'Product' }}</th>
-                        <th class="th-product">{{ $isAr ? 'الكمية' : 'Qty' }}</th>
-                        <th class="th-product">{{ $isAr ? 'سعر الوحدة' : 'Unit Price' }}</th>
-                        <th class="th-product">{{ $isAr ? 'خصم الوحدة' : 'Unit offer' }}</th>
-
-                        <th class="th-product">{{ $isAr ? 'الإجمالي' : 'Total' }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($order->items as $i => $item)
-                        @php
-                            $price = (float) $item->price;
-                            $offer = (float) $item->offer;
-                            $qty = (int) $item->quantity;
-                        @endphp
-                        <tr class="{{ $i % 2 === 1 ? 'row-alt' : '' }}">
-                            <td class="td-product">
-                                {{ $item->productVariation->product->{'name_' . app()->getLocale()} }}
-                                <small>SKU: {{ $item->productVariation->sku }}</small>
-                            </td>
-                            <td>{{ $qty }}</td>
-                            <td>{{ number_format($price, 2) }}</td>
-                            <td>{{ number_format($offer, 2) }}</td>
-                            <td class="td-total">{{ number_format(($price - $offer) * $qty, 2) }}</td>
+        <!-- META INFO -->
+        <table class="meta-table">
+            <tr>
+                <td width="50%" valign="top">
+                    <table width="100%" style="border-collapse: collapse;">
+                        <tr>
+                            <td class="label">رقم الطلب :</td>
+                            <td class="value-ltr">{{ $order->id }}</td>
+                            <td class="label-ltr">Order No :</td>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        <tr>
+                            <td class="label">التاريخ :</td>
+                            <td class="value-ltr">{{ $order->created_at->format('Y-m-d') }}</td>
+                            <td class="label-ltr">Date :</td>
+                        </tr>
+                        <tr>
+                            <td class="label">نوع الفاتورة :</td>
+                            <td class="value-ltr">{{ $payment->paymentMethod->name_ar }}</td>
+                            <td class="label-ltr">Type :</td>
+                        </tr>
+                    </table>
+                </td>
+                <td width="50%" valign="top">
+                    <table width="100%" style="border-collapse: collapse;">
+                        <tr>
+                            <td class="label">اسم العميل :</td>
+                            <td class="value">{{ optional($order->user)->name ?? '-' }}</td>
+                            <td class="label-ltr">Customer Name :</td>
+                        </tr>
+                        <tr>
+                            <td class="label">عنوان العميل :</td>
+                            <td class="value">{{ $order->address_details ?? '-' }}</td>
+                            <td class="label-ltr">Customer Address :</td>
+                        </tr>
+                        <tr>
+                            <td class="label">الرقم الضريبي :</td>
+                            <td class="value">{{ optional($order->user)->tax_number ?? '-' }}</td>
+                            <td class="label-ltr">Customer Vat No :</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
-            {{-- == TOTALS == --}}
-            <div class="totals-wrap">
-
-                <table class="totals-table">
+        <!-- ITEMS TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>م<br />NO</th>
+                    <th class="col-desc">الصنف<br />Description</th>
+                    <th>المقاس<br />Size</th>
+                    <th>الكمية<br />Qty</th>
+                    <th>السعر<br />Price</th>
+                    <th>الخصم<br />Disc</th>
+                    <th>المجموع<br />Total</th>
+                    <th>الضريبة<br />VAT</th>
+                    <th>الإجمالي<br />Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($order->items as $index => $item)
+                    @php
+                        $price = (float) $item->price;
+                        $offer = (float) $item->offer;
+                        $qty = (int) $item->quantity;
+                        $subtotal = ($price - $offer) * $qty;
+                        $vat = (float) $item->tax;
+                        $total = $subtotal + $vat;
+                    @endphp
                     <tr>
-
-                        {{-- LEFT SIDE : TOTALS --}}
-                        <td class="totals-left">
-
-                            <div class="totals-inner">
-
-                                <table class="total-line">
-                                    <tr>
-                                        <td>{{ $isAr ? 'المجموع الفرعي' : 'Subtotal' }}</td>
-                                        <td class="tl-amount">{{ number_format($order->subtotal_price, 2) }}</td>
-                                    </tr>
-                                </table>
-
-                                <table class="total-line">
-                                    <tr>
-                                        <td>{{ $isAr ? 'الشحن' : 'Shipping' }}</td>
-                                        <td class="tl-amount">{{ number_format($order->shipping_cost, 2) }}</td>
-                                    </tr>
-                                </table>
-
-                                <table class="total-line">
-                                    <tr>
-                                        <td>{{ $isAr ? 'الضريبة' : 'Tax' }}</td>
-                                        <td class="tl-amount">{{ number_format($order->tax_amount, 2) }}</td>
-                                    </tr>
-                                </table>
-
-                                @if ($order->discount_of_offer > 0 || $order->discount_of_promo_code > 0)
-
-                                    @if ($order->discount_of_offer > 0)
-                                        <table class="total-line">
-                                            <tr>
-                                                <td>{{ $isAr ? 'خصم العروض' : 'Offers Discount' }}</td>
-                                                <td class="tl-discount">
-                                                    {{ number_format($order->discount_of_offer, 2) }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    @endif
-
-                                    @if ($order->discount_of_promo_code > 0)
-                                        <table class="total-line">
-                                            <tr>
-                                                <td>{{ $isAr ? 'كود الخصم' : 'Promo Code' }}</td>
-                                                <td class="tl-discount">
-                                                    {{ $order->promo_code }}
-                                                </td>
-                                            </tr>
-                                        </table>
-
-                                        <table class="total-line">
-                                            <tr>
-                                                <td>{{ $isAr ? 'خصم كود الخصم' : 'Promo Code Discount' }}</td>
-                                                <td class="tl-discount">
-                                                    {{ number_format($order->discount_of_promo_code, 2) }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    @endif
-
-                                    <table class="total-line">
-                                        <tr>
-                                            <td>{{ $isAr ? 'الخصم الكلي' : 'Total Discount' }}</td>
-                                            <td class="tl-discount">
-                                                {{ number_format($order->discount_of_offer + $order->discount_of_promo_code, 2) }}
-                                            </td>
-                                        </tr>
-                                    </table>
-
-                                @endif
-
-                                <table class="grand-row">
-                                    <tr>
-                                        <td>{{ $isAr ? 'الإجمالي الكلي' : 'Grand Total' }}</td>
-                                        <td class="grand-amount">
-                                            {{ number_format($order->total_price, 2) }}
-                                        </td>
-                                    </tr>
-                                </table>
-
-                            </div>
-
-                        </td>
-
-                        {{-- RIGHT SIDE : VAT + RETURN POLICY --}}
-                        <td class="totals-right">
-
-                            <div class="policy-box">
-
-                                <div class="policy-title">
-                                    {{ $isAr ? 'ملاحظات الفاتورة' : 'Invoice Notes' }}
-                                </div>
-
-                                <p>
-                                    {{ $isAr
-                                        ? 'جميع الأسعار المذكورة في هذه الفاتورة شاملة ضريبة القيمة المضافة.'
-                                        : 'All prices listed in this invoice are inclusive of VAT.' }}
-                                </p>
-
-                                <br>
-
-                                <div class="policy-title">
-                                    {{ $isAr ? 'سياسة الاسترجاع' : 'Return Policy' }}
-                                </div>
-
-                                <p>
-                                    {{ $isAr
-                                        ? 'يمكن استرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام بشرط أن تكون بحالتها الأصلية وغير مستخدمة وإرفاق الفاتورة.'
-                                        : 'Products can be returned within 14 days from the delivery date provided they are unused, in original condition, and accompanied by the invoice.' }}
-                                </p>
-
-                            </div>
-
-                        </td>
-
+                        <td>{{ $index + 1 }}</td>
+                        <td class="col-desc">{{ $item->productVariation->product->{'name_' . app()->getLocale()} }}</td>
+                        <td>{{ $item->productVariation->size->{'name_' . app()->getLocale()} ?? '-' }}</td>
+                        <td>{{ number_format($qty, 0) }}</td>
+                        <td>{{ number_format($price, 2) }}</td>
+                        <td>{{ number_format($offer, 2) }}</td>
+                        <td>{{ number_format($subtotal, 2) }}</td>
+                        <td>{{ number_format($vat, 2) }}</td>
+                        <td>{{ number_format($total, 2) }}</td>
                     </tr>
-                </table>
-
-            </div>
-
-
-            {{-- == FOOTER == --}}
-            <div class="footer">
-                <div class="footer-title">{{ $isAr ? 'شكرًا لتسوقك معنا' : 'Thank you for your order!' }}</div>
-                <table class="footer-contacts">
+                @endforeach
+                @for ($i = count($order->items); $i < 10; $i++)
                     <tr>
-                        <td>{{ optional($settings)->phone }}</td>
-                        <td>{{ optional($settings)->email }}</td>
-                        <td> www.alkhimah.com</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
                     </tr>
-                </table>
-                <div class="footer-copy">
-                    {{ $isAr ? 'رقم التسجيل الضريبي' : 'Tax Registration Number' }}: 312700988800003
-                </div>
+                @endfor
+            </tbody>
+        </table>
 
-                <div class="footer-copy">
-                    {{ $isAr ? 'جميع الحقوق محفوظة' : 'All rights reserved' }} &copy; {{ date('Y') }}
-                </div>
-            </div>
+        <!-- FOOTER -->
+        <div class="footer-section">
+            <table>
+                <tr>
+                    <td width="60%">
+                        <table width="100%" style="border-collapse: collapse;">
+                            <tr>
+                                <td width="66.7%" style="padding: 0; vertical-align: top;">
+                                    <div class="notes-box">
+                                        <div class="notes-label">ملاحظات على الفاتورة / Notes</div>
+
+                                        @if ($order->tax_amount == 0)
+                            <tr height="120px">
+                                <td colspan="2">
+                                    <div class="note-item"
+                                        style="color:#ff0000; font-weight:bold; font-size:12px; text-align:center;">
+                                        {{ '* جميع اﻷسعار شاملة الضريبة' }}
+                                    </div>
+                                </td>
+                            </tr>
+                            @endif
+                            <tr height="120px">
+                                <td colspan="2">
+                                    <div class="note-item padding-bottom:10px;">
+
+                                        {{ '* يمكن استرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام بشرط أن تكون بحالتها الأصلية وغير مستخدمة وإرفاق الفاتورة. ' }}
+                                    </div>
+                                </td>
+                            </tr>
 
         </div>
+        </td>
+        <td width="33.3%" style="padding: 0; vertical-align: top;">
+            <div style="padding: 8px 10px; text-align: center; background: #eaf4fb;">
+                {{-- <div class="qr-box">
+                                            <img src="{{ public_path('Images/qr-code.png') }}" alt="QR Code"
+                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                                            <div class="qr-placeholder" style="display: none;">QR Code</div>
+                                        </div> --}}
+            </div>
+        </td>
+        </tr>
+        </table>
+        </td>
+        <td width="40%">
+            <table class="totals-table">
+                <tr>
+                    <td class="tot-label">
+                        الإجمالي بدون الضريبة<br /><small>Subtotal</small>
+                    </td>
+                    <td class="tot-value">{{ number_format($order->subtotal_price, 2) }}</td>
+                </tr>
+                <tr>
+                    <td class="tot-label">
+                        إجمالي الخصم<br /><small>Total Discount</small>
+                    </td>
+                    <td class="tot-value">
+                        {{ number_format($order->discount_of_offer + $order->discount_of_promo_code, 2) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tot-label">
+                        ضريبة القيمة المضافة<br /><small>VAT 15%</small>
+                    </td>
+                    <td class="tot-value">{{ number_format($order->tax_amount, 2) }}</td>
+                </tr>
+                <tr>
+                    <td class="tot-final-label">
+                        الإجمالي النهائي<br /><small>Total</small>
+                    </td>
+                    <td class="tot-final">{{ number_format($order->total_price, 2) }}</td>
+                </tr>
+            </table>
+        </td>
+        </tr>
+        </table>
+    </div>
     </div>
 </body>
 

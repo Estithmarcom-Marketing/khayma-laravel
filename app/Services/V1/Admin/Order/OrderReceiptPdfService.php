@@ -12,16 +12,16 @@ class OrderReceiptPdfService
     {
         $order->loadMissing([
             'items.productVariation.product:id,name_ar,name_en',
+            'items.productVariation.size:id,name_ar',
             'user',
             'deliveryMethod',
             'payments' => function ($query) {
-                $query->latest();
+                $query->latest()->with('paymentMethod:id,name_ar,name_en');
             },
         ]);
 
-        $locale = app()->getLocale();
         $hash = md5($order->updated_at);
-        $fileName = "receipt-{$order->id}-{$hash}-{$locale}.pdf";
+        $fileName = "receipt-{$order->id}-{$hash}.pdf";
         $filePath = "receipts/{$fileName}";
 
         $disk = Storage::disk('public');
@@ -57,18 +57,5 @@ class OrderReceiptPdfService
         $mpdf->WriteHTML($html);
 
         return $mpdf->Output('', 'S');
-    }
-
-    public function deleteCached(Order $order, ?string $locale = null): bool
-    {
-        $locale = $locale ?? app()->getLocale();
-        $fileName = "receipt-{$order->id}-{$locale}.pdf";
-        $filePath = "receipts/{$fileName}";
-
-        if (Storage::disk('public')->exists($filePath)) {
-            return Storage::disk('public')->delete($filePath);
-        }
-
-        return false;
     }
 }

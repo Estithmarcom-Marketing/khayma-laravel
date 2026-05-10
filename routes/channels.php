@@ -8,8 +8,5 @@ use Illuminate\Support\Facades\Log;
 // });
 
 Broadcast::channel('admins.notifications', function ($admin) {
-    Log::info('Broadcast auth hit', [
-        'admin_id' => $admin?->id
-    ]);
     return true;
 }, ['guards' => ['admin']]);
