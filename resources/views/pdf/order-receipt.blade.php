@@ -211,15 +211,17 @@
             color: #020303;
             padding-bottom: 4px;
             display: block;
+            text-align: center;
             /* border-bottom: 1px solid #e1e9f5; */
         }
 
         .note-item {
-            padding: 8px;
-            margin: 0;
-            font-size: 10.5px;
-            /* line-height: 1.6; */
+            padding: 10px 8px;
+            margin: 4px 0;
+            font-size: 11px;
+            line-height: 1.6;
             color: #222;
+            text-align: right;
         }
 
         .note-item:first-child {
@@ -365,14 +367,14 @@
                             <td class="label-ltr">Customer Name :</td>
                         </tr>
                         <tr>
-                            <td class="label">عنوان العميل :</td>
-                            <td class="value">{{ $order->address_details ?? '-' }}</td>
-                            <td class="label-ltr">Customer Address :</td>
+                            <td class="label">هاتف العميل :</td>
+                            <td class="value">{{ $order->phone }}</td>
+                            <td class="label-ltr">Customer Phone :</td>
                         </tr>
                         <tr>
-                            <td class="label">الرقم الضريبي :</td>
-                            <td class="value">{{ optional($order->user)->tax_number ?? '-' }}</td>
-                            <td class="label-ltr">Customer Vat No :</td>
+                            <td class="label"> طريقة التوصيل:</td>
+                            <td class="value">{{ $order->deliveryMethod->name_ar }}</td>
+                            <td class="label-ltr"> Delivery Method :</td>
                         </tr>
                     </table>
                 </td>
@@ -436,79 +438,93 @@
         <div class="footer-section">
             <table>
                 <tr>
-                    <td width="60%">
+                    <td width="60%" height="100%" style="padding: 0; vertical-align: top;">
                         <table width="100%" style="border-collapse: collapse;">
                             <tr>
-                                <td width="66.7%" style="padding: 0; vertical-align: top;">
+                                <td width="100%" style="padding: 0; text-align: center; vertical-align: top;">
                                     <div class="notes-box">
-                                        <div class="notes-label">ملاحظات على الفاتورة / Notes</div>
+                                        <h3 class="notes-label">ملاحظات على الفاتورة / Notes</h3>
+                                        <div class="note-item">
+                                            <br>
+                                        </div>
 
                                         @if ($order->tax_amount == 0)
-                            <tr height="120px">
-                                <td colspan="2">
-                                    <div class="note-item"
-                                        style="color:#ff0000; font-weight:bold; font-size:12px; text-align:center;">
-                                        {{ '* جميع اﻷسعار شاملة الضريبة' }}
+                                            <h4 class="note-item"
+                                                style="color:#ff0000; font-weight:bold; font-size:12px; ">
+                                                {{ '- جميع اﻷسعار شاملة الضريبة' }}
+                                            </h4>
+                                        @endif
+
+                                        <div class="note-item">
+                                            <br> <br> <br>
+                                        </div>
+
+
+                                        @if ($order->shipping_cost != 0)
+                                            <div class="note-item" style="font-weight:bold; font-size:12px;">
+                                                {{ '-  عنوان التوصيل: ' }}
+                                            </div>
+                                            <div class="note-item" style="padding: 4px 4px;">
+
+                                            </div>
+                                            <div class="note-item" style="font-size:12px;">
+                                                {{ $order->address_details }}
+                                            </div>
+                                        @endif
+                                        <div class="note-item">
+                                            <br> <br> <br>
+                                        </div>
+
+                                        <div class="note-item" style="font-size:12px;  padding: 12px 8px;">
+                                            {{ '- يمكن استرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام بشرط أن تكون بحالتها الأصلية وغير مستخدمة وإرفاق الفاتورة.' }}
+                                        </div>
+
                                     </div>
                                 </td>
                             </tr>
+                        </table>
+                    </td>
+                    <td width="40%">
+                        <table class="totals-table">
+                            <tr>
+                                <td class="tot-label">
+                                    الإجمالي بدون الضريبة<br /><small>Subtotal</small>
+                                </td>
+                                <td class="tot-value">{{ number_format($order->subtotal_price, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="tot-label">
+                                    إجمالي الخصم<br /><small>Total Discount</small>
+                                </td>
+                                <td class="tot-value">
+                                    {{ number_format($order->discount_of_offer + $order->discount_of_promo_code, 2) }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tot-label">
+                                    ضريبة القيمة المضافة<br /><small>VAT 15%</small>
+                                </td>
+                                <td class="tot-value">{{ number_format($order->tax_amount, 2) }}</td>
+                            </tr>
+                            @if ($order->shipping_cost != 0)
+                                <tr>
+                                    <td class="tot-label">
+                                        إجمالي الشحن<br /><small>Total Shipping</small>
+                                    </td>
+                                    <td class = "tot-value"> {{ number_format($order->shipping_cost, 2) }} </td>
+                                </tr>
                             @endif
-                            <tr height="120px">
-                                <td colspan="2">
-                                    <div class="note-item padding-bottom:10px;">
-
-                                        {{ '* يمكن استرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام بشرط أن تكون بحالتها الأصلية وغير مستخدمة وإرفاق الفاتورة. ' }}
-                                    </div>
+                            <tr>
+                                <td class="tot-final-label">
+                                    الإجمالي النهائي<br /><small>Total</small>
                                 </td>
+                                <td class="tot-final">{{ number_format($order->total_price, 2) }}</td>
                             </tr>
-
-        </div>
-        </td>
-        <td width="33.3%" style="padding: 0; vertical-align: top;">
-            <div style="padding: 8px 10px; text-align: center; background: #eaf4fb;">
-                {{-- <div class="qr-box">
-                                            <img src="{{ public_path('Images/qr-code.png') }}" alt="QR Code"
-                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                                            <div class="qr-placeholder" style="display: none;">QR Code</div>
-                                        </div> --}}
-            </div>
-        </td>
-        </tr>
-        </table>
-        </td>
-        <td width="40%">
-            <table class="totals-table">
-                <tr>
-                    <td class="tot-label">
-                        الإجمالي بدون الضريبة<br /><small>Subtotal</small>
+                        </table>
                     </td>
-                    <td class="tot-value">{{ number_format($order->subtotal_price, 2) }}</td>
-                </tr>
-                <tr>
-                    <td class="tot-label">
-                        إجمالي الخصم<br /><small>Total Discount</small>
-                    </td>
-                    <td class="tot-value">
-                        {{ number_format($order->discount_of_offer + $order->discount_of_promo_code, 2) }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tot-label">
-                        ضريبة القيمة المضافة<br /><small>VAT 15%</small>
-                    </td>
-                    <td class="tot-value">{{ number_format($order->tax_amount, 2) }}</td>
-                </tr>
-                <tr>
-                    <td class="tot-final-label">
-                        الإجمالي النهائي<br /><small>Total</small>
-                    </td>
-                    <td class="tot-final">{{ number_format($order->total_price, 2) }}</td>
                 </tr>
             </table>
-        </td>
-        </tr>
-        </table>
-    </div>
+        </div>
     </div>
 </body>
 
