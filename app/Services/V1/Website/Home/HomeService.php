@@ -23,8 +23,7 @@ class HomeService
     public function getCategories()
     {
         return Category::select(['id', 'name_ar', 'name_en'])
-            ->
-        with(['media:id,model_id,name,file_name,collection_name,disk'])
+            ->with(['media:id,model_id,name,file_name,collection_name,disk'])
             ->whereNull('parent_id')
             ->limit(10)
             ->get();
@@ -46,13 +45,15 @@ class HomeService
         return Product::query()
             ->published()
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId
-                ? $q->where('user_id', $userId)
-                : $q->whereRaw('0 = 1'),
-                'cartItems as is_in_cart' => fn ($q) => $cartId
+                'favourites as is_favourite' => fn($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1')])
-            ->with(['category:id,name_ar,name_en',
+                    : $q->whereRaw('0 = 1')
+            ])
+            ->with([
+                'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
                 'productVariations' => function ($q) {
                     $q->selectWithActiveOffer()
@@ -61,7 +62,8 @@ class HomeService
                 },
                 'productVariations.color:id,name_ar,name_en,code',
                 'productVariations.size',
-                'media:id,model_id,name,file_name,collection_name,disk'])
+                'media:id,model_id,name,file_name,collection_name,disk'
+            ])
             ->withCount(['reviews', 'favourites', 'orders'])
             ->withAvg('reviews', 'rating')
             ->latest()
@@ -84,12 +86,13 @@ class HomeService
                     ->orWhereHas('favourites');
             })
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId
-                ? $q->where('user_id', $userId)
-                : $q->whereRaw('0 = 1'),
-                'cartItems as is_in_cart' => fn ($q) => $cartId
+                'favourites as is_favourite' => fn($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1')])
+                    : $q->whereRaw('0 = 1')
+            ])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
@@ -118,12 +121,13 @@ class HomeService
             ->withCount(['orders', 'reviews'])
             ->withAvg('reviews', 'rating')
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId
-                ? $q->where('user_id', $userId)
-                : $q->whereRaw('0 = 1'),
-                'cartItems as is_in_cart' => fn ($q) => $cartId
+                'favourites as is_favourite' => fn($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1')])
+                    : $q->whereRaw('0 = 1')
+            ])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
@@ -152,12 +156,13 @@ class HomeService
             ->withAvg('reviews', 'rating')
             ->whereHas('category')
             ->withExists([
-                'favourites as is_favourite' => fn ($q) => $userId
-                ? $q->where('user_id', $userId)
-                : $q->whereRaw('0 = 1'),
-                'cartItems as is_in_cart' => fn ($q) => $cartId
+                'favourites as is_favourite' => fn($q) => $userId
+                    ? $q->where('user_id', $userId)
+                    : $q->whereRaw('0 = 1'),
+                'cartItems as is_in_cart' => fn($q) => $cartId
                     ? $q->where('cart_id', $cartId)
-                    : $q->whereRaw('0 = 1')])
+                    : $q->whereRaw('0 = 1')
+            ])
             ->with([
                 'category:id,name_ar,name_en',
                 'brand:id,name_ar,name_en',
@@ -177,7 +182,7 @@ class HomeService
     public function getHomeReviews()
     {
         return Review::query()
-            ->with(['user:id,name', 'user.media'])
+            ->with(['user:id,name'])
             ->where(function ($q) {
                 $q->where('rating', '>', 4);
             })
