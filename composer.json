@@ -10,7 +10,6 @@
         "algolia/algoliasearch-client-php": "^4.38",
         "dedoc/scramble": "^0.13.20",
         "firebase/php-jwt": "^7.0",
-        "hypersender/hypersender-laravel": "^2.1",
         "kreait/laravel-firebase": "^7.1",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
