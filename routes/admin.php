@@ -175,6 +175,7 @@ Route::prefix('admin/v1')
             ->prefix('properties')
             ->group(function () {
                 Route::get('', [PropertyController::class, 'index'])->middleware('permission:read-properties');
+                Route::get('unpaginated', [PropertyController::class, 'listWithoutPagination'])->middleware('permission:read-properties');
                 Route::post('', [PropertyController::class, 'store'])->middleware('permission:store-property');
                 Route::patch('{property}', [PropertyController::class, 'update'])->middleware('permission:store-property');
                 Route::get('{property}', [PropertyController::class, 'show'])->middleware('permission:read-properties');

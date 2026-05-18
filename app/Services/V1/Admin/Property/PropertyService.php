@@ -8,10 +8,15 @@ class PropertyService
 {
     public function list()
     {
-        return Property::query()
-            ->orderBy('created_at', 'desc')
+        return Property::select(['id', 'name_ar', 'name_en', 'created_at'])
+            ->latest()
             ->paginate(10);
-
+    }
+    public function listWithoutPagination()
+    {
+        return Property::select(['id', 'name_ar'])
+            ->latest()
+            ->get();
     }
 
     public function show(Property $property)
@@ -26,18 +31,12 @@ class PropertyService
 
     public function store(array $data)
     {
-        return Property::create([
-            'name_ar' => $data['name_ar'],
-            'name_en' => $data['name_en'],
-        ]);
+        return Property::create($data);
     }
 
     public function update(Property $property, array $data)
     {
-        $property->update([
-            'name_ar' => $data['name_ar'],
-            'name_en' => $data['name_en'],
-        ]);
+        $property->fill($data)->save();
 
         return $property->refresh();
     }
