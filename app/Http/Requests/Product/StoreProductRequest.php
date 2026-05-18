@@ -17,8 +17,8 @@ class StoreProductRequest extends FormRequest
         return [
             'name_ar'               => 'required|string|max:255',
             'name_en'               => 'required|string|max:255',
-            'description_ar'        => 'nullable|string|max:500',
-            'description_en'        => 'nullable|string|max:500',
+            'description_ar'        => 'nullable|string|max:60000',
+            'description_en'        => 'nullable|string|max:60000',
 
             'slug_ar' => [
                 'sometimes',

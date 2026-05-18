@@ -12,7 +12,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use InteractsWithMedia , Searchable ,SoftDeletes, HasFactory;
+    use InteractsWithMedia, Searchable, SoftDeletes, HasFactory;
 
     protected $fillable = [
         'name_ar',
@@ -34,19 +34,38 @@ class Product extends Model implements HasMedia
         'is_published' => 'boolean',
     ];
 
-    public function toSearchableArray()
+    public function toSearchableArray(): array
     {
+        $this->loadMissing(['brand', 'category']);
+
         return [
             'id' => $this->id,
+
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
-            'description_ar'=>$this->description_ar,
-            'description_en'=>$this->description_en,
-            'slug_en' => $this->slug_en,
-            'slug_ar' => $this->slug_ar,
-            'brand_id' => $this->brand_id,
-            'category_id' => $this->category_id,
+
+            'description_ar' => $this->searchableText($this->description_ar),
+            'description_en' => $this->searchableText($this->description_en),
+
+            'brand' => $this->brand?->name_ar,
+            'category' => $this->category?->name_ar,
+            'search_terms' => implode(' ', [
+                $this->name_ar,
+                $this->name_en,
+                $this->brand?->name_ar,
+                $this->brand?->name_en,
+                $this->category?->name_ar,
+                $this->category?->name_en,
+            ]),
         ];
+    }
+    private function searchableText(?string $text): string
+    {
+        $clean = trim(
+            preg_replace('/\s+/', ' ', strip_tags($text ?? ''))
+        );
+
+        return mb_substr($clean, 0, 30000);
     }
 
     public function category()
@@ -122,7 +141,7 @@ class Product extends Model implements HasMedia
 
         return $this->productVariations
             ->load('properties')
-            ->flatMap(fn ($variation) => $variation->properties)
+            ->flatMap(fn($variation) => $variation->properties)
             ->unique('id')
             ->values();
     }
@@ -130,7 +149,6 @@ class Product extends Model implements HasMedia
     public function sizes(): HasManyThrough
     {
         return $this->hasManyThrough(Size::class, ProductVariation::class);
-
     }
 
     public function colors(): HasManyThrough
