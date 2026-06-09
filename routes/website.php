@@ -77,6 +77,7 @@ Route::middleware(['tokenfromcookie', 'locale', 'json'])
             ->prefix('products')
             ->group(function () {
                 Route::get('', [ProductController::class, 'filter']);
+                Route::get('site-map', [ProductController::class, 'getAllForSiteMap']);
                 Route::get('{identifier}', [ProductController::class, 'show']);
                 Route::get('{identifier}/related', [ProductController::class, 'getRelatedProducts']);
                 Route::get('{identifier}/variations', [ProductController::class, 'showVariations']);

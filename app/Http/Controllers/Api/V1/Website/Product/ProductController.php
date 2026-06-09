@@ -6,17 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\FilterProductRequest;
 use App\Http\Resources\ProductVariation\ProductVariationResource;
 use App\Http\Resources\Product\ProductResource;
+use App\Http\Resources\Product\ProductSiteMapResource;
 use App\Services\V1\Website\Product\ProductService;
 use App\Traits\Response\ApiResponse;
 use Illuminate\Support\Facades\Log;
 
 use Symfony\Component\HttpFoundation\Response;
 use Dedoc\Scramble\Attributes\Group;
+
 #[Group('Website Product')]
 class ProductController extends Controller
 {
     public function __construct(protected ProductService $service) {}
-
+    
     public function filter(FilterProductRequest $request)
     {
         try {
@@ -24,12 +26,14 @@ class ProductController extends Controller
             $products = ProductResource::collection($products)->response()->getData(true);
 
             return ApiResponse::successResponse(
-                ['products' => $products['data'],
+                [
+                    'products' => $products['data'],
                     'meta' => $products['meta'],
                     'links' => $products['links'],
                 ],
                 __('product.filter_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed To Fetch Products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -42,9 +46,11 @@ class ProductController extends Controller
         try {
             $variations = $this->service->showVariations($identifier);
 
-            return ApiResponse::successResponse(['variations' => ProductVariationResource::collection($variations)],
+            return ApiResponse::successResponse(
+                ['variations' => ProductVariationResource::collection($variations)],
                 __('product.variations_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed To Fetch Product Variation', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -57,8 +63,11 @@ class ProductController extends Controller
         try {
             $product = $this->service->showProduct($identifier);
 
-            return ApiResponse::successResponse(['product' => ProductResource::make($product)],
-                __('product.show_success'), Response::HTTP_OK);
+            return ApiResponse::successResponse(
+                ['product' => ProductResource::make($product)],
+                __('product.show_success'),
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed To Fetch Product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -71,13 +80,29 @@ class ProductController extends Controller
         try {
             $products = $this->service->getRelatedProducts($identifier);
 
-            return ApiResponse::successResponse(['products' => ProductResource::collection($products)],
+            return ApiResponse::successResponse(
+                ['products' => ProductResource::collection($products)],
                 __('product.related_success'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed To Fetch Related Products', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('product.related_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    /**
+     * @unauthenticated
+     */
+    public function getAllForSiteMap()
+    {
+        try {
+            $products = $this->service->getAllForSiteMap();
+            $products = ProductSiteMapResource::collection($products);
+            return ApiResponse::successResponse(['products' => $products], __('product.sitemap_success'), Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            Log::error('Failed To Fetch All Products For Site Map', ['error' => $th->getMessage(), 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('product.sitemap_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

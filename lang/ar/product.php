@@ -32,8 +32,13 @@ return [
     'create_success' => 'تم إضافة المنتج بنجاح',
     'create_failed' => 'فشل في إضافة المنتج',
 
+    'sitemap_success' => 'تم جلب المنتجات بنجاح',
+    'sitemap_failed' => 'فشل في جلب المنتجات',
+
     'offer_expired_date_required'       => 'تاريخ انتهاء العرض مطلوب عند تحديد قيمة العرض',
     'offer_started_date_required'       => 'تاريخ بداية العرض مطلوب عند تحديد قيمة العرض',
     'offer_started_date_before_expired' => 'تاريخ بداية العرض يجب أن يكون قبل تاريخ انتهائه',
     'offer_required_with_dates'         => 'قيمة العرض مطلوبة عند تحديد تواريخ العرض',
+
+
 ];

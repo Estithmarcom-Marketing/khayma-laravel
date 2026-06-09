@@ -246,10 +246,10 @@ class ProductService
     private function existsConditions(?int $userId, ?int $cartId): array
     {
         return [
-            'favourites as is_favourite' => fn ($q) => $userId
+            'favourites as is_favourite' => fn($q) => $userId
                 ? $q->where('user_id', $userId)
                 : $q->whereRaw('0 = 1'),
-            'cartItems as is_in_cart' => fn ($q) => $cartId
+            'cartItems as is_in_cart' => fn($q) => $cartId
                 ? $q->where('cart_id', $cartId)
                 : $q->whereRaw('0 = 1'),
         ];
@@ -269,11 +269,11 @@ class ProductService
         $now = now()->format('Y-m-d H:i:s');
 
         return ProductVariation::select(
-            DB::raw("CASE 
-                WHEN offer_started_date <= '{$now}' 
-                AND offer_expired_date >= '{$now}' 
-                THEN offer 
-                ELSE NULL 
+            DB::raw("CASE
+                WHEN offer_started_date <= '{$now}'
+                AND offer_expired_date >= '{$now}'
+                THEN offer
+                ELSE NULL
             END as offer")
         )
             ->whereColumn('product_variations.product_id', 'products.id')
@@ -337,5 +337,20 @@ class ProductService
                 $q->where('price', '<=', $filters['max_price']);
             }
         };
+    }
+    public function getAllForSiteMap()
+    {
+        return Product::select([
+            'id',
+            'slug_en',
+            'slug_ar',
+            'meta_title_en',
+            'meta_title_ar',
+            'meta_description_en',
+            'meta_description_ar'
+        ])
+            ->published()
+            ->latest()
+            ->get();
     }
 }

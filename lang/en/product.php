@@ -29,6 +29,9 @@ return [
     'create_success' => 'Product created successfully',
     'create_failed' => 'Failed to create product',
 
+    'sitemap_success' => 'Products fetched successfully',
+    'sitemap_failed' => 'Failed to fetch products for site map',
+
     'offer_expired_date_required'       => 'Offer expiry date is required when offer value is set',
     'offer_started_date_required'       => 'Offer start date is required when offer value is set',
     'offer_started_date_before_expired' => 'Offer start date must be before offer expiry date',
