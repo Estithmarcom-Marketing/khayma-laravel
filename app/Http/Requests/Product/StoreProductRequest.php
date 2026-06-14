@@ -58,12 +58,12 @@ class StoreProductRequest extends FormRequest
                 Rule::unique('product_variations', 'sku'),
             ],
 
-            'variations.*.price'          => 'required|numeric|min:0',
-            'variations.*.tax'            => 'required|numeric|min:0',
+            'variations.*.price'          => 'required|numeric|min:0|decimal:0,2',
+            'variations.*.tax'            => 'required|numeric|min:0|decimal:0,2',
             'variations.*.stock_quantity' => 'required|integer|min:0',
             'variations.*.is_active'      => 'required|boolean',
 
-            'variations.*.offer'              => 'nullable|numeric|min:0',
+            'variations.*.offer'              => 'nullable|numeric|min:0|decimal:0,2',
             'variations.*.offer_expired_date' => 'nullable|date|after:today',
             'variations.*.offer_started_date' => 'nullable|date',
         ];

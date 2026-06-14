@@ -83,7 +83,7 @@ class BannerSeeder extends Seeder
 
             if (File::exists($data['image'])) {
                 $banner
-                    ->addMedia($data['image'])
+                    ->copyMedia($data['image'])
                     ->toMediaCollection('banners');
             }
         }

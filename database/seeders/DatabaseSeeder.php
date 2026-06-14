@@ -32,11 +32,11 @@ class DatabaseSeeder extends Seeder
         $admin->assignRole($role);
         $this->call(CitySeeder::class);
         $this->call(CityShipmentSeeder::class);
-        $this->call(BrandSeeder::class);
-        $this->call(CategorySeeder::class);
+        // $this->call(BrandSeeder::class);
+        // $this->call(CategorySeeder::class);
         $this->call(ColorSeeder::class);
-        $this->call(SizeSeeder::class);
-        $this->call(ProductSeeder::class);
+        // $this->call(SizeSeeder::class);
+        // $this->call(ProductSeeder::class);
         $this->call(DeliveryMethodSeeder::class);
         $this->call(PaymentMethodSeeder::class);
         $this->call(PaymentGatewaySeeder::class);
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
         // Category::factory()->count(5)->create();
         // Brand::factory()->count(10)->create();
         // Product::factory()->count(500)->create();
-        $this->call(ProductVariationSeeder::class);
+        // $this->call(ProductVariationSeeder::class);
         $this->call(SettingSeeder::class);
     }
 }

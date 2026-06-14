@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Category;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCategoryRequest extends FormRequest
+class UpdateSubCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,14 +18,14 @@ class UpdateCategoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        $categoryId = $this->route('category')->id;
+        $subCategoryId = $this->route('subCategory')->id;
         return [
-            'name_en' => 'sometimes|string|max:255|unique:categories,name_en,' . $categoryId,
-            'name_ar' => 'sometimes|string|max:255|unique:categories,name_ar,' . $categoryId,
+            'name_en' => 'sometimes|string|max:255|unique:categories,name_en,' . $subCategoryId,
+            'name_ar' => 'sometimes|string|max:255|unique:categories,name_ar,' . $subCategoryId,
             'description_en' => 'sometimes|nullable|max:5000',
             'description_ar' => 'sometimes|nullable|max:5000',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',

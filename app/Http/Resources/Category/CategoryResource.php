@@ -18,8 +18,6 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
-            'slug_en' => $this->slug_en,
-            'slug_ar' => $this->slug_ar,
             'description_en' => $this->description_en,
             'description_ar' => $this->description_ar,
             'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('category'))),

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\ImportCategoryRequest;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Requests\Category\UpdateSubCategoryRequest;
 use App\Http\Resources\Category\CategoryResource;
 use App\Imports\CategoriesImport;
 use App\Models\Category;
@@ -16,6 +17,7 @@ use App\Traits\Response\ApiResponse;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+
 #[Group('Admin Categories')]
 class CategoryController extends Controller
 {
@@ -27,13 +29,15 @@ class CategoryController extends Controller
             $categories = $this->service->list();
             $categories = CategoryResource::collection($categories)->response()->getData(true);
 
-            return ApiResponse::successResponse([
-                'categories' => $categories['data'],
-                'meta' => $categories['meta'],
-                'links' => $categories['links'],
-            ],
+            return ApiResponse::successResponse(
+                [
+                    'categories' => $categories['data'],
+                    'meta' => $categories['meta'],
+                    'links' => $categories['links'],
+                ],
                 'Categories retrieved successfully',
-                status: Response::HTTP_OK);
+                status: Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -46,9 +50,11 @@ class CategoryController extends Controller
         try {
             $category = $this->service->show($category);
 
-            return ApiResponse::successResponse(['category' => CategoryResource::make($category)],
+            return ApiResponse::successResponse(
+                ['category' => CategoryResource::make($category)],
                 'Category retrieved successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -62,9 +68,11 @@ class CategoryController extends Controller
 
             $category = $this->service->store($request->validated());
 
-            return ApiResponse::successResponse(['category' => CategoryResource::make($category)],
+            return ApiResponse::successResponse(
+                ['category' => CategoryResource::make($category)],
                 'Category created successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to create category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -77,9 +85,11 @@ class CategoryController extends Controller
         try {
             $category = $this->service->update($category, $request->validated());
 
-            return ApiResponse::successResponse(['category' => CategoryResource::make($category)],
+            return ApiResponse::successResponse(
+                ['category' => CategoryResource::make($category)],
                 'Category updated successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to update category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -92,9 +102,11 @@ class CategoryController extends Controller
         try {
             $this->service->delete($category);
 
-            return ApiResponse::successResponse(null,
+            return ApiResponse::successResponse(
+                null,
                 'Category deleted successfully',
-                Response::HTTP_NO_CONTENT);
+                Response::HTTP_NO_CONTENT
+            );
         } catch (\Exception $e) {
             Log::error('Failed to delete category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -107,9 +119,11 @@ class CategoryController extends Controller
         try {
             $subCategory = $this->service->storeSubCategory($category, $request->validated());
 
-            return ApiResponse::successResponse(['sub_category' => CategoryResource::make($subCategory)],
+            return ApiResponse::successResponse(
+                ['sub_category' => CategoryResource::make($subCategory)],
                 'Sub-category created successfully',
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to create sub-category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -117,17 +131,35 @@ class CategoryController extends Controller
         }
     }
 
-    public function updateSubCategory(UpdateCategoryRequest $request, Category $category, Category $subCategory)
+    public function updateSubCategory(UpdateSubCategoryRequest $request, Category $category, Category $subCategory)
     {
         try {
 
             $subCategory = $this->service->updateSubCategory($category, $subCategory, $request->validated());
-            return ApiResponse::successResponse(['sub_category' => CategoryResource::make($subCategory)],
+            return ApiResponse::successResponse(
+                ['sub_category' => CategoryResource::make($subCategory)],
                 'Sub-category updated successfully',
-                Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to update sub-category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+                Response::HTTP_OK
+            );
+        } catch (\LogicException $e) {
+            Log::error('Failed to update sub-category', [
+                'error' => $e->getMessage(),
+                'category_id' => $category->id,
+                'sub_category_id' => $subCategory->id,
+                'request' => $request->validated(),
+                'method' => __METHOD__
+            ]);
 
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Throwable $th) {
+
+            Log::error('Failed to update sub-category', [
+                'error' => $th->getMessage(),
+                'category_id' => $category->id,
+                'sub_category_id' => $subCategory->id,
+                'request' => $request->validated(),
+                'method' => __METHOD__
+            ]);
             return ApiResponse::errorResponse('Failed to update sub-category', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -137,9 +169,11 @@ class CategoryController extends Controller
         try {
             $this->service->deleteSubCategory($category, $subCategory);
 
-            return ApiResponse::successResponse(null,
+            return ApiResponse::successResponse(
+                null,
                 'Sub-category deleted successfully',
-                Response::HTTP_NO_CONTENT);
+                Response::HTTP_NO_CONTENT
+            );
         } catch (\Exception $e) {
             Log::error('Failed to delete sub-category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -153,13 +187,15 @@ class CategoryController extends Controller
             $subCategories = $this->service->listSubCategories($category);
             $subCategories = CategoryResource::collection($subCategories)->response()->getData(true);
 
-            return ApiResponse::successResponse([
-                'sub_categories' => $subCategories['data'],
-                'meta' => $subCategories['meta'],
-                'links' => $subCategories['links'],
-            ],
+            return ApiResponse::successResponse(
+                [
+                    'sub_categories' => $subCategories['data'],
+                    'meta' => $subCategories['meta'],
+                    'links' => $subCategories['links'],
+                ],
                 'Sub-categories retrieved successfully',
-                status: Response::HTTP_OK);
+                status: Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch sub-categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
@@ -211,7 +247,6 @@ class CategoryController extends Controller
                 $message,
                 Response::HTTP_OK
             );
-
         } catch (\Throwable $e) {
             Log::error('Failed to import categories', [
                 'error' => $e->getMessage(),
@@ -220,7 +255,7 @@ class CategoryController extends Controller
             ]);
 
             return ApiResponse::errorResponse(
-                'Failed to import categories: '.$e->getMessage(),
+                'Failed to import categories: ' . $e->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -232,9 +267,11 @@ class CategoryController extends Controller
             $categories = $this->service->categoriesNoPagination();
             $categories = CategoryResource::collection($categories);
 
-            return ApiResponse::successResponse(['categories' => $categories],
+            return ApiResponse::successResponse(
+                ['categories' => $categories],
                 __('category.listed_all'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
             return ApiResponse::errorResponse(__('category.list_all_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -247,9 +284,11 @@ class CategoryController extends Controller
             $sub_categories = $this->service->subCategoriesNoPagination($category);
             $sub_categories = CategoryResource::collection($sub_categories);
 
-            return ApiResponse::successResponse(['sub_categories' => $sub_categories],
+            return ApiResponse::successResponse(
+                ['sub_categories' => $sub_categories],
                 __('category.listed_all'),
-                Response::HTTP_OK);
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             Log::error('Failed to fetch sub-categories', ['error' => $e->getMessage(), 'method' => __METHOD__]);
             return ApiResponse::errorResponse(__('category.failed_to_fetch_subcategories'), Response::HTTP_INTERNAL_SERVER_ERROR);

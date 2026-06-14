@@ -22,7 +22,6 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name_ar,
-            'slug' => $this->slug_ar,
             'description' => $this->description_ar,
 
             'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('category'))),
@@ -50,7 +49,6 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name_en,
-            'slug' => $this->slug_en,
             'description' => $this->description_en,
             'image' => $this->whenLoaded('media', $this->whenNotNull($this->getFirstMediaUrl('category'))),
             'parent' => $this->whenLoaded('parent', function () {
