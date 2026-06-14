@@ -174,8 +174,22 @@ class CategoryController extends Controller
                 'Sub-category deleted successfully',
                 Response::HTTP_NO_CONTENT
             );
+        } catch (\LogicException $e) {
+            Log::error('Failed to delete sub-category', [
+                'error' => $e->getMessage(),
+                'category_id' => $category->id,
+                'sub_category_id' => $subCategory->id,
+                'method' => __METHOD__
+            ]);
+
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         } catch (\Exception $e) {
-            Log::error('Failed to delete sub-category', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to delete sub-category', [
+                'error' => $e->getMessage(),
+                'category_id' => $category->id,
+                'sub_category_id' => $subCategory->id,
+                'method' => __METHOD__
+            ]);
 
             return ApiResponse::errorResponse('Failed to delete sub-category', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -22,32 +22,23 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
     use Importable, SkipsFailures;
 
     private array $existingCategories = [];
-
-    private array $slugCache = [];
-
     private int $processedRows = 0;
-
     private int $successCount = 0;
-
     private int $skippedCount = 0;
-
     private float $startTime;
 
     public function __construct()
     {
         $this->startTime = microtime(true);
-
         $this->loadExistingCategories();
     }
 
     private function loadExistingCategories(): void
     {
-        Category::select('id', 'slug_en', 'slug_ar', 'parent_id')
+        Category::select('id', 'name_en', 'name_ar', 'parent_id')
             ->get()
             ->each(function ($category) {
                 $this->existingCategories[$category->id] = $category;
-                $this->slugCache['en'][$category->slug_en] = $category->id;
-                $this->slugCache['ar'][$category->slug_ar] = $category->id;
             });
     }
 
@@ -56,37 +47,66 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
         $this->processedRows++;
 
         try {
+            $nameEn = trim($row['name_en']);
+            $nameAr = trim($row['name_ar']);
+
             $parentId = $this->resolveParentId($row);
 
-            if ($parentId && $this->wouldCreateCircularReference($row['slug_en'], $parentId)) {
-                Log::warning('Circular reference detected', [
-                    'row' => $this->processedRows,
-                    'slug_en' => $row['slug_en'],
-                    'parent_id' => $parentId,
-                ]);
-                $this->skippedCount++;
+            $enCategory = Category::where('name_en', $nameEn)->first();
+            $arCategory = Category::where('name_ar', $nameAr)->first();
 
+            if (
+                $enCategory &&
+                $arCategory &&
+                $enCategory->id !== $arCategory->id
+            ) {
+                Log::warning('Conflicting category names detected', [
+                    'row' => $this->processedRows,
+                    'name_en' => $nameEn,
+                    'name_ar' => $nameAr,
+                ]);
+
+                $this->skippedCount++;
                 return null;
             }
 
-            $category = DB::transaction(function () use ($row, $parentId) {
-                return Category::updateOrCreate(
-                    ['slug_en' => $row['slug_en']],
-                    [
-                        'name_en' => trim($row['name_en']),
-                        'name_ar' => trim($row['name_ar']),
-                        'slug_ar' => $row['slug_ar'],
-                        'description_en' => ! empty($row['description_en']) ? trim($row['description_en']) : null,
-                        'description_ar' => ! empty($row['description_ar']) ? trim($row['description_ar']) : null,
-                        'parent_id' => $parentId,
-                    ]
-                );
+            $category = $enCategory ?? $arCategory;
+
+            if (
+                $category &&
+                $parentId &&
+                $this->wouldCreateCircularReference($category->id, $parentId)
+            ) {
+                Log::warning('Circular reference detected', [
+                    'row' => $this->processedRows,
+                    'category_id' => $category->id,
+                    'parent_id' => $parentId,
+                ]);
+
+                $this->skippedCount++;
+                return null;
+            }
+
+            $category = DB::transaction(function () use ($row, $parentId, $category, $nameEn, $nameAr) {
+                if (!$category) {
+                    $category = new Category();
+                }
+
+                $category->name_en = $nameEn;
+                $category->name_ar = $nameAr;
+                $category->description_en = !empty($row['description_en'])
+                    ? trim($row['description_en'])
+                    : null;
+                $category->description_ar = !empty($row['description_ar'])
+                    ? trim($row['description_ar'])
+                    : null;
+                $category->parent_id = $parentId;
+                $category->save();
+
+                return $category;
             });
 
             $this->existingCategories[$category->id] = $category;
-            $this->slugCache['en'][$category->slug_en] = $category->id;
-            $this->slugCache['ar'][$category->slug_ar] = $category->id;
-
             $this->successCount++;
 
             if ($this->processedRows % 100 === 0) {
@@ -94,18 +114,16 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
             }
 
             return $category;
-
         } catch (\Throwable $e) {
             Log::error('Category import row failed', [
                 'row' => $this->processedRows,
-                'slug_en' => $row['slug_en'] ?? 'N/A',
+                'name_en' => $row['name_en'] ?? 'N/A',
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
 
             $this->skippedCount++;
-
             return null;
         }
     }
@@ -119,11 +137,10 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
         if (is_numeric($row['parent_id'])) {
             $parentId = (int) $row['parent_id'];
 
-            if (! isset($this->existingCategories[$parentId])) {
+            if (!isset($this->existingCategories[$parentId])) {
                 Log::warning('Parent category ID not found', [
                     'row' => $this->processedRows,
                     'parent_id' => $parentId,
-                    'child_slug' => $row['slug_en'],
                 ]);
 
                 return null;
@@ -132,35 +149,26 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
             return $parentId;
         }
 
-        $parentSlug = trim($row['parent_id']);
+        $parentName = trim($row['parent_id']);
 
-        if (isset($this->slugCache['en'][$parentSlug])) {
-            return $this->slugCache['en'][$parentSlug];
+        $parent = Category::where('name_en', $parentName)
+            ->orWhere('name_ar', $parentName)
+            ->first();
+
+        if (!$parent) {
+            Log::warning('Parent category not found', [
+                'row' => $this->processedRows,
+                'parent_name' => $parentName,
+            ]);
+
+            return null;
         }
 
-        if (isset($this->slugCache['ar'][$parentSlug])) {
-            return $this->slugCache['ar'][$parentSlug];
-        }
-
-        Log::warning('Parent category slug not found', [
-            'row' => $this->processedRows,
-            'parent_slug' => $parentSlug,
-            'child_slug' => $row['slug_en'],
-        ]);
-
-        return null;
+        return $parent->id;
     }
 
-    private function wouldCreateCircularReference(string $childSlug, int $potentialParentId): bool
+    private function wouldCreateCircularReference(int $childId, int $potentialParentId): bool
     {
-
-        $childId = $this->slugCache['en'][$childSlug] ?? null;
-
-        if (! $childId) {
-            return false;
-
-        }
-
         if ($childId === $potentialParentId) {
             return true;
         }
@@ -189,21 +197,9 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
         return [
             'name_en' => ['required', 'string', 'max:255'],
             'name_ar' => ['required', 'string', 'max:255'],
-            'slug_en' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:categories,slug_en',
-            ],
-            'slug_ar' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:categories,slug_ar',
-            ],
             'description_en' => ['nullable', 'string', 'max:500'],
             'description_ar' => ['nullable', 'string', 'max:500'],
-            'parent_id' => ['nullable', 'exists:categories,id'],
+            'parent_id' => ['nullable'],
         ];
     }
 
@@ -212,11 +208,8 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
         return [
             'name_en.required' => 'English name is required (column: name_en)',
             'name_ar.required' => 'Arabic name is required (column: name_ar)',
-            'slug_en.required' => 'English slug is required (column: slug_en)',
-            'slug_en.regex' => 'English slug must be lowercase with hyphens only (e.g., electronics-phones)',
-            'slug_ar.required' => 'Arabic slug is required (column: slug_ar)',
-            'description_en.max' => 'English description cannot exceed 1000 characters',
-            'description_ar.max' => 'Arabic description cannot exceed 1000 characters',
+            'description_en.max' => 'English description cannot exceed 500 characters',
+            'description_ar.max' => 'Arabic description cannot exceed 500 characters',
         ];
     }
 
@@ -257,9 +250,6 @@ class CategoriesImport implements SkipsOnFailure, ToModel, WithChunkReading, Wit
         ];
     }
 
-    /**
-     * Chunk reading size
-     */
     public function chunkSize(): int
     {
         return 100;
