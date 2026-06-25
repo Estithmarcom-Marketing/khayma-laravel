@@ -12,7 +12,7 @@ class ColorService
     }
     public function listWithoutPagination()
     {
-        return Color::select(['id', 'name_ar'])->get();
+        return Color::select(['id', 'name_ar', 'code'])->get();
     }
 
     public function store(array $data): Color
