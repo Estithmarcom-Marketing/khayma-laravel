@@ -20,7 +20,7 @@ class ProductService
     public function show(Product $product)
     {
         $product->load([
-            'category:id,name_ar,name_en',
+            'category:id,name_ar,name_en,parent_id',
             'brand:id,name_ar,name_en',
             'productVariations' => function ($q) {
                 $q->select('id', 'product_id', 'sku', 'price', 'stock_quantity', 'is_active', 'offer', 'offer_started_date', 'offer_expired_date', 'color_id', 'size_id');
