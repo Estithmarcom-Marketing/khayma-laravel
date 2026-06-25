@@ -9,7 +9,10 @@ class CategoryService
 {
     public function list()
     {
-        return Category::with(['parent', 'media'])->whereNull('parent_id')->paginate(10);
+        return Category::with(['parent', 'media'])
+            ->whereNull('parent_id')
+            ->latest()
+            ->paginate(10);
     }
 
     public function show(Category $category)
@@ -23,8 +26,8 @@ class CategoryService
             $category = Category::create([
                 'name_ar' => $data['name_ar'],
                 'name_en' => $data['name_en'],
-                'description_ar' => $data['description_ar'],
-                'description_en' => $data['description_en'],
+                'description_ar' => $data['description_ar'] ?? null,
+                'description_en' => $data['description_en'] ?? null,
                 'parent_id' => null,
             ]);
 

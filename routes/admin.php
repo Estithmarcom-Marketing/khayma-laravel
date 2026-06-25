@@ -88,6 +88,7 @@ Route::prefix('admin/v1')
             ->prefix('colors')
             ->group(function () {
                 Route::get('', [ColorController::class, 'index'])->middleware('permission:read-colors');
+                Route::get('unpaginated', [ColorController::class, 'listWithoutPagination'])->middleware('permission:read-colors');
                 Route::post('', [ColorController::class, 'store'])->middleware('permission:store-color');
                 Route::patch('{color}', [ColorController::class, 'update'])->middleware('permission:store-color');
                 Route::get('{color}', [ColorController::class, 'show'])->middleware('permission:read-colors');

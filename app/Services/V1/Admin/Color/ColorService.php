@@ -10,6 +10,10 @@ class ColorService
     {
         return Color::paginate(10);
     }
+    public function listWithoutPagination()
+    {
+        return Color::select(['id', 'name_ar'])->get();
+    }
 
     public function store(array $data): Color
     {

@@ -37,7 +37,7 @@ return [
     'date' => 'يجب أن يكون حقل :attribute تاريخًا صالحًا.',
     'date_equals' => 'يجب أن يكون حقل :attribute تاريخًا مساويًا لـ :date.',
     'date_format' => 'يجب أن يطابق حقل :attribute التنسيق :format.',
-    'decimal' => 'يجب أن يحتوي حقل :attribute على :decimal منازل عشرية.',
+    'decimal' => 'يجب أن يحتوي حقل :attribute على :decimal رقم بعد العلامة العشرية.',
     'declined' => 'يجب رفض حقل :attribute.',
     'declined_if' => 'يجب رفض حقل :attribute عندما يكون :other يساوي :value.',
     'different' => 'يجب أن يكون حقل :attribute مختلفًا عن :other.',
@@ -129,6 +129,12 @@ return [
         'email' => 'البريد الالكتروني',
         'password' => 'كلمة المرور',
         'password_confirmation' => 'تاكيد كلمة المرور',
+        'variations.*.offer' => 'العرض',
+        'variations.*.tax' => 'الضريبة',
+        'variations.*.price' => 'السعر',
+        'variations.*.stock_quantity' => 'الكمية المتاحة',
+        'offer_started_date' => 'تاريخ بدء العرض',
+        'offer_expired_date' => 'تاريخ انتهاء العرض'
     ],
 
 ];

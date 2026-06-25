@@ -30,7 +30,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->dropIndex(['name_ar', 'name_en']);
+            $table->dropIndex('category_names_idx');
         });
         Schema::dropIfExists('categories');
     }

@@ -28,7 +28,7 @@ class UpdateProductVaritionsRequest extends FormRequest
             'sku' => 'sometimes|string|max:255| unique:product_variations,sku,' . $this->route('productVariation')->id,
             'price' => 'sometimes|numeric|min:0|decimal:0,2',
             'tax' => 'sometimes|numeric|min:0|decimal:0,2',
-            'stock_quantity' => 'sometimes||min:0',
+            'stock_quantity' => 'sometimes|integer|min:0',
             'is_active' => 'sometimes|boolean',
             'offer' => 'sometimes|nullable|numeric|min:0|decimal:0,2',
             'offer_expired_date' => 'sometimes|date|after:today',

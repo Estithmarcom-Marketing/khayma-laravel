@@ -10,8 +10,8 @@ use App\Models\Color;
 use App\Services\V1\Admin\Color\ColorService;
 use App\Traits\Response\ApiResponse;
 use Dedoc\Scramble\Attributes\Group;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Group('Admin Color')]
 class ColorController extends Controller
@@ -37,6 +37,24 @@ class ColorController extends Controller
             Log::error('Failed to fetch colors', ['error' => $e->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse('Failed to fetch colors', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function listWithoutPagination()
+    {
+        try {
+            $colors = $this->service->listWithoutPagination();
+            $colors = ColorResource::collection($colors);
+
+            return ApiResponse::successResponse(
+                ['colors' => $colors],
+                'Unpaginated Colors retrieved successfully',
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch unpaginated colors', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse('Failed to fetch unpaginated colors', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
