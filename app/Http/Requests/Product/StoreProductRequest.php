@@ -46,8 +46,8 @@ class StoreProductRequest extends FormRequest
             'images.*'              => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
 
             'variations'            => 'required|array|min:1',
-            'variations.*.color_id' => 'required|exists:colors,id',
-            'variations.*.size_id'  => 'required|exists:sizes,id',
+            'variations.*.color_id' => 'nullable|exists:colors,id',
+            'variations.*.size_id'  => 'nullable|exists:sizes,id',
 
 
             'variations.*.sku' => [

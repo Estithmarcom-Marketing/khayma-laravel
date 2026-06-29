@@ -22,8 +22,8 @@ class StoreProductVariationsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'color_id' => 'required|exists:colors,id',
-            'size_id' => 'required|exists:sizes,id',
+            'color_id' => 'nullable|exists:colors,id',
+            'size_id' => 'nullable|exists:sizes,id',
             'sku' => 'required|string|max:255|unique:product_variations,sku',
             'price' => 'required|numeric|min:0|decimal:0,2',
             'tax' => 'required|numeric|min:0|decimal:0,2',

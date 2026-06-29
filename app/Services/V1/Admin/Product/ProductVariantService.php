@@ -11,8 +11,8 @@ class ProductVariantService
     public function storeVariations(Product $product, array $data)
     {
         return $product->productVariations()->create([
-            'color_id' => $data['color_id'],
-            'size_id' => $data['size_id'],
+            'color_id' => $data['color_id'] ?? null,
+            'size_id' => $data['size_id'] ?? null,
             'sku' => $data['sku'],
             'price' => $data['price'],
             'tax' => $data['tax'] ?? 0,

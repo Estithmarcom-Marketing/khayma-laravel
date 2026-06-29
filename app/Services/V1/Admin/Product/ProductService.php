@@ -106,8 +106,8 @@ class ProductService
     private function prepareVariation(array $variation): array
     {
         return [
-            'color_id'           => $variation['color_id'],
-            'size_id'            => $variation['size_id'],
+            'color_id'           => $variation['color_id'] ?? null,
+            'size_id'            => $variation['size_id'] ?? null,
             'sku'                => $variation['sku'],
             'price'              => $variation['price'],
             'tax'                => $variation['tax'] ?? 0,
