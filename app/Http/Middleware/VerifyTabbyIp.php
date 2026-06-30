@@ -26,6 +26,10 @@ class VerifyTabbyIp
             ]);
             abort(403, 'Unauthorized IP');
         }
+        Log::info('Authorized IP address accessed Tabby webhook', [
+            'ip' => $request->ip(),
+            'request' => $request->all()
+        ]);
 
         return $next($request);
     }

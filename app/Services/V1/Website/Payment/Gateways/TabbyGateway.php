@@ -150,11 +150,20 @@ class TabbyGateway implements PaymentGatewayInterface
         };
     }
 
-    private function findPayment(string $transactionId, string $orderId): ?Payment
+    private function findPayment(?string $transactionId, ?string $orderId): ?Payment
     {
         return Payment::query()
-            ->when($transactionId, fn($q) => $q->where('transaction_id', $transactionId))
-            ->when(! $transactionId && $orderId, fn($q) => $q->where('order_id', $orderId))
+            ->where(function ($q) use ($transactionId, $orderId) {
+                if ($transactionId) {
+                    $q->where('transaction_id', $transactionId)
+                        ->orWhere('meta_data->payment->id', $transactionId);
+                }
+
+                if ($orderId) {
+                    $q->orWhere('order_id', $orderId);
+                }
+            })
+            ->latest()
             ->first();
     }
 
