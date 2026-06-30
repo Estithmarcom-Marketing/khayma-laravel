@@ -18,7 +18,7 @@ use Dedoc\Scramble\Attributes\Group;
 class ProductController extends Controller
 {
     public function __construct(protected ProductService $service) {}
-    
+
     public function filter(FilterProductRequest $request)
     {
         try {
@@ -69,7 +69,7 @@ class ProductController extends Controller
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
-            Log::error('Failed To Fetch Product', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed To Fetch Product', ['error' => $e->getMessage(), 'identifier' => $identifier, 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('product.show_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
