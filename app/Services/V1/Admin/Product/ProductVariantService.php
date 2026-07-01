@@ -49,7 +49,7 @@ class ProductVariantService
 
     public function listProductVariations(Product $product)
     {
-        return $product->productVariations()->with(['color', 'size'])->paginate(10);
+        return $product->productVariations()->with(['color', 'size'])->latest()->paginate(10);
     }
     public function listLowStock()
     {
