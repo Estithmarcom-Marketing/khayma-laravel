@@ -23,8 +23,8 @@ class UserAuthService
     public function sendOtp(array $data)
     {
         return DB::transaction(function () use ($data) {
-            $otp = $this->generateOtp();
-            // $otp = 1234;
+            // $otp = $this->generateOtp();
+            $otp = 1234;
             $phoneNumber = normalize_saudi_phone_number($data['phone']);
             OtpCode::create([
                 'phone' => $phoneNumber,
