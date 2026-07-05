@@ -71,7 +71,7 @@ class ProfileManagementService
                 ->first();
 
             if (! $otp || ! Hash::check($otpCode, $otp->otp_code) || $otp->expires_at->isPast()) {
-                throw new \Exception('Invalid or expired OTP code.');
+                throw new \LogicException(__('auth.invalid_otp'));
             }
             $otp->is_used = true;
             $otp->save();
@@ -92,9 +92,7 @@ class ProfileManagementService
             } catch (\Exception $e) {
                 Log::error('Failed to send OTP for new phone verification via WhatsApp', ['phone' => $newPhoneNumber, 'error' => $e->getMessage(), 'method' => __METHOD__]);
             }
-
         });
-
     }
 
     public function updatePhoneNumber(array $data)
@@ -111,7 +109,7 @@ class ProfileManagementService
                 ->first();
 
             if (! $otp || ! Hash::check($otpCode, $otp->otp_code) || $otp->expires_at->isPast()) {
-                throw new \Exception('Invalid or expired OTP code.');
+                throw new \LogicException(__('auth.invalid_otp'));
             }
             $otp->is_used = true;
             $otp->save();

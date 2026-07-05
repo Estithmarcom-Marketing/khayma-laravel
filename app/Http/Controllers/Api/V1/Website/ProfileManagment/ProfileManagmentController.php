@@ -52,14 +52,19 @@ class ProfileManagmentController extends Controller
         }
     }
 
+
     public function sendOtpForPhoneUpdate()
     {
         try {
             $this->service->sendOtpForPhoneUpdate();
 
             return ApiResponse::successResponse(null, __('profile.otp_sent_success'), Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (\LogicException $e) {
             Log::error('Failed to send OTP for phone update', ['error' => $e->getMessage(), 'method' => __METHOD__]);
+
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Throwable $th) {
+            Log::error('Failed to send OTP for phone update', ['error' => $th->getMessage(), 'method' => __METHOD__]);
 
             return ApiResponse::errorResponse(__('profile.otp_sent_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -71,8 +76,12 @@ class ProfileManagmentController extends Controller
             $this->service->sendOtpToNewPhone($request->validated());
 
             return ApiResponse::successResponse(null, __('profile.otp_sent_success'), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Failed to send OTP for new phone number', ['error' => $e->getMessage(), 'method' => __METHOD__, 'request_data' => $request->all()]);
+        } catch (\LogicException $e) {
+            Log::error('Failed to send OTP for new phone number', ['error' => $e->getMessage(), 'method' => __METHOD__, 'request_data' => $request->only(['phone', 'otp_code'])]);
+
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Throwable $th) {
+            Log::error('Failed to send OTP for new phone number', ['error' => $th->getMessage(), 'method' => __METHOD__, 'request_data' => $request->only(['phone', 'otp_code'])]);
 
             return ApiResponse::errorResponse(__('profile.otp_sent_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -86,8 +95,12 @@ class ProfileManagmentController extends Controller
             return ApiResponse::successResponse([
                 'user' => UserResource::make($user),
             ], __('profile.phone_update_success'), Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (\LogicException $e) {
             Log::error('Failed to update phone number', ['error' => $e->getMessage(), 'method' => __METHOD__, 'request_data' => $request->only(['new_phone', 'otp_code'])]);
+
+            return ApiResponse::errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Throwable $th) {
+            Log::error('Failed to update phone number', ['error' => $th->getMessage(), 'method' => __METHOD__, 'request_data' => $request->only(['new_phone', 'otp_code'])]);
 
             return ApiResponse::errorResponse(__('profile.phone_update_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
