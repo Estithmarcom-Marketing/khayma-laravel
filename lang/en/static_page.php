@@ -14,4 +14,6 @@ return [
 
     'deleted_successfully'=>'The Static page deleted successfully',
     'deleted_failed'=>'Failed to delete the static page',
+
+    'not_found'=>'The static page not found',
 ];

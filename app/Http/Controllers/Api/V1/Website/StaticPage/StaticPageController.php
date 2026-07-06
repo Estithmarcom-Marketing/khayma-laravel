@@ -7,6 +7,7 @@ use App\Http\Resources\StaticPage\StaticPageResource;
 use App\Services\V1\Website\StaticPage\StaticPageService;
 use App\Traits\Response\ApiResponse;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,8 +37,11 @@ class StaticPageController extends Controller
             return ApiResponse::successResponse([
                 'page' => $page
             ], __('static_page.showed_successfully'), Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            Log::alert('The static page was not found', ['error' => $e->getMessage(), 'identifier' => $identifier, 'method' => __METHOD__]);
+            return ApiResponse::errorResponse(__('static_page.not_found'), Response::HTTP_NOT_FOUND);
         } catch (\Throwable $th) {
-            Log::error('Failed to retrieve static page', [$th->getMessage(), 'method' => __METHOD__]);
+            Log::error('Failed to retrieve static page', ['error' => $th->getMessage(), 'identifier' => $identifier, 'method' => __METHOD__]);
             return ApiResponse::errorResponse(__('static_page.showed_failed'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
