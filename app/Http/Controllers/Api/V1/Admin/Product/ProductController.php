@@ -40,18 +40,13 @@ class ProductController extends Controller
         try {
             $products = $this->service->list();
 
+            $products = ProductResource::collection($products)->response()->getData(true);
+
             return ApiResponse::successResponse(
                 [
-                    'products' => ProductResource::collection($products),
-                    'meta' => [
-                        'per_page' => $products->perPage(),
-                        'next_cursor' => optional($products->nextCursor())->encode(),
-                        'prev_cursor' => optional($products->previousCursor())->encode(),
-                    ],
-                    'links' => [
-                        'next' => $products->nextPageUrl(),
-                        'prev' => $products->previousPageUrl(),
-                    ],
+                    'products' => $products['data'],
+                    'meta' => $products['meta'],
+                    'links' => $products['links'],
                 ],
                 __('product.list_success'),
                 Response::HTTP_OK
