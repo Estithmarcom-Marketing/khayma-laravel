@@ -12,9 +12,9 @@ class ProductService
     public function list()
     {
         return Product::query()
-            ->with(['category:id,name_ar,name_en', 'brand:id,name_ar,name_en', 'media:id,model_id,name,file_name,collection_name,disk'])
+            ->with(['category:id,name_ar', 'brand:id,name_ar', 'media:id,model_id,name,file_name,collection_name,disk'])
             ->latest()
-            ->cursorPaginate(10);
+            ->paginate(10);
     }
 
     public function show(Product $product)
